@@ -136,3 +136,11 @@ proof, audit, test, check and lint remains blocking.
 Main-only badge publication uses GITHUB_TOKEN and writes endpoint JSON to the
 `badges` branch. No service token is needed. These files are generated only by
 an authorized future workflow; nothing has been pushed or published locally.
+
+## Exceptions
+
+An urgent security fix may skip the ratchet only if a maintainer lists the exact
+40-character commit here, with the approver and what restores the ratchet. None so far.
+
+| Commit | Approving maintainer | Reason | Restores ratchet in |
+| --- | --- | --- | --- |
