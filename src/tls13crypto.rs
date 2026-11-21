@@ -861,25 +861,43 @@ impl Algorithms {
     }
 
     pub(crate) fn validate(&self) -> Result<(), TLSError> {
-        let signature_enabled = match self.signature {
-            SignatureScheme::EcdsaSecp256r1Sha256 => cfg!(feature = "ecdsa-p256"),
-            SignatureScheme::RsaPssRsaSha256 => cfg!(feature = "rsa"),
-            // Upstream supports the primitive, but not TLS certificate negotiation.
-            SignatureScheme::ED25519 => false,
-        };
-        let kem_enabled = (self.kem == KemScheme::X25519 && cfg!(feature = "x25519"))
-            || (self.kem == KemScheme::Secp256r1 && cfg!(feature = "p256"))
-            || (self.kem == KemScheme::X25519MlKem768 && cfg!(feature = "mlkem768"));
-        if !cfg!(feature = "sha256")
-            || self.hash != HashAlgorithm::SHA256
+        if self.hash != HashAlgorithm::SHA256
             || self.aead != AeadAlgorithm::Chacha20Poly1305
-            || !cfg!(feature = "chacha20poly1305")
-            || !signature_enabled
-            || !kem_enabled
+            || (self.signature != SignatureScheme::EcdsaSecp256r1Sha256
+                && !(cfg!(feature = "rsa") && self.signature == SignatureScheme::RsaPssRsaSha256))
+            || !matches!(
+                self.kem,
+                KemScheme::X25519 | KemScheme::Secp256r1 | KemScheme::X25519MlKem768
+            )
             || self.psk_mode
             || self.zero_rtt
         {
             return tlserr(UNSUPPORTED_ALGORITHM);
+        }
+        #[cfg(not(all(
+            feature = "sha256",
+            feature = "chacha20poly1305",
+            feature = "ecdsa-p256",
+            feature = "x25519",
+            feature = "p256",
+            feature = "mlkem768"
+        )))]
+        {
+            let signature_enabled = match self.signature {
+                SignatureScheme::EcdsaSecp256r1Sha256 => cfg!(feature = "ecdsa-p256"),
+                SignatureScheme::RsaPssRsaSha256 => cfg!(feature = "rsa"),
+                SignatureScheme::ED25519 => false,
+            };
+            let kem_enabled = (self.kem == KemScheme::X25519 && cfg!(feature = "x25519"))
+                || (self.kem == KemScheme::Secp256r1 && cfg!(feature = "p256"))
+                || (self.kem == KemScheme::X25519MlKem768 && cfg!(feature = "mlkem768"));
+            if !cfg!(feature = "sha256")
+                || !cfg!(feature = "chacha20poly1305")
+                || !signature_enabled
+                || !kem_enabled
+            {
+                return tlserr(UNSUPPORTED_ALGORITHM);
+            }
         }
         Ok(())
     }
