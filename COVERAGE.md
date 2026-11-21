@@ -117,6 +117,20 @@ checked range, approving maintainer, reason and restoration obligation. Human
 review verifies the approval; a Markdown name cannot authenticate a maintainer.
 The next change to the affected code must restore the pre-exception floor.
 
+## Badges
+
+On main, `coverage.yml` writes shields.io endpoint JSON to the `badges` branch
+(`proven`, `tested`, `unverified`, `proof-ratio`, `ratchet`) using only the default
+`GITHUB_TOKEN`. Colors are set by plain thresholds and are not tuned to look good:
+
+| Badge | Color rule |
+| --- | --- |
+| proven | red below 25%, orange 25–50%, yellow 50–75%, green 75–90%, bright green 90% and up |
+| unverified | bright green below 10% of security lines, green below 25%, yellow below 50%, orange below 75%, red above |
+| tested | blue (informational: referenced by tests, not executed coverage) |
+| proof/code | informational, never red: grey `n/a` when not measured, bright green inside 5–15, yellow outside |
+| ratchet | green pass, red fail |
+
 ## Exceptions
 
 | Commit | Approving maintainer | Reason | Restoration obligation |
