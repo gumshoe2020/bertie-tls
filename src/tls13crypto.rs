@@ -525,23 +525,28 @@ impl KemScheme {
     }
 }
 
-// Bridge the KEM's rand_core 0.10 API to Bertie's existing caller RNG.
-struct KemRng<'a, R: CryptoRng>(&'a mut R);
+// Implementation glue, outside the existing abstract cryptographic proof interface.
+mod non_hax {
+    use super::CryptoRng;
+    // Bridge the KEM's rand_core 0.10 API to Bertie's existing caller RNG.
+    pub(super) struct KemRng<'a, R: CryptoRng>(pub(super) &'a mut R);
 
-impl<R: CryptoRng> rand_core::TryRng for KemRng<'_, R> {
-    type Error = core::convert::Infallible;
-    fn try_next_u32(&mut self) -> Result<u32, Self::Error> {
-        Ok(self.0.next_u32())
+    impl<R: CryptoRng> rand_core::TryRng for KemRng<'_, R> {
+        type Error = core::convert::Infallible;
+        fn try_next_u32(&mut self) -> Result<u32, Self::Error> {
+            Ok(self.0.next_u32())
+        }
+        fn try_next_u64(&mut self) -> Result<u64, Self::Error> {
+            Ok(self.0.next_u64())
+        }
+        fn try_fill_bytes(&mut self, dest: &mut [u8]) -> Result<(), Self::Error> {
+            self.0.fill_bytes(dest);
+            Ok(())
+        }
     }
-    fn try_next_u64(&mut self) -> Result<u64, Self::Error> {
-        Ok(self.0.next_u64())
-    }
-    fn try_fill_bytes(&mut self, dest: &mut [u8]) -> Result<(), Self::Error> {
-        self.0.fill_bytes(dest);
-        Ok(())
-    }
+    impl<R: CryptoRng> rand_core::TryCryptoRng for KemRng<'_, R> {}
 }
-impl<R: CryptoRng> rand_core::TryCryptoRng for KemRng<'_, R> {}
+use non_hax::KemRng;
 
 /// Generate a new KEM key pair.
 #[cfg_attr(
