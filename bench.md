@@ -37,10 +37,6 @@ Client
 	Handshake: 18850 μs | 53.05039006817865 /s
 	Application: 254 μs | 61.42504065826636 MB/s
 	Message Sizes: 167, 2197, 58 bytes
- - TLS_Chacha20Poly1305_SHA256 w/ EcdsaSecp256r1Sha256 | X25519Kyber768Draft00:
-	Handshake: 5582 μs | 179.1359595215902 /s
-	Application: 256 μs | 61.01392340465518 MB/s
-	Message Sizes: 1351, 1893, 58 bytes
  - TLS_Chacha20Poly1305_SHA256 w/ EcdsaSecp256r1Sha256 | X25519MlKem768:
 	Handshake: 5487 μs | 182.24313662925482 /s
 	Application: 253 μs | 61.53509645857742 MB/s
@@ -64,10 +60,6 @@ Ciphersuite: TLS_Chacha20Poly1305_SHA256 w/ RsaPssRsaSha256 | Secp256r1
 
 Ciphersuite: TLS_Chacha20Poly1305_SHA256 w/ RsaPssRsaSha256 | X25519
 [Client Connect] Highest stack usage: 55.4 KB
-[Client Read   ] Highest stack usage: 5.9 KB
-
-Ciphersuite: TLS_Chacha20Poly1305_SHA256 w/ EcdsaSecp256r1Sha256 | X25519Kyber768Draft00
-[Client Connect] Highest stack usage: 78.2 KB
 [Client Read   ] Highest stack usage: 5.9 KB
 
 Ciphersuite: TLS_Chacha20Poly1305_SHA256 w/ EcdsaSecp256r1Sha256 | X25519MlKem768

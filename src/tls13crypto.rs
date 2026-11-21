@@ -613,7 +613,6 @@ pub enum KemScheme {
     X448,
     Secp384r1,
     Secp521r1,
-    X25519Kyber768Draft00,
     X25519MlKem768,
 }
 
@@ -623,12 +622,29 @@ impl KemScheme {
         match self {
             KemScheme::X25519 => Ok(libcrux_kem::Algorithm::X25519),
             KemScheme::Secp256r1 => Ok(libcrux_kem::Algorithm::Secp256r1),
-            KemScheme::X25519Kyber768Draft00 => Ok(libcrux_kem::Algorithm::X25519Kyber768Draft00),
             KemScheme::X25519MlKem768 => Ok(libcrux_kem::Algorithm::X25519MlKem768Draft00),
             _ => tlserr(UNSUPPORTED_ALGORITHM),
         }
     }
 }
+
+// Bridge the KEM's rand_core 0.10 API to Bertie's existing caller RNG.
+struct KemRng<'a, R: CryptoRng>(&'a mut R);
+
+impl<R: CryptoRng> rand_core::TryRng for KemRng<'_, R> {
+    type Error = core::convert::Infallible;
+    fn try_next_u32(&mut self) -> Result<u32, Self::Error> {
+        Ok(self.0.next_u32())
+    }
+    fn try_next_u64(&mut self) -> Result<u64, Self::Error> {
+        Ok(self.0.next_u64())
+    }
+    fn try_fill_bytes(&mut self, dest: &mut [u8]) -> Result<(), Self::Error> {
+        self.0.fill_bytes(dest);
+        Ok(())
+    }
+}
+impl<R: CryptoRng> rand_core::TryCryptoRng for KemRng<'_, R> {}
 
 /// Generate a new KEM key pair.
 #[cfg_attr(
@@ -647,7 +663,7 @@ pub(crate) fn kem_keygen(
     alg: KemScheme,
     rng: &mut impl CryptoRng,
 ) -> Result<(KemSk, KemPk), TLSError> {
-    let res = libcrux_kem::key_gen(alg.libcrux_kem_algorithm()?, rng);
+    let res = libcrux_kem::key_gen(alg.libcrux_kem_algorithm()?, &mut KemRng(rng));
     match res {
         Ok((sk, pk)) => {
             // event!(
@@ -708,7 +724,7 @@ pub(crate) fn kem_encap(
 
     let pk = into_raw(alg, pk.clone());
     let pk = PublicKey::decode(alg.libcrux_kem_algorithm()?, &pk.declassify()).unwrap();
-    let res = pk.encapsulate(rng);
+    let res = pk.encapsulate(&mut KemRng(rng));
     match res {
         Ok((shared_secret, ct)) => {
             let ct = encoding_prefix(alg).concat(Bytes::from(ct.encode()));
@@ -854,7 +870,6 @@ impl Algorithms {
             KemScheme::X448 => tlserr(UNSUPPORTED_ALGORITHM),
             KemScheme::Secp384r1 => tlserr(UNSUPPORTED_ALGORITHM),
             KemScheme::Secp521r1 => tlserr(UNSUPPORTED_ALGORITHM),
-            KemScheme::X25519Kyber768Draft00 => Ok([0x63, 0x99].into()), // same as https://github.com/google/boringssl/blob/66d274dfbab9e4f84599f06504987c418ca087d9/include/openssl/ssl.h#L2540
             KemScheme::X25519MlKem768 => Ok([0x11, 0xec].into()), // cf. https://datatracker.ietf.org/doc/draft-kwiatkowski-tls-ecdhe-mlkem/
         }
     }
@@ -925,9 +940,6 @@ impl TryFrom<&str> for Algorithms {
             // "SHA384_Aes256Gcm_RsaPssRsaSha256_X25519" => {
             //     Ok(SHA384_Aes256Gcm_RsaPssRsaSha256_X25519)
             // }
-            "SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519Kyber768Draft00" => {
-                Ok(SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519Kyber768Draft00)
-            }
             "SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519MLKEM768" => {
                 Ok(SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519MlKem768)
             }
@@ -961,20 +973,6 @@ pub const SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519: Algorithms = Algo
     false,
     false,
 );
-
-/// `TLS_CHACHA20_POLY1305_SHA256`
-/// with
-/// * X25519Kyber768Draft00 for key exchange (cf. https://www.ietf.org/archive/id/draft-tls-westerbaan-xyber768d00-02.html)
-/// * EcDSA P256 SHA256 for signatures
-pub const SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519Kyber768Draft00: Algorithms =
-    Algorithms::new(
-        HashAlgorithm::SHA256,
-        AeadAlgorithm::Chacha20Poly1305,
-        SignatureScheme::EcdsaSecp256r1Sha256,
-        KemScheme::X25519Kyber768Draft00,
-        false,
-        false,
-    );
 
 /// `TLS_CHACHA20_POLY1305_SHA256`
 /// with
@@ -1133,3 +1131,47 @@ pub const SHA256_Chacha20Poly1305_RsaPssRsaSha256_P256: Algorithms = Algorithms:
 //     false,
 //     false,
 // );
+
+#[cfg(test)]
+mod maintained_kem_tests {
+    use super::*;
+
+    #[test]
+    fn supported_groups_keep_wire_sizes_and_shared_secrets() {
+        let mut rng = rand::rng();
+        for (algs, group, pk_len, ct_len, ss_len) in [
+            (
+                SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519MlKem768,
+                [0x11, 0xec],
+                1216,
+                1120,
+                64,
+            ),
+            (
+                SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519,
+                [0, 0x1d],
+                32,
+                32,
+                32,
+            ),
+            (
+                SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_P256,
+                [0, 0x17],
+                65,
+                65,
+                32,
+            ),
+        ] {
+            assert_eq!(algs.supported_group().unwrap().declassify(), group);
+            let (sk, pk) = kem_keygen(algs.kem(), &mut rng).unwrap();
+            assert_eq!(pk.len(), pk_len);
+            let (ss, ct) = kem_encap(algs.kem(), &pk, &mut rng).unwrap();
+            assert_eq!(ct.len(), ct_len);
+            assert_eq!(ss.len(), ss_len);
+            assert_eq!(
+                ss.declassify(),
+                kem_decap(algs.kem(), &ct, &sk).unwrap().declassify()
+            );
+        }
+    }
+}
