@@ -5,16 +5,26 @@ revision `9b55643` plus the frozen-extraction driver recorded by SHA-256 in the
 retained receipt. This baseline is the initial floor; it is not evidence of an
 improvement caused by the package rename or feature reorganization.
 
+**Re-baselined for formal-coverage v1.7.3 (2026-11-21).** The tool changed, not the
+code: v1.7.2 counted Rust doc comments (`///`, `//!`) as code, because the Rust lexer
+turns them into `#[doc]` attributes. v1.7.3 skips them. On the same source and the same
+F* receipt, the security denominator fell from 6,382 to 5,818 lines (564 doc-comment
+lines, matched by an independent count), no unit changed tier and no unit grew.
+Proven moved from 884 (13.85%) to 824 (14.16%), and tested from 746 (11.69%) to
+548 (9.42%), because the proven and tested functions carried many doc lines
+(e.g. `server`: 73 to 20 lines). Full comparison: formal-coverage
+`dev/v173/compare.md` at tag v1.7.3.
+
 <!-- measured coverage: begin -->
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 884 | 13.85% |
-| tested | 746 | 11.69% |
-| unverified | 4752 | 74.46% |
+| proven | 824 | 14.16% |
+| tested | 548 | 9.42% |
+| unverified | 4446 | 76.42% |
 
-Total: **6382** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (884 lines); Verus proven: 0 lines.
+Total: **5818** first-party security runtime SLoC. Proven includes explicitly labelled
+`proven-extracted` hax credit (824 lines); Verus proven: 0 lines.
 
 Proof-to-code ratio: **not measured**. formal-coverage counts proof lines only for Verus proofs; the hax/F* proofs here are not counted, so the tool reports 0 proof lines. Reporting 0 would be wrong, so the ratio is left unreported (informational only; it never blocks).
 
@@ -54,7 +64,7 @@ those modules hazardous until proven.
 listed as a credited module in the receipt. It is trusted abstract-interface code
 either way.
 
-Proof-to-code ratio: formal-coverage v1.7.2 counts proof lines only for Verus
+Proof-to-code ratio: formal-coverage v1.7.3 counts proof lines only for Verus
 proofs, so it reports 0 proof lines for this hax/F* repository. We show "not
 measured" rather than 0, which would wrongly suggest free proofs. Measuring F*
 proof cost needs support in the tool; this is for Andrew to decide.
@@ -67,8 +77,8 @@ Any rejected receipt or unmapped function retains zero credit; see the full repo
 
 ## Reproduction and pins
 
-- formal-coverage commit `4031d85f178365ac350a578c8d977514a473da01` (private) / `a2915311881b030910c1b6218ef3d8a7757dcaa5`
-  (public tag v1.7.2, identical tree; CI uses the public commit; its Cargo package/version string still says `1.5.0`).
+- formal-coverage commit `1362183` (private) / `f7cc4ea32837a52e7c8ab384029852bb7704db24`
+  (public tag v1.7.3, identical tree; CI uses the public commit; version string `1.7.3`).
 - hax `0.4.2`, source `5ccf89dd2e996c9f88f2267eaa2a64739c4ca41a`.
 - Rust extraction toolchain `nightly-2025-11-08`; F* `2025.10.06`, Z3 `4.13.3`.
 - Local container images: `fc-verify-hax:v17` (aarch64) and
