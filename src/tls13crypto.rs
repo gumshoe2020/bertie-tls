@@ -545,8 +545,21 @@ mod non_hax {
         }
     }
     impl<R: CryptoRng> rand_core::TryCryptoRng for KemRng<'_, R> {}
+
+    pub(super) fn key_gen(
+        alg: libcrux_kem::Algorithm,
+        rng: &mut impl CryptoRng,
+    ) -> Result<(libcrux_kem::PrivateKey, libcrux_kem::PublicKey), libcrux_kem::Error> {
+        libcrux_kem::key_gen(alg, &mut KemRng(rng))
+    }
+
+    pub(super) fn encapsulate(
+        pk: &libcrux_kem::PublicKey,
+        rng: &mut impl CryptoRng,
+    ) -> Result<(libcrux_kem::Ss, libcrux_kem::Ct), libcrux_kem::Error> {
+        pk.encapsulate(&mut KemRng(rng))
+    }
 }
-use non_hax::KemRng;
 
 /// Generate a new KEM key pair.
 #[cfg_attr(
@@ -565,7 +578,7 @@ pub(crate) fn kem_keygen(
     alg: KemScheme,
     rng: &mut impl CryptoRng,
 ) -> Result<(KemSk, KemPk), TLSError> {
-    let res = libcrux_kem::key_gen(alg.libcrux_kem_algorithm()?, &mut KemRng(rng));
+    let res = non_hax::key_gen(alg.libcrux_kem_algorithm()?, rng);
     match res {
         Ok((sk, pk)) => {
             // event!(
@@ -627,7 +640,7 @@ pub(crate) fn kem_encap(
     let pk = into_raw(alg, pk.clone());
     let pk = PublicKey::decode(alg.libcrux_kem_algorithm()?, &pk.declassify())
         .map_err(|_| CRYPTO_ERROR)?;
-    let res = pk.encapsulate(&mut KemRng(rng));
+    let res = non_hax::encapsulate(&pk, rng);
     match res {
         Ok((shared_secret, ct)) => {
             let ct = encoding_prefix(alg).concat(Bytes::from(ct.encode()));
