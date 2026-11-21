@@ -317,3 +317,68 @@ fn removed_configurations_fail_cleanly() {
         );
     }
 }
+
+#[test]
+fn removed_wire_offers_fail_cleanly() {
+    let algs = TLS_CHACHA20_POLY1305_SHA256_X25519;
+    let mut rng = rand::rng();
+    let mut ks = TLSkeyscheduler {
+        keys: HashMap::new(),
+    };
+    let (hello, _) = Client::connect(
+        algs,
+        &Bytes::from(b"localhost"),
+        None,
+        None,
+        &mut rng,
+        &mut ks,
+    )
+    .unwrap();
+    let original = hello.declassify();
+    // TLS record + handshake header + legacy_version + random + session id.
+    let suites_len_at = 44 + usize::from(original[43]);
+    let suites_len = usize::from(u16::from_be_bytes([
+        original[suites_len_at],
+        original[suites_len_at + 1],
+    ]));
+    let compression_at = suites_len_at + 2 + suites_len;
+    let extensions_at = compression_at + 1 + usize::from(original[compression_at]) + 2;
+    // None changes the suite; the other cases replace only signature/group offers.
+    for (extension, replacement) in [
+        (None, [0x13, 0x01]),
+        (Some(13u16), [8, 4]),
+        (Some(13), [8, 7]),
+        (Some(10), [0, 30]),
+        (Some(51), [0, 30]),
+    ] {
+        let mut wire = original.clone();
+        if let Some(wanted) = extension {
+            let mut pos = extensions_at;
+            let mut changed = false;
+            while pos < wire.len() {
+                let kind = u16::from_be_bytes([wire[pos], wire[pos + 1]]);
+                let len = usize::from(u16::from_be_bytes([wire[pos + 2], wire[pos + 3]]));
+                if kind == wanted {
+                    // Each generated list has exactly one entry; its list length stays unchanged.
+                    wire[pos + 6..pos + 8].copy_from_slice(&replacement);
+                    changed = true;
+                    break;
+                }
+                pos += 4 + len;
+            }
+            assert!(changed, "missing generated extension {wanted}");
+        } else {
+            wire[suites_len_at + 2..suites_len_at + 4].copy_from_slice(&replacement);
+        }
+        let db = ServerDB::new(
+            Bytes::from(b"localhost"),
+            Bytes::from(&ECDSA_P256_SHA256_CERT),
+            SignatureKey::from(&ECDSA_P256_SHA256_Key),
+            None,
+        );
+        let mut server_ks = TLSkeyscheduler {
+            keys: HashMap::new(),
+        };
+        assert!(Server::accept(algs, db, &wire.into(), &mut rng, &mut server_ks).is_err());
+    }
+}
