@@ -1,8 +1,8 @@
 /target
-Cargo.lock
 
 # CLion
 .idea
 
 .DS_Store
 .vscode
+__pycache__/

@@ -1,11 +1,22 @@
+[advisories]
+ignore = [
+    # proc-macro-error2 is unmaintained with no safe upgrade. It reaches us only
+    # through hax-lib-macros (a compile-time proc macro), never runtime code.
+    # Revisit when hax moves off it. Approved by Andrew 2026-11-21.
+    { id = "RUSTSEC-2026-0173", reason = "compile-time only, via hax-lib-macros; no upstream fix" },
+]
+
 [bans]
-multiple-versions = "deny"
+# Duplicates come from hax, libcrux and rand version splits we don't control.
+# Warn so they stay visible without failing CI. Approved by Andrew 2026-11-21.
+multiple-versions = "warn"
 
 [sources]
 unknown-registry = "deny"
 unknown-git = "deny"
 allow-git = ["https://github.com/cryspen/libcrux"]
 
-# TODO: Agree on some license ...
 [licenses]
-allow = ["Apache-2.0", "MIT", "Unicode-DFS-2016"]
+# Permissive licenses compatible with the project's Apache-2.0/MIT terms.
+# BSD-3-Clause, ISC and Unicode-3.0 approved by Andrew 2026-11-21.
+allow = ["Apache-2.0", "MIT", "Unicode-DFS-2016", "BSD-3-Clause", "ISC", "Unicode-3.0"]

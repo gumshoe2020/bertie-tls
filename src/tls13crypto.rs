@@ -3,13 +3,15 @@ use std::vec;
 #[cfg(feature = "hax-pv")]
 use hax_lib::{proverif, pv_constructor};
 
+#[cfg(feature = "chacha20poly1305")]
 use libcrux_chacha20poly1305::{decrypt_detached, encrypt_detached};
+#[cfg(feature = "ecdsa-p256")]
 use libcrux_ecdsa::DigestAlgorithm as EcDsaDigestAlgorithm;
-use libcrux_ed25519;
 use libcrux_hkdf::{expand, extract, Algorithm as HkdfAlgorithm};
 use libcrux_hmac::{hmac, Algorithm as HmacAlgorithm};
 
 use libcrux_kem::{Ct, PrivateKey, PublicKey};
+#[cfg(feature = "rsa")]
 use libcrux_rsa::{
     sign_varlen, verify_varlen, DigestAlgorithm as RsaDigestAlgorithm, VarLenPrivateKey,
     VarLenPublicKey,
@@ -137,9 +139,14 @@ impl HashAlgorithm {
     /// Get the libcrux hash algorithm
     fn libcrux_algorithm(&self) -> Result<Sha2Algorithm, TLSError> {
         match self {
+            #[cfg(feature = "sha256")]
             HashAlgorithm::SHA256 => Ok(Sha2Algorithm::Sha256),
+            #[cfg(feature = "sha384")]
             HashAlgorithm::SHA384 => Ok(Sha2Algorithm::Sha384),
+            #[cfg(feature = "sha512")]
             HashAlgorithm::SHA512 => Ok(Sha2Algorithm::Sha512),
+            #[cfg(not(all(feature = "sha256", feature = "sha384", feature = "sha512")))]
+            _ => tlserr(UNSUPPORTED_ALGORITHM),
         }
     }
 
@@ -157,9 +164,14 @@ impl HashAlgorithm {
     /// Get the libcrux hmac algorithm.
     fn hmac_algorithm(&self) -> Result<HmacAlgorithm, TLSError> {
         match self {
+            #[cfg(feature = "sha256")]
             HashAlgorithm::SHA256 => Ok(HmacAlgorithm::Sha256),
+            #[cfg(feature = "sha384")]
             HashAlgorithm::SHA384 => Ok(HmacAlgorithm::Sha384),
+            #[cfg(feature = "sha512")]
             HashAlgorithm::SHA512 => Ok(HmacAlgorithm::Sha512),
+            #[cfg(not(all(feature = "sha256", feature = "sha384", feature = "sha512")))]
+            _ => tlserr(UNSUPPORTED_ALGORITHM),
         }
     }
 
@@ -225,9 +237,14 @@ pub(crate) fn zero_key(alg: &HashAlgorithm) -> Bytes {
 /// Get the libcrux HKDF algorithm.
 fn hkdf_algorithm(alg: &HashAlgorithm) -> Result<HkdfAlgorithm, TLSError> {
     match alg {
+        #[cfg(feature = "sha256")]
         HashAlgorithm::SHA256 => Ok(HkdfAlgorithm::Sha256),
+        #[cfg(feature = "sha384")]
         HashAlgorithm::SHA384 => Ok(HkdfAlgorithm::Sha384),
+        #[cfg(feature = "sha512")]
         HashAlgorithm::SHA512 => Ok(HkdfAlgorithm::Sha512),
+        #[cfg(not(all(feature = "sha256", feature = "sha384", feature = "sha512")))]
+        _ => tlserr(UNSUPPORTED_ALGORITHM),
     }
 }
 
@@ -297,6 +314,7 @@ impl AeadAlgorithm {
 }
 
 /// AEAD encrypt
+#[cfg(feature = "chacha20poly1305")]
 pub(crate) fn aead_encrypt(
     k: &AeadKey,
     iv: &AeadIV,
@@ -331,6 +349,7 @@ pub(crate) fn aead_encrypt(
 }
 
 /// AEAD decrypt.
+#[cfg(feature = "chacha20poly1305")]
 pub(crate) fn aead_decrypt(
     k: &AeadKey,
     iv: &AeadIV,
@@ -372,6 +391,7 @@ pub enum SignatureScheme {
 }
 
 /// Sign the `input` with the provided RSA key.
+#[cfg(feature = "rsa")]
 pub(crate) fn sign_rsa(
     sk: &Bytes,
     pk_modulus: &Bytes,
@@ -446,6 +466,7 @@ pub(crate) fn sign(
     rng: &mut impl CryptoRng,
 ) -> Result<Bytes, TLSError> {
     match algorithm {
+        #[cfg(feature = "ecdsa-p256")]
         SignatureScheme::EcdsaSecp256r1Sha256 => libcrux_ecdsa::p256::rand::sign(
             EcDsaDigestAlgorithm::Sha256,
             &input.declassify(),
@@ -461,6 +482,7 @@ pub(crate) fn sign(
             Bytes::from(r).concat(Bytes::from(s))
         }),
 
+        #[cfg(feature = "ed25519")]
         SignatureScheme::ED25519 => libcrux_ed25519::sign(
             &input.declassify(),
             &sk.declassify()
@@ -470,9 +492,7 @@ pub(crate) fn sign(
         .map_err(|_| CRYPTO_ERROR)
         .map(|s| s.into()),
 
-        SignatureScheme::RsaPssRsaSha256 => {
-            panic!("wrong function, use sign_rsa")
-        }
+        _ => tlserr(UNSUPPORTED_ALGORITHM),
     }
 }
 
@@ -538,15 +558,7 @@ pub(crate) fn verify(
     sig: &Bytes,
 ) -> Result<(), TLSError> {
     match (alg, pk) {
-        (SignatureScheme::ED25519, PublicVerificationKey::EcDsa(pk)) => libcrux_ed25519::verify(
-            &input.declassify(),
-            &pk.declassify()
-                .try_into()
-                .map_err(|_| INCORRECT_ARRAY_LENGTH)?,
-            &sig.declassify_array()?,
-        )
-        .map_err(|_| INVALID_SIGNATURE),
-
+        #[cfg(feature = "ecdsa-p256")]
         (SignatureScheme::EcdsaSecp256r1Sha256, PublicVerificationKey::EcDsa(pk)) => {
             libcrux_ecdsa::p256::verify(
                 EcDsaDigestAlgorithm::Sha256,
@@ -558,6 +570,17 @@ pub(crate) fn verify(
             .map_err(|_| INVALID_SIGNATURE)
         }
 
+        #[cfg(feature = "ed25519")]
+        (SignatureScheme::ED25519, PublicVerificationKey::EcDsa(pk)) => libcrux_ed25519::verify(
+            &input.declassify(),
+            &pk.declassify()
+                .try_into()
+                .map_err(|_| INCORRECT_ARRAY_LENGTH)?,
+            &sig.declassify_array()?,
+        )
+        .map_err(|_| INVALID_SIGNATURE),
+
+        #[cfg(feature = "rsa")]
         (
             SignatureScheme::RsaPssRsaSha256,
             PublicVerificationKey::Rsa(RsaVerificationKey {
@@ -589,6 +612,7 @@ pub(crate) fn verify(
 
 /// Determine if given modulus conforms to one of the key sizes supported by
 /// `libcrux`.
+#[cfg(feature = "rsa")]
 fn supported_rsa_key_size(n: &Bytes) -> Result<(), u8> {
     match n.len() as u16 {
         // The format includes an extra 0-byte in front to disambiguate from negative numbers
@@ -599,6 +623,7 @@ fn supported_rsa_key_size(n: &Bytes) -> Result<(), u8> {
 
 /// Determine if given public exponent is supported by `libcrux`, i.e. whether
 ///  `e == 0x010001`.
+#[cfg(feature = "rsa")]
 fn valid_rsa_exponent(e: Vec<u8>) -> bool {
     e.len() == 3 && e[0] == 0x1 && e[1] == 0x0 && e[2] == 0x1
 }
@@ -613,7 +638,6 @@ pub enum KemScheme {
     X448,
     Secp384r1,
     Secp521r1,
-    X25519Kyber768Draft00,
     X25519MlKem768,
 }
 
@@ -621,12 +645,50 @@ impl KemScheme {
     /// Get the libcrux algorithm for this [`KemScheme`].
     fn libcrux_kem_algorithm(self) -> Result<libcrux_kem::Algorithm, TLSError> {
         match self {
+            #[cfg(feature = "x25519")]
             KemScheme::X25519 => Ok(libcrux_kem::Algorithm::X25519),
+            #[cfg(feature = "p256")]
             KemScheme::Secp256r1 => Ok(libcrux_kem::Algorithm::Secp256r1),
-            KemScheme::X25519Kyber768Draft00 => Ok(libcrux_kem::Algorithm::X25519Kyber768Draft00),
+            #[cfg(feature = "mlkem768")]
             KemScheme::X25519MlKem768 => Ok(libcrux_kem::Algorithm::X25519MlKem768Draft00),
             _ => tlserr(UNSUPPORTED_ALGORITHM),
         }
+    }
+}
+
+// Implementation glue, outside the existing abstract cryptographic proof interface.
+mod non_hax {
+    use super::CryptoRng;
+    // Bridge the KEM's rand_core 0.10 API to Bertie's existing caller RNG.
+    pub(super) struct KemRng<'a, R: CryptoRng>(pub(super) &'a mut R);
+
+    impl<R: CryptoRng> rand_core::TryRng for KemRng<'_, R> {
+        type Error = core::convert::Infallible;
+        fn try_next_u32(&mut self) -> Result<u32, Self::Error> {
+            Ok(self.0.next_u32())
+        }
+        fn try_next_u64(&mut self) -> Result<u64, Self::Error> {
+            Ok(self.0.next_u64())
+        }
+        fn try_fill_bytes(&mut self, dest: &mut [u8]) -> Result<(), Self::Error> {
+            self.0.fill_bytes(dest);
+            Ok(())
+        }
+    }
+    impl<R: CryptoRng> rand_core::TryCryptoRng for KemRng<'_, R> {}
+
+    pub(super) fn key_gen(
+        alg: libcrux_kem::Algorithm,
+        rng: &mut impl CryptoRng,
+    ) -> Result<(libcrux_kem::PrivateKey, libcrux_kem::PublicKey), libcrux_kem::Error> {
+        libcrux_kem::key_gen(alg, &mut KemRng(rng))
+    }
+
+    pub(super) fn encapsulate(
+        pk: &libcrux_kem::PublicKey,
+        rng: &mut impl CryptoRng,
+    ) -> Result<(libcrux_kem::Ss, libcrux_kem::Ct), libcrux_kem::Error> {
+        pk.encapsulate(&mut KemRng(rng))
     }
 }
 
@@ -647,7 +709,7 @@ pub(crate) fn kem_keygen(
     alg: KemScheme,
     rng: &mut impl CryptoRng,
 ) -> Result<(KemSk, KemPk), TLSError> {
-    let res = libcrux_kem::key_gen(alg.libcrux_kem_algorithm()?, rng);
+    let res = non_hax::key_gen(alg.libcrux_kem_algorithm()?, rng);
     match res {
         Ok((sk, pk)) => {
             // event!(
@@ -707,8 +769,9 @@ pub(crate) fn kem_encap(
     // event!(Level::TRACE, "  pk:  {}", pk.as_hex());
 
     let pk = into_raw(alg, pk.clone());
-    let pk = PublicKey::decode(alg.libcrux_kem_algorithm()?, &pk.declassify()).unwrap();
-    let res = pk.encapsulate(rng);
+    let pk = PublicKey::decode(alg.libcrux_kem_algorithm()?, &pk.declassify())
+        .map_err(|_| CRYPTO_ERROR)?;
+    let res = non_hax::encapsulate(&pk, rng);
     match res {
         Ok((shared_secret, ct)) => {
             let ct = encoding_prefix(alg).concat(Bytes::from(ct.encode()));
@@ -747,9 +810,9 @@ pub(crate) fn kem_decap(alg: KemScheme, ct: &Bytes, sk: &Bytes) -> Result<Bytes,
     // event!(Level::TRACE, "  with ciphertext: {}", ct.as_hex());
 
     let librux_algorithm = alg.libcrux_kem_algorithm()?;
-    let sk = PrivateKey::decode(librux_algorithm, &sk.declassify()).unwrap();
+    let sk = PrivateKey::decode(librux_algorithm, &sk.declassify()).map_err(|_| CRYPTO_ERROR)?;
     let ct = into_raw(alg, ct.clone()).declassify();
-    let ct = Ct::decode(librux_algorithm, &ct).unwrap();
+    let ct = Ct::decode(librux_algorithm, &ct).map_err(|_| CRYPTO_ERROR)?;
     let res = ct.decapsulate(&sk);
     match res {
         Ok(shared_secret) => {
@@ -795,6 +858,48 @@ impl Algorithms {
             psk_mode: psk,
             zero_rtt,
         }
+    }
+
+    pub(crate) fn validate(&self) -> Result<(), TLSError> {
+        if self.hash != HashAlgorithm::SHA256
+            || self.aead != AeadAlgorithm::Chacha20Poly1305
+            || (self.signature != SignatureScheme::EcdsaSecp256r1Sha256
+                && !(cfg!(feature = "rsa") && self.signature == SignatureScheme::RsaPssRsaSha256))
+            || !matches!(
+                self.kem,
+                KemScheme::X25519 | KemScheme::Secp256r1 | KemScheme::X25519MlKem768
+            )
+            || self.psk_mode
+            || self.zero_rtt
+        {
+            return tlserr(UNSUPPORTED_ALGORITHM);
+        }
+        #[cfg(not(all(
+            feature = "sha256",
+            feature = "chacha20poly1305",
+            feature = "ecdsa-p256",
+            feature = "x25519",
+            feature = "p256",
+            feature = "mlkem768"
+        )))]
+        {
+            let signature_enabled = match self.signature {
+                SignatureScheme::EcdsaSecp256r1Sha256 => cfg!(feature = "ecdsa-p256"),
+                SignatureScheme::RsaPssRsaSha256 => cfg!(feature = "rsa"),
+                SignatureScheme::ED25519 => false,
+            };
+            let kem_enabled = (self.kem == KemScheme::X25519 && cfg!(feature = "x25519"))
+                || (self.kem == KemScheme::Secp256r1 && cfg!(feature = "p256"))
+                || (self.kem == KemScheme::X25519MlKem768 && cfg!(feature = "mlkem768"));
+            if !cfg!(feature = "sha256")
+                || !cfg!(feature = "chacha20poly1305")
+                || !signature_enabled
+                || !kem_enabled
+            {
+                return tlserr(UNSUPPORTED_ALGORITHM);
+            }
+        }
+        Ok(())
     }
 
     /// Get the [`HashAlgorithm`].
@@ -854,7 +959,6 @@ impl Algorithms {
             KemScheme::X448 => tlserr(UNSUPPORTED_ALGORITHM),
             KemScheme::Secp384r1 => tlserr(UNSUPPORTED_ALGORITHM),
             KemScheme::Secp521r1 => tlserr(UNSUPPORTED_ALGORITHM),
-            KemScheme::X25519Kyber768Draft00 => Ok([0x63, 0x99].into()), // same as https://github.com/google/boringssl/blob/66d274dfbab9e4f84599f06504987c418ca087d9/include/openssl/ssl.h#L2540
             KemScheme::X25519MlKem768 => Ok([0x11, 0xec].into()), // cf. https://datatracker.ietf.org/doc/draft-kwiatkowski-tls-ecdhe-mlkem/
         }
     }
@@ -893,6 +997,11 @@ impl TryFrom<&str> for Algorithms {
     /// Get the ciphersuite from a string description.
     fn try_from(s: &str) -> Result<Self, Self::Error> {
         match s {
+            #[cfg(feature = "rsa")]
+            "SHA256_Chacha20Poly1305_RsaPssRsaSha256_P256" => {
+                Ok(SHA256_Chacha20Poly1305_RsaPssRsaSha256_P256)
+            }
+            #[cfg(feature = "rsa")]
             "SHA256_Chacha20Poly1305_RsaPssRsaSha256_X25519" => {
                 Ok(SHA256_Chacha20Poly1305_RsaPssRsaSha256_X25519)
             }
@@ -901,32 +1010,6 @@ impl TryFrom<&str> for Algorithms {
             }
             "SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_P256" => {
                 Ok(SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_P256)
-            }
-            "SHA256_Chacha20Poly1305_RsaPssRsaSha256_P256" => {
-                Ok(SHA256_Chacha20Poly1305_RsaPssRsaSha256_P256)
-            }
-            // "SHA256_Aes128Gcm_EcdsaSecp256r1Sha256_P256" => {
-            //     Ok(SHA256_Aes128Gcm_EcdsaSecp256r1Sha256_P256)
-            // }
-            // "SHA256_Aes128Gcm_EcdsaSecp256r1Sha256_X25519" => {
-            //     Ok(SHA256_Aes128Gcm_EcdsaSecp256r1Sha256_X25519)
-            // }
-            // "SHA256_Aes128Gcm_RsaPssRsaSha256_P256" => Ok(SHA256_Aes128Gcm_RsaPssRsaSha256_P256),
-            // "SHA256_Aes128Gcm_RsaPssRsaSha256_X25519" => {
-            //     Ok(SHA256_Aes128Gcm_RsaPssRsaSha256_X25519)
-            // }
-            // "SHA384_Aes256Gcm_EcdsaSecp256r1Sha256_P256" => {
-            //     Ok(SHA384_Aes256Gcm_EcdsaSecp256r1Sha256_P256)
-            // }
-            // "SHA384_Aes256Gcm_EcdsaSecp256r1Sha256_X25519" => {
-            //     Ok(SHA384_Aes256Gcm_EcdsaSecp256r1Sha256_X25519)
-            // }
-            // "SHA384_Aes256Gcm_RsaPssRsaSha256_P256" => Ok(SHA384_Aes256Gcm_RsaPssRsaSha256_P256),
-            // "SHA384_Aes256Gcm_RsaPssRsaSha256_X25519" => {
-            //     Ok(SHA384_Aes256Gcm_RsaPssRsaSha256_X25519)
-            // }
-            "SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519Kyber768Draft00" => {
-                Ok(SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519Kyber768Draft00)
             }
             "SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519MLKEM768" => {
                 Ok(SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519MlKem768)
@@ -964,20 +1047,6 @@ pub const SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519: Algorithms = Algo
 
 /// `TLS_CHACHA20_POLY1305_SHA256`
 /// with
-/// * X25519Kyber768Draft00 for key exchange (cf. https://www.ietf.org/archive/id/draft-tls-westerbaan-xyber768d00-02.html)
-/// * EcDSA P256 SHA256 for signatures
-pub const SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519Kyber768Draft00: Algorithms =
-    Algorithms::new(
-        HashAlgorithm::SHA256,
-        AeadAlgorithm::Chacha20Poly1305,
-        SignatureScheme::EcdsaSecp256r1Sha256,
-        KemScheme::X25519Kyber768Draft00,
-        false,
-        false,
-    );
-
-/// `TLS_CHACHA20_POLY1305_SHA256`
-/// with
 /// * X25519MlKem768 for key exchange (cf. https://datatracker.ietf.org/doc/draft-kwiatkowski-tls-ecdhe-mlkem/)
 /// * EcDSA P256 SHA256 for signatures
 pub const SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519MlKem768: Algorithms = Algorithms::new(
@@ -985,19 +1054,6 @@ pub const SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519MlKem768: Algorithm
     AeadAlgorithm::Chacha20Poly1305,
     SignatureScheme::EcdsaSecp256r1Sha256,
     KemScheme::X25519MlKem768,
-    false,
-    false,
-);
-
-/// `TLS_CHACHA20_POLY1305_SHA256`
-/// with
-/// * x25519 for key exchange
-/// * RSA PSS SHA256 for signatures
-pub const SHA256_Chacha20Poly1305_RsaPssRsaSha256_X25519: Algorithms = Algorithms::new(
-    HashAlgorithm::SHA256,
-    AeadAlgorithm::Chacha20Poly1305,
-    SignatureScheme::RsaPssRsaSha256,
-    KemScheme::X25519,
     false,
     false,
 );
@@ -1015,10 +1071,90 @@ pub const SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_P256: Algorithms = Algori
     false,
 );
 
-/// `TLS_CHACHA20_POLY1305_SHA256`
-/// with
-/// * P256 for key exchange
-/// * RSA PSSS SHA256 for signatures
+#[cfg(test)]
+mod maintained_kem_tests {
+    use super::*;
+
+    #[test]
+    fn supported_groups_keep_wire_sizes_and_shared_secrets() {
+        let mut rng = rand::rng();
+        for (algs, group, pk_len, ct_len, ss_len) in [
+            (
+                SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519MlKem768,
+                [0x11, 0xec],
+                1216,
+                1120,
+                64,
+            ),
+            (
+                SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519,
+                [0, 0x1d],
+                32,
+                32,
+                32,
+            ),
+            (
+                SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_P256,
+                [0, 0x17],
+                65,
+                65,
+                32,
+            ),
+        ] {
+            assert_eq!(algs.supported_group().unwrap().declassify(), group);
+            let enabled = match algs.kem() {
+                KemScheme::X25519 => cfg!(feature = "x25519"),
+                KemScheme::Secp256r1 => cfg!(feature = "p256"),
+                KemScheme::X25519MlKem768 => cfg!(feature = "mlkem768"),
+                _ => unreachable!(),
+            };
+            if !enabled {
+                assert!(kem_keygen(algs.kem(), &mut rng).is_err());
+                continue;
+            }
+            let (sk, pk) = kem_keygen(algs.kem(), &mut rng).unwrap();
+            assert_eq!(pk.len(), pk_len);
+            let (ss, ct) = kem_encap(algs.kem(), &pk, &mut rng).unwrap();
+            assert_eq!(ct.len(), ct_len);
+            assert_eq!(ss.len(), ss_len);
+            assert_eq!(
+                ss.declassify(),
+                kem_decap(algs.kem(), &ct, &sk).unwrap().declassify()
+            );
+        }
+    }
+}
+
+#[cfg(not(feature = "chacha20poly1305"))]
+pub(crate) fn aead_encrypt(
+    _: &AeadKey,
+    _: &AeadIV,
+    _: &Bytes,
+    _: &Bytes,
+) -> Result<Bytes, TLSError> {
+    tlserr(UNSUPPORTED_ALGORITHM)
+}
+#[cfg(not(feature = "chacha20poly1305"))]
+pub(crate) fn aead_decrypt(
+    _: &AeadKey,
+    _: &AeadIV,
+    _: &Bytes,
+    _: &Bytes,
+) -> Result<Bytes, TLSError> {
+    tlserr(UNSUPPORTED_ALGORITHM)
+}
+
+#[cfg(feature = "rsa")]
+pub const SHA256_Chacha20Poly1305_RsaPssRsaSha256_X25519: Algorithms = Algorithms::new(
+    HashAlgorithm::SHA256,
+    AeadAlgorithm::Chacha20Poly1305,
+    SignatureScheme::RsaPssRsaSha256,
+    KemScheme::X25519,
+    false,
+    false,
+);
+
+#[cfg(feature = "rsa")]
 pub const SHA256_Chacha20Poly1305_RsaPssRsaSha256_P256: Algorithms = Algorithms::new(
     HashAlgorithm::SHA256,
     AeadAlgorithm::Chacha20Poly1305,
@@ -1027,109 +1163,3 @@ pub const SHA256_Chacha20Poly1305_RsaPssRsaSha256_P256: Algorithms = Algorithms:
     false,
     false,
 );
-
-// We don't support AES right now.
-
-// /// `TLS_AES_128_GCM_SHA256`
-// /// with
-// /// * x25519 for key exchange
-// /// * EcDSA P256 SHA256 for signatures
-// pub const SHA256_Aes128Gcm_EcdsaSecp256r1Sha256_X25519: Algorithms = Algorithms::new(
-//     HashAlgorithm::SHA256,
-//     AeadAlgorithm::Aes128Gcm,
-//     SignatureScheme::EcdsaSecp256r1Sha256,
-//     KemScheme::X25519,
-//     false,
-//     false,
-// );
-
-// /// `TLS_AES_128_GCM_SHA256`
-// /// with
-// /// * P256 for key exchange
-// /// * EcDSA P256 SHA256 for signatures
-// pub const SHA256_Aes128Gcm_EcdsaSecp256r1Sha256_P256: Algorithms = Algorithms::new(
-//     HashAlgorithm::SHA256,
-//     AeadAlgorithm::Aes128Gcm,
-//     SignatureScheme::EcdsaSecp256r1Sha256,
-//     KemScheme::Secp256r1,
-//     false,
-//     false,
-// );
-
-// /// `TLS_AES_128_GCM_SHA256`
-// /// with
-// /// * P256 for key exchange
-// /// * RSA PSS SHA256 for signatures
-// pub const SHA256_Aes128Gcm_RsaPssRsaSha256_P256: Algorithms = Algorithms::new(
-//     HashAlgorithm::SHA256,
-//     AeadAlgorithm::Aes128Gcm,
-//     SignatureScheme::RsaPssRsaSha256,
-//     KemScheme::Secp256r1,
-//     false,
-//     false,
-// );
-
-// /// `TLS_AES_128_GCM_SHA256`
-// /// with
-// /// * x25519 for key exchange
-// /// * RSA PSS SHA256 for signatures
-// pub const SHA256_Aes128Gcm_RsaPssRsaSha256_X25519: Algorithms = Algorithms::new(
-//     HashAlgorithm::SHA256,
-//     AeadAlgorithm::Aes128Gcm,
-//     SignatureScheme::RsaPssRsaSha256,
-//     KemScheme::X25519,
-//     false,
-//     false,
-// );
-
-// /// `TLS_AES_256_GCM_SHA384`
-// /// with
-// /// * x25519 for key exchange
-// /// * RSA PSS SHA256 for signatures
-// pub const SHA384_Aes256Gcm_RsaPssRsaSha256_X25519: Algorithms = Algorithms::new(
-//     HashAlgorithm::SHA384,
-//     AeadAlgorithm::Aes256Gcm,
-//     SignatureScheme::RsaPssRsaSha256,
-//     KemScheme::X25519,
-//     false,
-//     false,
-// );
-
-// /// `TLS_AES_256_GCM_SHA384`
-// /// with
-// /// * x25519 for key exchange
-// /// * EcDSA P256 SHA256 for signatures
-// pub const SHA384_Aes256Gcm_EcdsaSecp256r1Sha256_X25519: Algorithms = Algorithms::new(
-//     HashAlgorithm::SHA384,
-//     AeadAlgorithm::Aes256Gcm,
-//     SignatureScheme::EcdsaSecp256r1Sha256,
-//     KemScheme::X25519,
-//     false,
-//     false,
-// );
-
-// /// `TLS_AES_256_GCM_SHA384`
-// /// with
-// /// * P256 for key exchange
-// /// * RSA PSS SHA256 for signatures
-// pub const SHA384_Aes256Gcm_RsaPssRsaSha256_P256: Algorithms = Algorithms::new(
-//     HashAlgorithm::SHA384,
-//     AeadAlgorithm::Aes256Gcm,
-//     SignatureScheme::RsaPssRsaSha256,
-//     KemScheme::Secp256r1,
-//     false,
-//     false,
-// );
-
-// /// `TLS_AES_256_GCM_SHA384`
-// /// with
-// /// * P256 for key exchange
-// /// * EcDSA P256 SHA256 for signatures
-// pub const SHA384_Aes256Gcm_EcdsaSecp256r1Sha256_P256: Algorithms = Algorithms::new(
-//     HashAlgorithm::SHA384,
-//     AeadAlgorithm::Aes256Gcm,
-//     SignatureScheme::EcdsaSecp256r1Sha256,
-//     KemScheme::Secp256r1,
-//     false,
-//     false,
-// );

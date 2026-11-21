@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 base64 = "0.20.0"
-bertie = { path = "../" }
+bertie-tls = { path = "../", features = ["client"] }
 rand = "0.9"
 tracing = "*"
 tracing-subscriber = "*"
