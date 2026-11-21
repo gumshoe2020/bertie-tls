@@ -67,8 +67,8 @@ Any rejected receipt or unmapped function retains zero credit; see the full repo
 
 ## Reproduction and pins
 
-- formal-coverage commit `4031d85f178365ac350a578c8d977514a473da01`
-  (the v1.7.2 source checkout; its Cargo package/version string still says `1.5.0`).
+- formal-coverage commit `4031d85f178365ac350a578c8d977514a473da01` (private) / `a2915311881b030910c1b6218ef3d8a7757dcaa5`
+  (public tag v1.7.2, identical tree; CI uses the public commit; its Cargo package/version string still says `1.5.0`).
 - hax `0.4.2`, source `5ccf89dd2e996c9f88f2267eaa2a64739c4ca41a`.
 - Rust extraction toolchain `nightly-2025-11-08`; F* `2025.10.06`, Z3 `4.13.3`.
 - Local container images: `fc-verify-hax:v17` (aarch64) and
