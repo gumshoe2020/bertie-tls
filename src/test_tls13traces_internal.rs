@@ -710,6 +710,11 @@ fn test_finished() {
     let tx_hash1 = hash(&ha, &tx1);
     let tx2 = tx1.concat(sf);
     let tx_hash2 = hash(&ha, &tx2);
+    if !cfg!(feature = "sha256") {
+        assert!(tx_hash1.is_err());
+        assert!(tx_hash2.is_err());
+        return;
+    }
     let mut b = true;
     match (tx_hash1, tx_hash2) {
         (Ok(h1), Ok(h2)) => {

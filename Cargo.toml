@@ -22,12 +22,24 @@ rand_core = "0.10"
 libcrux-sha2 = { version = "0.0.3-alpha.1" }
 libcrux-hmac = { version = "0.0.3-alpha.1" }
 libcrux-hkdf = { version = "0.0.3-alpha.1" }
-libcrux-chacha20poly1305 = { version = "0.0.9" }
-libcrux-ecdsa = { version = "0.0.3-alpha.1", features = ["rand"] }
+libcrux-chacha20poly1305 = { version = "0.0.9", optional = true }
+libcrux-rsa = { version = "0.0.2", optional = true }
+libcrux-ed25519 = { version = "0.0.9", optional = true }
+libcrux-ecdsa = { version = "0.0.3-alpha.1", features = ["rand"], optional = true }
 hax-lib = { version = "0.4.2" }
 
 [features]
-default = ["api", "std", "defensive"]
+default = ["api", "std", "defensive", "client", "chacha20poly1305", "ecdsa-p256", "rsa", "ed25519", "x25519", "p256", "mlkem768", "sha256", "sha384", "sha512"]
+chacha20poly1305 = ["std", "dep:libcrux-chacha20poly1305"]
+ecdsa-p256 = ["std", "dep:libcrux-ecdsa"]
+rsa = ["std", "dep:libcrux-rsa"]
+ed25519 = ["std", "dep:libcrux-ed25519"]
+x25519 = ["std"]
+p256 = ["std"]
+mlkem768 = ["std"]
+sha256 = ["std"]
+sha384 = ["std"]
+sha512 = ["std"]
 defensive = []
 std = []
 test_utils = []
@@ -38,7 +50,7 @@ hax-fstar = []
 hax-pv = []
 
 [dev-dependencies]
-bertie = { path = ".", features = ["test_utils", "client"] }
+bertie = { path = ".", default-features = false, features = ["test_utils", "client"] }
 dhat = "0.3.0"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }

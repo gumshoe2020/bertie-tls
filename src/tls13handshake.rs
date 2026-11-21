@@ -698,6 +698,21 @@ fn get_server_hello(
     ))
 }
 
+#[cfg(feature = "rsa")]
+fn get_rsa_signature(
+    cert: &Bytes,
+    sk: &Bytes,
+    sigval: &Bytes,
+    rng: &mut impl CryptoRng,
+) -> Result<Bytes, TLSError> {
+    // To avoid cyclic dependencies between the modules we pull out
+    // the values from the RSA certificate here.
+    // We could really read this from the key as well.
+    let (cert_scheme, cert_slice) = verification_key_from_cert(cert)?;
+    let pk = rsa_public_key(cert, cert_slice)?;
+    crate::tls13crypto::sign_rsa(sk, &pk.modulus, &pk.exponent, cert_scheme, sigval, rng)
+}
+
 fn get_server_signature_no_psk(
     state: ServerPostServerHello,
     rng: &mut impl CryptoRng,
@@ -723,6 +738,10 @@ fn get_server_signature_no_psk(
             &sigval,
             rng,
         ),
+        #[cfg(feature = "rsa")]
+        SignatureScheme::RsaPssRsaSha256 => {
+            get_rsa_signature(&state.server.cert, &state.server.sk, &sigval, rng)
+        }
         _ => Err(UNSUPPORTED_ALGORITHM),
     })?;
     let scv = certificate_verify(&state.ciphersuite, &sig)?;

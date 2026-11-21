@@ -112,6 +112,27 @@ const TLS_WITH_PSK_CHACHA20_POLY1305_SHA256_X25519: Algorithms = Algorithms::new
 
 #[test]
 fn test_full_round_trip() {
+    if !cfg!(all(
+        feature = "sha256",
+        feature = "chacha20poly1305",
+        feature = "ecdsa-p256",
+        feature = "x25519"
+    )) {
+        let mut rng = rand::rng();
+        let mut ks = TLSkeyscheduler {
+            keys: HashMap::new(),
+        };
+        assert!(Client::connect(
+            TLS_CHACHA20_POLY1305_SHA256_X25519,
+            &Bytes::from(b"localhost"),
+            None,
+            None,
+            &mut rng,
+            &mut ks
+        )
+        .is_err());
+        return;
+    }
     let cr = random_bytes(32);
     let x = cr.concat(load_hex(client_x25519_priv));
     let mut client_rng = TestRng::new(x.declassify());
@@ -267,6 +288,7 @@ fn removed_configurations_fail_cleanly() {
             false,
             false,
         ),
+        #[cfg(not(feature = "rsa"))]
         Algorithms::new(
             base.hash(),
             base.aead(),
@@ -320,6 +342,27 @@ fn removed_configurations_fail_cleanly() {
 
 #[test]
 fn removed_wire_offers_fail_cleanly() {
+    if !cfg!(all(
+        feature = "sha256",
+        feature = "chacha20poly1305",
+        feature = "ecdsa-p256",
+        feature = "x25519"
+    )) {
+        let mut rng = rand::rng();
+        let mut ks = TLSkeyscheduler {
+            keys: HashMap::new(),
+        };
+        assert!(Client::connect(
+            TLS_CHACHA20_POLY1305_SHA256_X25519,
+            &Bytes::from(b"localhost"),
+            None,
+            None,
+            &mut rng,
+            &mut ks
+        )
+        .is_err());
+        return;
+    }
     let algs = TLS_CHACHA20_POLY1305_SHA256_X25519;
     let mut rng = rand::rng();
     let mut ks = TLSkeyscheduler {
