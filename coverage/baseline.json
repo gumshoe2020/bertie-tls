@@ -2064,20 +2064,20 @@
   "native_proof_ratio": null,
   "proof_ratio": null,
   "proof_sloc": 0,
-  "proven": 884,
+  "proven": 824,
   "schema": 1,
   "scope": "first-party security runtime",
   "statuses": {
     "hazard": 0,
     "proven": 0,
     "proven-bounded": 0,
-    "proven-extracted": 884,
+    "proven-extracted": 824,
     "proven-upstream": 0,
-    "tested": 746,
-    "trusted": 2517,
-    "unverified": 2235
+    "tested": 548,
+    "trusted": 2329,
+    "unverified": 2117
   },
-  "tested": 746,
-  "total": 6382,
-  "unverified": 4752
+  "tested": 548,
+  "total": 5818,
+  "unverified": 4446
 }
