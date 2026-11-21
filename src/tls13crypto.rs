@@ -5,15 +5,10 @@ use hax_lib::{proverif, pv_constructor};
 
 use libcrux_chacha20poly1305::{decrypt_detached, encrypt_detached};
 use libcrux_ecdsa::DigestAlgorithm as EcDsaDigestAlgorithm;
-use libcrux_ed25519;
 use libcrux_hkdf::{expand, extract, Algorithm as HkdfAlgorithm};
 use libcrux_hmac::{hmac, Algorithm as HmacAlgorithm};
 
 use libcrux_kem::{Ct, PrivateKey, PublicKey};
-use libcrux_rsa::{
-    sign_varlen, verify_varlen, DigestAlgorithm as RsaDigestAlgorithm, VarLenPrivateKey,
-    VarLenPublicKey,
-};
 use libcrux_sha2::Algorithm as Sha2Algorithm;
 
 use rand::CryptoRng;
@@ -372,49 +367,6 @@ pub enum SignatureScheme {
 }
 
 /// Sign the `input` with the provided RSA key.
-pub(crate) fn sign_rsa(
-    sk: &Bytes,
-    pk_modulus: &Bytes,
-    pk_exponent: &Bytes,
-    cert_scheme: SignatureScheme,
-    input: &Bytes,
-    rng: &mut impl CryptoRng,
-) -> Result<Bytes, TLSError> {
-    // salt must be same length as digest output length
-    let mut salt = [0u8; 32];
-    rng.fill_bytes(&mut salt);
-
-    if !matches!(cert_scheme, SignatureScheme::RsaPssRsaSha256) {
-        return tlserr(CRYPTO_ERROR); // XXX: Right error type?
-    }
-
-    if !valid_rsa_exponent(pk_exponent.declassify()) {
-        return tlserr(UNSUPPORTED_ALGORITHM);
-    }
-
-    supported_rsa_key_size(pk_modulus)?;
-    let pk = VarLenPublicKey::try_from(&pk_modulus.declassify()[1..])
-        .map_err(|_| INCORRECT_ARRAY_LENGTH)?;
-
-    let pk_modulus_vec = pk_modulus.declassify();
-    let sk_vec = sk.declassify();
-    let sk = VarLenPrivateKey::from_components(&pk_modulus_vec[1..], &sk_vec)
-        .map_err(|_| INCORRECT_ARRAY_LENGTH)?;
-
-    let msg = &input.declassify();
-    // XXX: hard coded length because of bad libcrux API
-    let mut signature = [0u8; 512];
-    sign_varlen(
-        RsaDigestAlgorithm::Sha2_256,
-        &sk,
-        msg,
-        &salt,
-        &mut signature,
-    )
-    .map_err(|_| CRYPTO_ERROR)?;
-
-    Ok(signature.into())
-}
 
 /// Sign the bytes in `input` with the signature key `sk` and `algorithm`.
 #[cfg_attr(
@@ -461,18 +413,7 @@ pub(crate) fn sign(
             Bytes::from(r).concat(Bytes::from(s))
         }),
 
-        SignatureScheme::ED25519 => libcrux_ed25519::sign(
-            &input.declassify(),
-            &sk.declassify()
-                .try_into()
-                .map_err(|_| INCORRECT_ARRAY_LENGTH)?,
-        )
-        .map_err(|_| CRYPTO_ERROR)
-        .map(|s| s.into()),
-
-        SignatureScheme::RsaPssRsaSha256 => {
-            panic!("wrong function, use sign_rsa")
-        }
+        _ => tlserr(UNSUPPORTED_ALGORITHM),
     }
 }
 
@@ -538,15 +479,6 @@ pub(crate) fn verify(
     sig: &Bytes,
 ) -> Result<(), TLSError> {
     match (alg, pk) {
-        (SignatureScheme::ED25519, PublicVerificationKey::EcDsa(pk)) => libcrux_ed25519::verify(
-            &input.declassify(),
-            &pk.declassify()
-                .try_into()
-                .map_err(|_| INCORRECT_ARRAY_LENGTH)?,
-            &sig.declassify_array()?,
-        )
-        .map_err(|_| INVALID_SIGNATURE),
-
         (SignatureScheme::EcdsaSecp256r1Sha256, PublicVerificationKey::EcDsa(pk)) => {
             libcrux_ecdsa::p256::verify(
                 EcDsaDigestAlgorithm::Sha256,
@@ -558,50 +490,15 @@ pub(crate) fn verify(
             .map_err(|_| INVALID_SIGNATURE)
         }
 
-        (
-            SignatureScheme::RsaPssRsaSha256,
-            PublicVerificationKey::Rsa(RsaVerificationKey {
-                modulus: n,
-                exponent: e,
-            }),
-        ) => {
-            if !valid_rsa_exponent(e.declassify()) {
-                tlserr(UNSUPPORTED_ALGORITHM)
-            } else {
-                supported_rsa_key_size(n)?;
-                let n_vec = n.declassify();
-                let pk =
-                    VarLenPublicKey::try_from(&n_vec[1..]).map_err(|_| INCORRECT_ARRAY_LENGTH)?;
-
-                verify_varlen(
-                    RsaDigestAlgorithm::Sha2_256,
-                    &pk,
-                    &input.declassify(),
-                    32, // salt must be same length as digest ouput length
-                    &sig.declassify(),
-                )
-                .map_err(|_| CRYPTO_ERROR)
-            }
-        }
         _ => tlserr(UNSUPPORTED_ALGORITHM),
     }
 }
 
 /// Determine if given modulus conforms to one of the key sizes supported by
 /// `libcrux`.
-fn supported_rsa_key_size(n: &Bytes) -> Result<(), u8> {
-    match n.len() as u16 {
-        // The format includes an extra 0-byte in front to disambiguate from negative numbers
-        257 | 385 | 513 | 769 | 1025 => Ok(()),
-        _ => tlserr(UNSUPPORTED_ALGORITHM),
-    }
-}
 
 /// Determine if given public exponent is supported by `libcrux`, i.e. whether
 ///  `e == 0x010001`.
-fn valid_rsa_exponent(e: Vec<u8>) -> bool {
-    e.len() == 3 && e[0] == 0x1 && e[1] == 0x0 && e[2] == 0x1
-}
 
 /// Bertie KEM schemes.
 ///
@@ -723,7 +620,8 @@ pub(crate) fn kem_encap(
     // event!(Level::TRACE, "  pk:  {}", pk.as_hex());
 
     let pk = into_raw(alg, pk.clone());
-    let pk = PublicKey::decode(alg.libcrux_kem_algorithm()?, &pk.declassify()).unwrap();
+    let pk = PublicKey::decode(alg.libcrux_kem_algorithm()?, &pk.declassify())
+        .map_err(|_| CRYPTO_ERROR)?;
     let res = pk.encapsulate(&mut KemRng(rng));
     match res {
         Ok((shared_secret, ct)) => {
@@ -763,9 +661,9 @@ pub(crate) fn kem_decap(alg: KemScheme, ct: &Bytes, sk: &Bytes) -> Result<Bytes,
     // event!(Level::TRACE, "  with ciphertext: {}", ct.as_hex());
 
     let librux_algorithm = alg.libcrux_kem_algorithm()?;
-    let sk = PrivateKey::decode(librux_algorithm, &sk.declassify()).unwrap();
+    let sk = PrivateKey::decode(librux_algorithm, &sk.declassify()).map_err(|_| CRYPTO_ERROR)?;
     let ct = into_raw(alg, ct.clone()).declassify();
-    let ct = Ct::decode(librux_algorithm, &ct).unwrap();
+    let ct = Ct::decode(librux_algorithm, &ct).map_err(|_| CRYPTO_ERROR)?;
     let res = ct.decapsulate(&sk);
     match res {
         Ok(shared_secret) => {
@@ -811,6 +709,22 @@ impl Algorithms {
             psk_mode: psk,
             zero_rtt,
         }
+    }
+
+    pub(crate) fn validate(&self) -> Result<(), TLSError> {
+        if self.hash != HashAlgorithm::SHA256
+            || self.aead != AeadAlgorithm::Chacha20Poly1305
+            || self.signature != SignatureScheme::EcdsaSecp256r1Sha256
+            || !matches!(
+                self.kem,
+                KemScheme::X25519 | KemScheme::Secp256r1 | KemScheme::X25519MlKem768
+            )
+            || self.psk_mode
+            || self.zero_rtt
+        {
+            return tlserr(UNSUPPORTED_ALGORITHM);
+        }
+        Ok(())
     }
 
     /// Get the [`HashAlgorithm`].
@@ -908,38 +822,12 @@ impl TryFrom<&str> for Algorithms {
     /// Get the ciphersuite from a string description.
     fn try_from(s: &str) -> Result<Self, Self::Error> {
         match s {
-            "SHA256_Chacha20Poly1305_RsaPssRsaSha256_X25519" => {
-                Ok(SHA256_Chacha20Poly1305_RsaPssRsaSha256_X25519)
-            }
             "SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519" => {
                 Ok(SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519)
             }
             "SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_P256" => {
                 Ok(SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_P256)
             }
-            "SHA256_Chacha20Poly1305_RsaPssRsaSha256_P256" => {
-                Ok(SHA256_Chacha20Poly1305_RsaPssRsaSha256_P256)
-            }
-            // "SHA256_Aes128Gcm_EcdsaSecp256r1Sha256_P256" => {
-            //     Ok(SHA256_Aes128Gcm_EcdsaSecp256r1Sha256_P256)
-            // }
-            // "SHA256_Aes128Gcm_EcdsaSecp256r1Sha256_X25519" => {
-            //     Ok(SHA256_Aes128Gcm_EcdsaSecp256r1Sha256_X25519)
-            // }
-            // "SHA256_Aes128Gcm_RsaPssRsaSha256_P256" => Ok(SHA256_Aes128Gcm_RsaPssRsaSha256_P256),
-            // "SHA256_Aes128Gcm_RsaPssRsaSha256_X25519" => {
-            //     Ok(SHA256_Aes128Gcm_RsaPssRsaSha256_X25519)
-            // }
-            // "SHA384_Aes256Gcm_EcdsaSecp256r1Sha256_P256" => {
-            //     Ok(SHA384_Aes256Gcm_EcdsaSecp256r1Sha256_P256)
-            // }
-            // "SHA384_Aes256Gcm_EcdsaSecp256r1Sha256_X25519" => {
-            //     Ok(SHA384_Aes256Gcm_EcdsaSecp256r1Sha256_X25519)
-            // }
-            // "SHA384_Aes256Gcm_RsaPssRsaSha256_P256" => Ok(SHA384_Aes256Gcm_RsaPssRsaSha256_P256),
-            // "SHA384_Aes256Gcm_RsaPssRsaSha256_X25519" => {
-            //     Ok(SHA384_Aes256Gcm_RsaPssRsaSha256_X25519)
-            // }
             "SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519MLKEM768" => {
                 Ok(SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519MlKem768)
             }
@@ -989,19 +877,6 @@ pub const SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519MlKem768: Algorithm
 
 /// `TLS_CHACHA20_POLY1305_SHA256`
 /// with
-/// * x25519 for key exchange
-/// * RSA PSS SHA256 for signatures
-pub const SHA256_Chacha20Poly1305_RsaPssRsaSha256_X25519: Algorithms = Algorithms::new(
-    HashAlgorithm::SHA256,
-    AeadAlgorithm::Chacha20Poly1305,
-    SignatureScheme::RsaPssRsaSha256,
-    KemScheme::X25519,
-    false,
-    false,
-);
-
-/// `TLS_CHACHA20_POLY1305_SHA256`
-/// with
 /// * P256 for key exchange
 /// * EcDSA P256 SHA256 for signatures
 pub const SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_P256: Algorithms = Algorithms::new(
@@ -1012,125 +887,6 @@ pub const SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_P256: Algorithms = Algori
     false,
     false,
 );
-
-/// `TLS_CHACHA20_POLY1305_SHA256`
-/// with
-/// * P256 for key exchange
-/// * RSA PSSS SHA256 for signatures
-pub const SHA256_Chacha20Poly1305_RsaPssRsaSha256_P256: Algorithms = Algorithms::new(
-    HashAlgorithm::SHA256,
-    AeadAlgorithm::Chacha20Poly1305,
-    SignatureScheme::RsaPssRsaSha256,
-    KemScheme::Secp256r1,
-    false,
-    false,
-);
-
-// We don't support AES right now.
-
-// /// `TLS_AES_128_GCM_SHA256`
-// /// with
-// /// * x25519 for key exchange
-// /// * EcDSA P256 SHA256 for signatures
-// pub const SHA256_Aes128Gcm_EcdsaSecp256r1Sha256_X25519: Algorithms = Algorithms::new(
-//     HashAlgorithm::SHA256,
-//     AeadAlgorithm::Aes128Gcm,
-//     SignatureScheme::EcdsaSecp256r1Sha256,
-//     KemScheme::X25519,
-//     false,
-//     false,
-// );
-
-// /// `TLS_AES_128_GCM_SHA256`
-// /// with
-// /// * P256 for key exchange
-// /// * EcDSA P256 SHA256 for signatures
-// pub const SHA256_Aes128Gcm_EcdsaSecp256r1Sha256_P256: Algorithms = Algorithms::new(
-//     HashAlgorithm::SHA256,
-//     AeadAlgorithm::Aes128Gcm,
-//     SignatureScheme::EcdsaSecp256r1Sha256,
-//     KemScheme::Secp256r1,
-//     false,
-//     false,
-// );
-
-// /// `TLS_AES_128_GCM_SHA256`
-// /// with
-// /// * P256 for key exchange
-// /// * RSA PSS SHA256 for signatures
-// pub const SHA256_Aes128Gcm_RsaPssRsaSha256_P256: Algorithms = Algorithms::new(
-//     HashAlgorithm::SHA256,
-//     AeadAlgorithm::Aes128Gcm,
-//     SignatureScheme::RsaPssRsaSha256,
-//     KemScheme::Secp256r1,
-//     false,
-//     false,
-// );
-
-// /// `TLS_AES_128_GCM_SHA256`
-// /// with
-// /// * x25519 for key exchange
-// /// * RSA PSS SHA256 for signatures
-// pub const SHA256_Aes128Gcm_RsaPssRsaSha256_X25519: Algorithms = Algorithms::new(
-//     HashAlgorithm::SHA256,
-//     AeadAlgorithm::Aes128Gcm,
-//     SignatureScheme::RsaPssRsaSha256,
-//     KemScheme::X25519,
-//     false,
-//     false,
-// );
-
-// /// `TLS_AES_256_GCM_SHA384`
-// /// with
-// /// * x25519 for key exchange
-// /// * RSA PSS SHA256 for signatures
-// pub const SHA384_Aes256Gcm_RsaPssRsaSha256_X25519: Algorithms = Algorithms::new(
-//     HashAlgorithm::SHA384,
-//     AeadAlgorithm::Aes256Gcm,
-//     SignatureScheme::RsaPssRsaSha256,
-//     KemScheme::X25519,
-//     false,
-//     false,
-// );
-
-// /// `TLS_AES_256_GCM_SHA384`
-// /// with
-// /// * x25519 for key exchange
-// /// * EcDSA P256 SHA256 for signatures
-// pub const SHA384_Aes256Gcm_EcdsaSecp256r1Sha256_X25519: Algorithms = Algorithms::new(
-//     HashAlgorithm::SHA384,
-//     AeadAlgorithm::Aes256Gcm,
-//     SignatureScheme::EcdsaSecp256r1Sha256,
-//     KemScheme::X25519,
-//     false,
-//     false,
-// );
-
-// /// `TLS_AES_256_GCM_SHA384`
-// /// with
-// /// * P256 for key exchange
-// /// * RSA PSS SHA256 for signatures
-// pub const SHA384_Aes256Gcm_RsaPssRsaSha256_P256: Algorithms = Algorithms::new(
-//     HashAlgorithm::SHA384,
-//     AeadAlgorithm::Aes256Gcm,
-//     SignatureScheme::RsaPssRsaSha256,
-//     KemScheme::Secp256r1,
-//     false,
-//     false,
-// );
-
-// /// `TLS_AES_256_GCM_SHA384`
-// /// with
-// /// * P256 for key exchange
-// /// * EcDSA P256 SHA256 for signatures
-// pub const SHA384_Aes256Gcm_EcdsaSecp256r1Sha256_P256: Algorithms = Algorithms::new(
-//     HashAlgorithm::SHA384,
-//     AeadAlgorithm::Aes256Gcm,
-//     SignatureScheme::EcdsaSecp256r1Sha256,
-//     KemScheme::Secp256r1,
-//     false,
-//     false,
-// );
 
 #[cfg(test)]
 mod maintained_kem_tests {

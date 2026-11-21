@@ -21,18 +21,8 @@ struct Cli {
     port: Option<u16>,
     /// Algorithms to attempt to propose to server.
     /// Can be one of the following strings:
-    ///   * SHA256_Chacha20Poly1305_RsaPssRsaSha256_X25519
     ///   * SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519
     ///   * SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_P256
-    ///   * SHA256_Chacha20Poly1305_RsaPssRsaSha256_P256
-    ///   * SHA256_Aes128Gcm_EcdsaSecp256r1Sha256_P256
-    ///   * SHA256_Aes128Gcm_EcdsaSecp256r1Sha256_X25519
-    ///   * SHA256_Aes128Gcm_RsaPssRsaSha256_P256
-    ///   * SHA256_Aes128Gcm_RsaPssRsaSha256_X25519
-    ///   * SHA384_Aes256Gcm_EcdsaSecp256r1Sha256_P256
-    ///   * SHA384_Aes256Gcm_EcdsaSecp256r1Sha256_X25519
-    ///   * SHA384_Aes256Gcm_RsaPssRsaSha256_P256
-    ///   * SHA384_Aes256Gcm_RsaPssRsaSha256_X25519
     ///   * SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519MLKEM768
     ///
     /// The default value is SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519.

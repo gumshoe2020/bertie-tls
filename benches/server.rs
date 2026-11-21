@@ -4,20 +4,8 @@ use std::time::{Duration, Instant};
 use bertie::{
     stream::init_db,
     tls13crypto::{
-        Algorithms,
-        // SHA256_Aes128Gcm_EcdsaSecp256r1Sha256_P256,
-        // SHA256_Aes128Gcm_EcdsaSecp256r1Sha256_X25519,
-        // SHA256_Aes128Gcm_RsaPssRsaSha256_P256,
-        // SHA256_Aes128Gcm_RsaPssRsaSha256_X25519,
-        // SHA384_Aes256Gcm_EcdsaSecp256r1Sha256_P256,
-        // SHA384_Aes256Gcm_EcdsaSecp256r1Sha256_X25519,
-        // SHA384_Aes256Gcm_RsaPssRsaSha256_P256,
-        // SHA384_Aes256Gcm_RsaPssRsaSha256_X25519,
-        SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_P256,
-        SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519,
-        SHA256_Chacha20Poly1305_RsaPssRsaSha256_P256,
-        SHA256_Chacha20Poly1305_RsaPssRsaSha256_X25519,
-        SignatureScheme,
+        Algorithms, SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_P256,
+        SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519, SignatureScheme,
     },
     tls13utils::Bytes,
     Client, Server, TLSkeyscheduler,
@@ -41,18 +29,8 @@ fn mb_per_second(d: Duration) -> f64 {
 const ITERATIONS: usize = 500;
 const NUM_PAYLOAD_BYTES: usize = 0x4000;
 const CIPHERSUITES: [Algorithms; 4] = [
-    // SHA256_Aes128Gcm_EcdsaSecp256r1Sha256_P256,
-    // SHA256_Aes128Gcm_EcdsaSecp256r1Sha256_X25519,
-    // SHA256_Aes128Gcm_RsaPssRsaSha256_P256,
-    // SHA256_Aes128Gcm_RsaPssRsaSha256_X25519,
     SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_P256,
     SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519,
-    SHA256_Chacha20Poly1305_RsaPssRsaSha256_P256,
-    SHA256_Chacha20Poly1305_RsaPssRsaSha256_X25519,
-    // SHA384_Aes256Gcm_EcdsaSecp256r1Sha256_P256,
-    // SHA384_Aes256Gcm_EcdsaSecp256r1Sha256_X25519,
-    // SHA384_Aes256Gcm_RsaPssRsaSha256_P256,
-    // SHA384_Aes256Gcm_RsaPssRsaSha256_X25519,
 ];
 
 /// Benchmark the parsing of the client hello.
@@ -74,10 +52,7 @@ af 2c 00 2b 00 03 02 03 04 00 0d 00 20 00 1e 04 03 05 03 06 03
     let ch = bertie::HandshakeData::from(Bytes::from_hex(CLIENT_HELLO));
     let start = Instant::now();
     for _ in 0..ITERATIONS {
-        let _res = bertie::bench_parse_client_hello(
-            &bertie::tls13crypto::SHA256_Aes128Gcm_RsaPssRsaSha256_X25519,
-            &ch,
-        );
+        let _res = bertie::bench_parse_client_hello(&ch);
     }
     let end = Instant::now();
     println!(

@@ -4,8 +4,8 @@ use crate::{
     server::{lookup_db, ServerDB, ServerInfo, ServerPubInfo},
     tls13cert::{cert_public_key, rsa_public_key, verification_key_from_cert},
     tls13crypto::{
-        hmac_tag, hmac_verify, kem_decap, kem_encap, kem_keygen, sign, sign_rsa, verify,
-        Algorithms, Digest, KemSk, MacKey, Psk, Random, SignatureScheme,
+        hmac_tag, hmac_verify, kem_decap, kem_encap, kem_keygen, sign, verify, Algorithms, Digest,
+        KemSk, MacKey, Psk, Random, SignatureScheme,
     },
     tls13formats::{handshake_data::HandshakeData, *},
     tls13keyscheduler::{
@@ -71,22 +71,28 @@ pub struct ClientPostClientFinished(
     Transcript,
 );
 
+#[cfg(feature = "client")]
 pub fn algs_post_client_hello(st: &ClientPostClientHello) -> Algorithms {
     st.1
 }
+#[cfg(feature = "client")]
 pub fn algs_post_server_hello(st: &ClientPostServerHello) -> Algorithms {
     st.2
 }
+#[cfg(feature = "client")]
 pub fn algs_post_client_finished(st: &ClientPostClientFinished) -> Algorithms {
     st.2
 }
 
+#[cfg(feature = "client")]
 pub fn server_info_post_client_hello(st: &ClientPostClientHello) -> ServerPubInfo {
     st.2.clone()
 }
+#[cfg(feature = "client")]
 pub fn server_info_post_server_hello(st: &ClientPostServerHello) -> ServerPubInfo {
     st.3.clone()
 }
+#[cfg(feature = "client")]
 pub fn server_info_post_client_finished(st: &ClientPostClientFinished) -> ServerPubInfo {
     st.3.clone()
 }
@@ -132,6 +138,7 @@ pub struct ServerPostClientFinished(Random, Random, Algorithms, Handle, Transcri
 
 /* TLS 1.3 Client Side Handshake Functions */
 
+#[cfg(feature = "client")]
 fn build_client_hello(
     ciphersuite: Algorithms,
     server_name: &Bytes,
@@ -180,6 +187,7 @@ fn build_client_hello(
 }
 
 #[hax_lib::requires(trunc_len <= ch.len())]
+#[cfg(feature = "client")]
 fn compute_psk_binder_zero_rtt(
     algs0: Algorithms,
     ch: HandshakeData,
@@ -231,6 +239,7 @@ fn compute_psk_binder_zero_rtt(
     }
 }
 
+#[cfg(feature = "client")]
 fn put_server_hello(
     handshake: &HandshakeData,
     state: ClientPostClientHello,
@@ -296,6 +305,7 @@ fn put_server_hello(
     ))
 }
 
+#[cfg(feature = "client")]
 fn put_server_signature(
     encrypted_extensions: &HandshakeData,
     server_certificate: &HandshakeData,
@@ -350,6 +360,7 @@ fn put_server_signature(
     }
 }
 
+#[cfg(feature = "client")]
 fn put_psk_skip_server_signature(
     encrypted_extensions: &HandshakeData,
     handshake_state: ClientPostServerHello,
@@ -382,6 +393,7 @@ fn put_psk_skip_server_signature(
     }
 }
 
+#[cfg(feature = "client")]
 fn put_server_finished(
     server_finished: &HandshakeData,
     handshake_state: ClientPostCertificateVerify,
@@ -434,6 +446,7 @@ fn put_server_finished(
     ))
 }
 
+#[cfg(feature = "client")]
 fn get_client_finished(
     handshake_state: ClientPostServerFinished,
     ks: &mut TLSkeyscheduler,
@@ -476,6 +489,7 @@ fn get_client_finished(
 // client_set_params -> (encrypt_handshake | decrypt_handshake)* ->
 // client_finish -> (encrypt_data | decrypt_data)*
 
+#[cfg(feature = "client")]
 pub fn client_init(
     algs: Algorithms,
     sn: &Bytes,
@@ -495,6 +509,7 @@ pub fn client_init(
 }
 
 /// Update the client state after generating the client hello message.
+#[cfg(feature = "client")]
 pub(crate) fn client_set_params(
     payload: &HandshakeData,
     st: ClientPostClientHello,
@@ -503,6 +518,7 @@ pub(crate) fn client_set_params(
     put_server_hello(payload, st, ks)
 }
 
+#[cfg(feature = "client")]
 pub fn client_finish(
     payload: &HandshakeData,
     handshake_state: ClientPostServerHello,
@@ -682,31 +698,6 @@ fn get_server_hello(
     ))
 }
 
-#[cfg_attr(
-    feature = "hax-pv",
-    hax_lib::proverif::replace_body(
-        "(
-              extern__sign_inner_rsa(
-                  sk,
-                  sigval
-               )
-         )"
-    )
-)]
-fn get_rsa_signature(
-    cert: &Bytes,
-    sk: &Bytes,
-    sigval: &Bytes,
-    rng: &mut impl CryptoRng,
-) -> Result<Bytes, TLSError> {
-    // To avoid cyclic dependencies between the modules we pull out
-    // the values from the RSA certificate here.
-    // We could really read this from the key as well.
-    let (cert_scheme, cert_slice) = verification_key_from_cert(cert)?;
-    let pk = rsa_public_key(cert, cert_slice)?;
-    sign_rsa(sk, &pk.modulus, &pk.exponent, cert_scheme, sigval, rng)
-}
-
 fn get_server_signature_no_psk(
     state: ServerPostServerHello,
     rng: &mut impl CryptoRng,
@@ -732,10 +723,7 @@ fn get_server_signature_no_psk(
             &sigval,
             rng,
         ),
-        SignatureScheme::RsaPssRsaSha256 => {
-            get_rsa_signature(&state.server.cert, &state.server.sk, &sigval, rng)
-        }
-        SignatureScheme::ED25519 => Err(UNSUPPORTED_ALGORITHM),
+        _ => Err(UNSUPPORTED_ALGORITHM),
     })?;
     let scv = certificate_verify(&state.ciphersuite, &sig)?;
     let transcript = transcript.add(&scv);
@@ -769,47 +757,6 @@ fn get_server_signature(
 > {
     if !state.ciphersuite.psk_mode() {
         get_server_signature_no_psk(state, rng)
-    } else {
-        Err(PSK_MODE_MISMATCH)
-    }
-}
-
-fn get_skip_server_signature_no_psk(
-    st: ServerPostServerHello,
-) -> Result<(HandshakeData, ServerPostCertificateVerify), TLSError> {
-    let ServerPostServerHello {
-        client_random: cr,
-        server_random: sr,
-        ciphersuite: algs,
-        server,
-        master_secret: ms,
-        cfk,
-        sfk,
-        transcript: tx,
-    } = st;
-    let ee = encrypted_extensions(&algs)?;
-    let tx = tx.add(&ee);
-    Ok((
-        ee,
-        ServerPostCertificateVerify(cr, sr, algs, ms, cfk, sfk, tx),
-    ))
-}
-
-fn get_skip_server_signature(
-    st: ServerPostServerHello,
-) -> Result<(HandshakeData, ServerPostCertificateVerify), TLSError> {
-    let ServerPostServerHello {
-        client_random: cr,
-        server_random: sr,
-        ciphersuite: algs,
-        server,
-        master_secret: ms,
-        cfk,
-        sfk,
-        transcript: tx,
-    } = &st;
-    if algs.psk_mode() {
-        get_skip_server_signature_no_psk(st)
     } else {
         Err(PSK_MODE_MISMATCH)
     }
@@ -891,34 +838,6 @@ pub fn server_init_no_psk(
 }
 
 #[allow(clippy::type_complexity)]
-pub fn server_init_psk(
-    algs: Algorithms,
-    ch: &HandshakeData,
-    db: ServerDB,
-    rng: &mut impl CryptoRng,
-    ks: &mut TLSkeyscheduler,
-) -> Result<
-    (
-        HandshakeData,
-        HandshakeData,
-        Option<ServerCipherState0>,
-        DuplexCipherStateH,
-        DuplexCipherState1,
-        ServerPostServerFinished,
-    ),
-    TLSError,
-> {
-    let (cipher0, st) = put_client_hello(algs, ch, db, ks)?;
-    let (sh, cipher_hs, st) = get_server_hello(st, rng, ks)?;
-
-    let (ee, st) = get_skip_server_signature(st)?;
-    let (sfin, cipher1, st) = get_server_finished(st, ks)?;
-    let flight = ee.concat(&sfin);
-
-    Ok((sh, flight, cipher0, cipher_hs, cipher1, st))
-}
-
-#[allow(clippy::type_complexity)]
 pub fn server_init(
     algs: Algorithms,
     ch: &HandshakeData,
@@ -938,7 +857,7 @@ pub fn server_init(
 > {
     match algs.psk_mode() {
         false => server_init_no_psk(algs, ch, db, rng, ks),
-        true => server_init_psk(algs, ch, db, rng, ks),
+        true => Err(UNSUPPORTED_ALGORITHM),
     }
 }
 

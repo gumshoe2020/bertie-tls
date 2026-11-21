@@ -23,8 +23,6 @@ libcrux-sha2 = { version = "0.0.3-alpha.1" }
 libcrux-hmac = { version = "0.0.3-alpha.1" }
 libcrux-hkdf = { version = "0.0.3-alpha.1" }
 libcrux-chacha20poly1305 = { version = "0.0.9" }
-libcrux-rsa = { version = "0.0.2" }
-libcrux-ed25519 = { version = "0.0.9" }
 libcrux-ecdsa = { version = "0.0.3-alpha.1", features = ["rand"] }
 hax-lib = { version = "0.4.2" }
 
@@ -35,11 +33,12 @@ std = []
 test_utils = []
 secret_integers = []
 api = []
+client = []
 hax-fstar = []
 hax-pv = []
 
 [dev-dependencies]
-bertie = { path = ".", features = ["test_utils"] }
+bertie = { path = ".", features = ["test_utils", "client"] }
 dhat = "0.3.0"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }

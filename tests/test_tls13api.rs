@@ -237,114 +237,83 @@ fn test_full_round_trip() {
 
 #[test]
 fn test_full_round_trip_with_psk() {
-    let cr = random_bytes(32);
-    let x = cr.concat(load_hex(client_x25519_priv));
-    let mut client_rng = TestRng::new(x.declassify());
-    let server_name = load_hex("6c 6f 63 61 6c 68 6f 73 74");
-    let sr = random_bytes(64);
-    let y = load_hex(server_x25519_priv);
-    let ent_s = sr.concat(y);
-    let mut server_rng = TestRng::new(ent_s.declassify());
-    let session_ticket = random_bytes(32);
-    let psk = random_bytes(32);
-
-    let db = ServerDB::new(
-        server_name.clone(),
-        Bytes::from(&ECDSA_P256_SHA256_CERT),
-        SignatureKey::from(&ECDSA_P256_SHA256_Key),
-        Some((session_ticket.clone(), psk.clone())),
-    );
-
-    let mut b = true;
-    const ciphersuite: Algorithms = TLS_WITH_PSK_CHACHA20_POLY1305_SHA256_X25519;
-
-    let mut client_ks: TLSkeyscheduler = TLSkeyscheduler {
+    // Resumption is deliberately unsupported by our maintained server.
+    let mut rng = rand::rng();
+    let mut ks = TLSkeyscheduler {
         keys: HashMap::new(),
     };
+    assert!(Client::connect(
+        TLS_WITH_PSK_CHACHA20_POLY1305_SHA256_X25519,
+        &Bytes::from(b"localhost"),
+        Some(random_bytes(32)),
+        Some(random_bytes(32)),
+        &mut rng,
+        &mut ks
+    )
+    .is_err());
+}
 
-    let mut server_ks: TLSkeyscheduler = TLSkeyscheduler {
-        keys: HashMap::new(),
-    };
-
-    match Client::connect(
-        ciphersuite,
-        &server_name,
-        Some(session_ticket),
-        Some(psk),
-        &mut client_rng,
-        &mut client_ks,
-    ) {
-        Err(x) => {
-            println!("Client0 Error {}", x);
-            b = false;
-        }
-        Ok((client_hello, client)) => {
-            println!("Client0 Complete {}", server_rng.raw().len());
-            match Server::accept(
-                ciphersuite,
-                db,
-                &client_hello,
-                &mut server_rng,
-                &mut server_ks,
-            ) {
-                Err(x) => {
-                    println!("ServerInit Error {}", x);
-                    b = false;
-                }
-                Ok((sh, sf, server)) => {
-                    println!("Server0 Complete");
-                    match client.read_handshake(&sh, &mut client_ks) {
-                        Err(x) => {
-                            println!("ServerHello Error {}", x);
-                            b = false;
-                        }
-                        Ok((Some(_), _)) => {
-                            println!("ServerHello State Error");
-                            b = false;
-                        }
-                        Ok((None, client_state)) => match client_state
-                            .read_handshake(&sf, &mut client_ks)
-                        {
-                            Err(x) => {
-                                println!("ClientFinish Error {}", x);
-                                b = false;
-                            }
-                            Ok((None, _)) => {
-                                println!("ClientFinish State Error");
-                                b = false;
-                            }
-                            Ok((Some(cf), client)) => {
-                                println!("Client Complete");
-                                match server.read_handshake(&cf, &mut server_ks) {
-                                    Err(x) => {
-                                        println!("Server1 Error {}", x);
-                                        b = false;
-                                    }
-                                    Ok(server) => {
-                                        println!("Server Complete");
-
-                                        // Send data from client to server.
-                                        let data = Bytes::from(b"Hello server, here is the client");
-                                        let (ap, client) =
-                                            client.write(AppData::new(data.clone())).unwrap();
-                                        let (apo, server) = server.read(&ap).unwrap();
-                                        assert!(eq(&data, apo.unwrap().as_raw()));
-
-                                        // Send data from server to client.
-                                        let data =
-                                            Bytes::from(b"Hello client, here is the server.");
-                                        let (ap, _server) =
-                                            server.write(AppData::new(data.clone())).unwrap();
-                                        let (application_data, _cstate) = client.read(&ap).unwrap();
-                                        assert!(eq(&data, application_data.unwrap().as_raw()));
-                                    }
-                                }
-                            }
-                        },
-                    }
-                }
-            }
-        }
+#[test]
+fn removed_configurations_fail_cleanly() {
+    let base = TLS_CHACHA20_POLY1305_SHA256_X25519;
+    for algs in [
+        TLS_AES_128_GCM_SHA256_X25519_RSA,
+        TLS_AES_128_GCM_SHA256_X25519,
+        Algorithms::new(
+            HashAlgorithm::SHA384,
+            AeadAlgorithm::Aes256Gcm,
+            SignatureScheme::EcdsaSecp256r1Sha256,
+            KemScheme::X25519,
+            false,
+            false,
+        ),
+        Algorithms::new(
+            base.hash(),
+            base.aead(),
+            SignatureScheme::RsaPssRsaSha256,
+            base.kem(),
+            false,
+            false,
+        ),
+        Algorithms::new(
+            base.hash(),
+            base.aead(),
+            SignatureScheme::ED25519,
+            base.kem(),
+            false,
+            false,
+        ),
+        Algorithms::new(
+            base.hash(),
+            base.aead(),
+            base.signature(),
+            KemScheme::X448,
+            false,
+            false,
+        ),
+        TLS_WITH_PSK_CHACHA20_POLY1305_SHA256_X25519,
+    ] {
+        let mut rng = rand::rng();
+        let mut ks = TLSkeyscheduler {
+            keys: HashMap::new(),
+        };
+        assert!(Client::connect(
+            algs,
+            &Bytes::from(b"localhost"),
+            None,
+            None,
+            &mut rng,
+            &mut ks
+        )
+        .is_err());
+        let db = ServerDB::new(
+            Bytes::from(b"localhost"),
+            Bytes::from(&ECDSA_P256_SHA256_CERT),
+            SignatureKey::from(&ECDSA_P256_SHA256_Key),
+            None,
+        );
+        assert!(
+            Server::accept(algs, db, &Bytes::from([22, 3, 3, 0, 0]), &mut rng, &mut ks).is_err()
+        );
     }
-    assert!(b);
 }

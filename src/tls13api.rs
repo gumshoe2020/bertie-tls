@@ -20,6 +20,7 @@ use crate::{
 };
 
 /// The TLS Client state.
+#[cfg(feature = "client")]
 pub enum Client {
     /// The initial client handshake state.
     Client0(ClientPostClientHello, Option<ClientCipherState0>),
@@ -39,6 +40,7 @@ pub enum Client {
 /// Check if the client is using a PSK mode or not.
 ///
 /// Returns `true` if the client is in PSK mode and `false` otherwise.
+#[cfg(feature = "client")]
 pub fn in_psk_mode(c: &Client) -> bool {
     match c {
         Client::Client0(cstate, _) => algs_post_client_hello(cstate).psk_mode(),
@@ -56,6 +58,7 @@ pub fn in_psk_mode(c: &Client) -> bool {
 /// and the session ticket in the server info is the one used for the connection.
 ///
 /// Returns a `ServerPubInfo`
+#[cfg(feature = "client")]
 pub fn get_server_info(c: &Client) -> ServerPubInfo {
     match c {
         Client::Client0(cstate, _) => server_info_post_client_hello(cstate),
@@ -64,6 +67,7 @@ pub fn get_server_info(c: &Client) -> ServerPubInfo {
     }
 }
 
+#[cfg(feature = "client")]
 impl Client {
     /// Start a TLS handshake as client.
     /// Note that Bertie clients only support a single ciphersuite at a time and
@@ -88,6 +92,7 @@ impl Client {
         rng: &mut impl CryptoRng,
         ks: &mut TLSkeyscheduler,
     ) -> Result<(Bytes, Self), TLSError> {
+        ciphersuite.validate()?;
         let (client_hello, cipherstate0, client_state) =
             client_init(ciphersuite, server_name, session_ticket, psk, rng, ks)?;
         let mut client_hello_record = handshake_record(client_hello)?;
@@ -224,6 +229,10 @@ impl Server {
         rng: &mut impl CryptoRng,
         ks: &mut TLSkeyscheduler,
     ) -> Result<(Bytes, Bytes, Self), TLSError> {
+        ciphersuite.validate()?;
+        if client_hello.len() < 5 {
+            return Err(PARSE_FAILED);
+        }
         let mut ch_rec = client_hello.clone();
         ch_rec[2] = U8(0x03);
         let ch = get_handshake_record(&ch_rec)?;

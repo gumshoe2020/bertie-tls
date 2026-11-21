@@ -50,7 +50,9 @@ pub mod tls13cert;
 pub mod tls13crypto;
 pub mod tls13utils;
 
-pub use tls13api::{Client, Server};
+#[cfg(feature = "client")]
+pub use tls13api::Client;
+pub use tls13api::Server;
 // Debug exports only
 pub use tls13formats::{handshake_data::get_hs_type, AlertDescription, AlertLevel, ContentType};
 
