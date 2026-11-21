@@ -1,0 +1,96 @@
+name: Set up hax
+description: Install prebuilt F* and cache the pinned hax Nix runtime closure.
+inputs:
+  hax_commit:
+    description: Full hax commit SHA to build and cache.
+    required: true
+  fstar:
+    description: F* release version tag.
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Install prebuilt F*
+      shell: bash
+      env:
+        VERSION: ${{ inputs.fstar }}
+      run: |
+        case "$(uname -s)-$(uname -m)" in
+          Darwin-*) PLATFORM=Darwin-arm64 ;;
+          Linux-x86_64) PLATFORM=Linux-x86_64 ;;
+          *) echo "::error::No prebuilt F* binary for this platform"; exit 1 ;;
+        esac
+        URL="https://github.com/FStarLang/FStar/releases/download/$VERSION/fstar-$VERSION-$PLATFORM.tar.gz"
+        archive="$RUNNER_TEMP/fstar.tar.gz"
+        if ! curl --fail --location --show-error "$URL" -o "$archive"; then
+          echo "::error::Failed to download prebuilt F* from $URL"
+          exit 1
+        fi
+        mkdir -p "$HOME/.fstar"
+        tar -xzf "$archive" -C "$HOME/.fstar" --strip-components=2
+        echo "$HOME/.fstar/bin" >> "$GITHUB_PATH"
+
+    - uses: DeterminateSystems/nix-installer-action@c5a866b6ab867e88becbed4467b93592bce69f8a # v21
+      with:
+        determinate: true
+
+    - name: Restore hax closure
+      id: cache
+      uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+      with:
+        path: ${{ runner.temp }}/hax-nix
+        key: hax-nix-${{ runner.os }}-${{ runner.arch }}-${{ inputs.hax_commit }}-v1
+
+    - name: Import cached hax or build the pinned commit
+      id: hax
+      shell: bash
+      env:
+        HAX_COMMIT: ${{ inputs.hax_commit }}
+        CACHE_HIT: ${{ steps.cache.outputs.cache-hit }}
+      run: |
+        cache_dir="$RUNNER_TEMP/hax-nix"
+        if [[ ! "$HAX_COMMIT" =~ ^[0-9a-f]{40}$ ]]; then
+          echo "::error::hax_commit must be a full commit SHA"
+          exit 1
+        fi
+        import_closure() {
+          store_path=$(cat "$cache_dir/store-path") || return 1
+          [[ "$store_path" =~ ^/nix/store/[0-9a-z]{32}-[^/[:space:]]+$ ]] || return 1
+          nix-store --import < "$cache_dir/closure.nar" || return 1
+          nix-store --check-validity "$store_path" || return 1
+          test -e "$store_path"
+        }
+        if [[ "$CACHE_HIT" == true ]] && import_closure; then
+          echo "Imported cached hax: $store_path"
+        else
+          if [[ "$CACHE_HIT" == true ]]; then
+            echo "::warning::Cached hax closure could not be imported or its store path is missing; rebuilding $HAX_COMMIT"
+          fi
+          rm -rf "$cache_dir"
+          mkdir -p "$cache_dir"
+          store_path=$(nix build "github:hacspec/hax/$HAX_COMMIT#hax" --print-out-paths --no-link)
+          printf '%s\n' "$store_path" > "$cache_dir/store-path"
+          nix-store -qR "$store_path" > "$cache_dir/closure-paths"
+          mapfile -t closure_paths < "$cache_dir/closure-paths"
+          nix-store --export "${closure_paths[@]}" > "$cache_dir/closure.nar"
+        fi
+        nix profile install "$store_path"
+        echo "store-path=$store_path" >> "$GITHUB_OUTPUT"
+
+    - name: Check hax and report closure size
+      shell: bash
+      env:
+        HAX_STORE_PATH: ${{ steps.hax.outputs.store-path }}
+      run: |
+        cargo hax --version
+        echo "hax runtime closure size (bytes):"
+        nix path-info --closure-size "$HAX_STORE_PATH"
+        echo "Exported closure size:"
+        du -h "$RUNNER_TEMP/hax-nix/closure.nar"
+
+    - name: Save hax closure
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+      with:
+        path: ${{ runner.temp }}/hax-nix
+        key: hax-nix-${{ runner.os }}-${{ runner.arch }}-${{ inputs.hax_commit }}-v1

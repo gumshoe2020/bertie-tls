@@ -52,10 +52,10 @@ jobs:
       - name: Build formal-coverage at the pinned commit
         run: cargo build --release --locked --manifest-path formal-coverage-src/Cargo.toml
 
-      - uses: hacspec/hax-actions@1f01b89579f425ad7c1e66aebbd5df7e688cb576 # main, pinned
+      - uses: ./.github/actions/setup-hax
         with:
           fstar: v2025.10.06
-          hax_reference: ${{ env.HAX_COMMIT }}
+          hax_commit: ${{ env.HAX_COMMIT }}
       - name: Fresh hax extraction and strict F*
         env:
           HAX_CORE_LIBS: ${{ github.workspace }}/hax-src/proof-libs/fstar

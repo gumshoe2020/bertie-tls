@@ -1,6 +1,7 @@
 name: hax
 
-# Fresh hax extraction plus strict F* on every module, nothing cached or patched.
+# Fresh hax extraction plus strict F* on every module, never cached or patched.
+# Only the hax tool build is cached, keyed on the pinned commit.
 # coverage.yml runs the same script and then measures; this workflow is the
 # proofs-only signal and the nightly check.
 on:
@@ -34,10 +35,10 @@ jobs:
           repository: cryspen/hax
           ref: ${{ env.HAX_COMMIT }}
           path: hax-src
-      - uses: hacspec/hax-actions@1f01b89579f425ad7c1e66aebbd5df7e688cb576 # main, pinned
+      - uses: ./.github/actions/setup-hax
         with:
           fstar: v2025.10.06
-          hax_reference: ${{ env.HAX_COMMIT }}
+          hax_commit: ${{ env.HAX_COMMIT }}
       - name: Extract and verify every module
         env:
           HAX_CORE_LIBS: ${{ github.workspace }}/hax-src/proof-libs/fstar
