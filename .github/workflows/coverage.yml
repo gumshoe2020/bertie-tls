@@ -62,7 +62,7 @@ jobs:
           HAX_LIB_PROOFS: ${{ github.workspace }}/hax-src/hax-lib/proofs/fstar/extraction
         run: |
           eval "$(opam env 2>/dev/null || true)"
-          python3 scripts/verify-fstar.py
+          FSTAR_JOBS="$(nproc)" python3 scripts/verify-fstar.py
 
       - name: Measure
         id: measure

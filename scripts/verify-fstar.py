@@ -114,7 +114,12 @@ def main():
                       outcome='success' if rc == 0 else 'failed')
         print(f'{name}: exit {rc}', flush=True)
         return result
-    with ThreadPoolExecutor(max_workers=2) as pool:
+    # Modules verified in parallel. Default 2 keeps local runs light; CI sets
+    # FSTAR_JOBS to the runner's CPU count. Only scheduling changes, never what is checked.
+    jobs = int(os.environ.get('FSTAR_JOBS', '2'))
+    if jobs < 1:
+        raise ValueError('FSTAR_JOBS must be at least 1')
+    with ThreadPoolExecutor(max_workers=jobs) as pool:
         modules = list(pool.map(verify, MODULES))
     combined = OUT / 'fstar.log'
     combined.write_bytes(b'\n'.join((OUT / f'Bertie_tls.{m}.log').read_bytes() for m in MODULES))
