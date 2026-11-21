@@ -70,7 +70,8 @@ def main():
                   f'export CARGO_HOME={cargo_home}; ')
         cmd = common + ['fc-verify-hax:v17', 'bash', '-ec', prefix + 'cargo fetch --locked && python3 hax-driver.py extract-fstar']
     else:
-        cmd = ['python3', 'hax-driver.py', 'extract-fstar']
+        # Fetch locked dependencies (including git sources) before the --frozen extraction.
+        cmd = ['bash', '-ec', 'cargo fetch --locked && python3 hax-driver.py extract-fstar']
     lock_before = digest(ws / 'Cargo.lock')
     rc = run(cmd, OUT / 'extract.log', cwd=ws)
     if rc or lock_before != digest(ws / 'Cargo.lock'):
