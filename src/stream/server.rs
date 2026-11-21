@@ -114,7 +114,7 @@ impl BertieStream<ServerState<TcpStream>> {
     /// A common pattern for the server would look as follows.
     /// ```
     /// use std::{net::{TcpStream, TcpListener}, thread};
-    /// use bertie::{stream::BertieStream, tls13crypto::SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519};
+    /// use bertie_tls::{stream::BertieStream, tls13crypto::SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519};
     /// use rand::thread_rng;
     ///
     /// let host = "localhost";

@@ -67,12 +67,12 @@ cargo_hax_into = [
     "hax",
     "-C",
     "-p",
-    "bertie",
+    "bertie-tls",
     "-p",
-    "rand_core",
+    "rand_core@0.9.5",
     "--no-default-features",
     "--features",
-    "defensive,std",
+    "defensive,std,sha256,chacha20poly1305,ecdsa-p256,x25519,p256,mlkem768",
     ";",
     "into",
 ]
@@ -82,7 +82,7 @@ cargo_hax_into_ssp = [
     "hax",
     "-C",
     "-p",
-    "bertie",
+    "bertie-tls",
     "--no-default-features",
     "--features",
     "std",
@@ -95,7 +95,7 @@ cargo_hax_into_pv = [
     "hax",
     "-C",
     "-p",
-    "bertie",
+    "bertie-tls",
     "--no-default-features",
     "--features",
     "hax-pv,std",
@@ -110,10 +110,10 @@ if options.sub == "extract-fstar":
         cargo_hax_into
         + [
             "-i",
-            "-**::non_hax::** -bertie::stream::**",
+            "-**::non_hax::** -bertie_tls::stream::**",
             "fstar",
             "--interfaces",
-            "+** +!bertie::tls13crypto::** +!bertie::tls13utils::** +!bertie::tls13cert::**"
+            "+** +!bertie_tls::tls13crypto::** +!bertie_tls::tls13utils::** +!bertie_tls::tls13cert::**"
         ],
         cwd=".",
         env=hax_env,
@@ -166,10 +166,10 @@ elif options.sub == "extract-handshake":
         cargo_hax_into
         + [
             "-i",
-            "-** +~bertie::tls13handshake::**",
+            "-** +~bertie_tls::tls13handshake::**",
             "fstar",
             "--interfaces",
-            "+!** +bertie::tls13handshake::**",
+            "+!** +bertie_tls::tls13handshake::**",
         ],
         cwd=".",
         env=hax_env,

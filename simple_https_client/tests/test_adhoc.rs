@@ -6,7 +6,7 @@
 
 use std::io::{Cursor, Read, Write};
 
-use bertie::{
+use bertie_tls::{
     stream::BertieStream,
     tls13crypto::{AeadAlgorithm, Algorithms, HashAlgorithm, KemScheme, SignatureScheme},
 };

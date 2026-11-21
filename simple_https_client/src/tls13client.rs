@@ -2,7 +2,7 @@
 //!
 //! A simple TLS 1.3 command line client based on Bertie.
 
-use bertie::{
+use bertie_tls::{
     stream::BertieStream,
     tls13crypto::{Algorithms, SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519},
     tls13utils::*,

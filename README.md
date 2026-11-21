@@ -1,71 +1,50 @@
 <img src="assets/bertie-logo.png" width="200px"/>
 
-[![CI](https://github.com/cryspen/bertie/actions/workflows/ci.yml/badge.svg)](https://github.com/cryspen/bertie/actions/workflows/ci.yml)
-[![Scheduled](https://github.com/cryspen/bertie/actions/workflows/scheduled.yml/badge.svg)](https://github.com/cryspen/bertie/actions/workflows/scheduled.yml)
+# bertie-tls
 
-Bertie is a minimal, high-assurance implementation of TLS 1.3 written in a subset of Rust called [hacspec].
+A small TLS 1.3 library in Rust, maintained independently from Cryspen’s Bertie.
+This project started from [Cryspen/Bertie](https://github.com/cryspen/bertie)
+commit `ef65f76`, under Apache-2.0. Upstream copyright notices and [LICENSE](LICENSE) are retained.
 
-It is built upon the following design principles:
+[![CI](https://github.com/gumshoe2020/bertie-tls/actions/workflows/ci.yml/badge.svg)](https://github.com/gumshoe2020/bertie-tls/actions/workflows/ci.yml)
+[![Proofs](https://github.com/gumshoe2020/bertie-tls/actions/workflows/hax.yml/badge.svg)](https://github.com/gumshoe2020/bertie-tls/actions/workflows/hax.yml)
+[![Coverage](https://github.com/gumshoe2020/bertie-tls/actions/workflows/coverage.yml/badge.svg)](https://github.com/gumshoe2020/bertie-tls/actions/workflows/coverage.yml)
+[![proven](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fgumshoe2020%2Fbertie-tls%2Fbadges%2Fproven.json)](COVERAGE.md)
+[![tested](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fgumshoe2020%2Fbertie-tls%2Fbadges%2Ftested.json)](COVERAGE.md)
+[![unverified](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fgumshoe2020%2Fbertie-tls%2Fbadges%2Funverified.json)](COVERAGE.md)
+[![proof-ratio](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fgumshoe2020%2Fbertie-tls%2Fbadges%2Fproof-ratio.json)](COVERAGE.md)
+[![ratchet](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fgumshoe2020%2Fbertie-tls%2Fbadges%2Fratchet.json)](COVERAGE.md)
 
-1) **Purely functional**: no mutable data structures or externally visible side-effects.
-2) **Verification friendly**: written in hacspec and translates to [F*].
-3) **Succinct and minimal**: configured with a single protocol version and cipher suite.
+Proof credit is limited to the checked contracts. Safety-only extraction proofs do not establish
+TLS correctness, cryptographic security or correspondence to RFC 8446. This is alpha software.
+Read [COVERAGE.md](COVERAGE.md) and [TRUSTED.md](TRUSTED.md) before relying on it.
+Badges appear after an authorized main workflow publishes them; no badge branch is created locally.
 
-Karthikeyan Bhargavan first authored Bertie at Inria in 2021 and transferred it to [Cryspen] in 2022.
-It is licensed under [Apache 2.0](LICENSE) but not yet ready for public consumption.
+## Use
 
-### USING BERTIE
+The package is `bertie-tls`; the Rust library is `bertie_tls`.
+Default features: `api`, `std`, `defensive`, `client`, `chacha20poly1305`, `ecdsa-p256`,
+`rsa`, `ed25519`, `x25519`, `p256`, `mlkem768`, `sha256`, `sha384`, `sha512`.
+Each algorithm can be disabled. Algorithm features require `std`.
+AES, the obsolete Kyber draft, unsupported curves, PSK and 0-RTT are unavailable.
+Ed25519 restores the upstream primitive; TLS certificate negotiation remains unsupported.
 
-An example HTTPS client using Bertie is provided in the `simple_https_client` crate.
-The client retrieves a web page using Bertie as the underlying TLS implementation.
+A minimal server dependency uses:
 
-You can try it out by executing ...
-
-```bash
-$ cargo run -p simple_https_client -- google.com
+```toml
+bertie-tls = { path = ".", default-features = false, features = [
+  "api", "std", "defensive", "sha256", "chacha20poly1305", "ecdsa-p256",
+  "x25519", "p256", "mlkem768"
+] }
 ```
 
-There is also a HTTPS server available as `simple_https_server`.
+Use `bertie_tls::Server`; opt into `client` for `bertie_tls::Client`.
+The `simple_https_client` and `simple_https_server` workspace crates contain examples.
 
-*WARNING*: Do not use in production. This is an early draft of Bertie and strictly work-in-progress.
+## Contribute
 
-If you are looking for commercial support for Bertie, please [reach out to Crypsen](mailto:info@cryspen.com).
-
-### WORKING ON BERTIE
-
-Note: You do not need to do any of this when you just want to build and run Bertie. This is only if you intend to *work* on Bertie, i.e., change its core and contribute the changes to the project.
-
-Keep in mind that Bertie is written in [hacspec] -- a more "restrictive" version of Rust that lends itself to formal verification.
-Working on Bertie feels a lot like working on a typical Rust crate but all code needs to be valid according to hacspec.
-Thus, you may also find that some code is "unusual" compared to vanilla Rust.
-
-But no worries!
-There is a Cargo plugin to verify that everything is valid according to hacspec.
-Just follow the instructions on the [hacspec] website to install it.
-Then, set a [rustup override](https://rust-lang.github.io/rustup/overrides.html) to the channel currently used in the [hacspec repository](https://github.com/hacspec/hacspec/blob/master/rust-toolchain), i.e., ...
-
-```sh
-rustup override set <channel>
-```
-
-You can then `cargo clean`, `cargo build`, and `cargo hacspec` to verify that your changes conform to the hacspec specification.
-
-### CONTRIBUTING
-
-To see what we are working on and what is in the pipeline, you can follow our [project tasks].
-
-Before contributing, please have a look at the [contributing guidelines] and the [code of conduct].
-
-#### PROJECT STRUCTURE
-
-* `.github` contains the configuration for GitHub Actions CI.
-* `assets` contains non-code files that are used in the Bertie project.
-* `bogo_shim` contains the BoGo shim application that is used for testing against BoringSSL's test runner.
-* `record` is a crate that provides common functionality used in `simple_https_client` and `simple_https_server`.
-* `simple_https_client` is an example crate that implements a Bertie HTTPS client.
-* `simple_https_server` is an example crate that implements a Bertie HTTPS server.
-* `src` contains the Bertie source code (that must be valid according to hacspec.)
-* `tests` contains all tests.
+See [CONTRIBUTING.md](CONTRIBUTING.md), the approved [AGENTS.md](AGENTS.md) policy,
+and the [code of conduct](CODE_OF_CONDUCT.md).
 
 ### PUBLICATIONS
 

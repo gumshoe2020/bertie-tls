@@ -5,7 +5,7 @@
 
 use std::collections::HashMap;
 
-use bertie::{
+use bertie_tls::{
     server::ServerDB,
     test_utils::TestRng,
     tls13crypto::{

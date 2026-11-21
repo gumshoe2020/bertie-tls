@@ -4,7 +4,7 @@
 
 use std::{net::TcpListener, time::Duration};
 
-use bertie::{
+use bertie_tls::{
     stream::BertieStream, tls13crypto::Algorithms,
     tls13crypto::SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519,
 };

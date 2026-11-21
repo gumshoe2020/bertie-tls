@@ -11,7 +11,7 @@ use std::{env, io::Write, net::TcpStream, process};
 
 use tracing::Level;
 
-use bertie::stream::{BertieError, BertieStream};
+use bertie_tls::stream::{BertieError, BertieStream};
 
 static BOGO_NACK: i32 = 89;
 
@@ -214,7 +214,7 @@ fn main() {
             println!(" running bertie client ...");
             let mut client = BertieStream::open_with_stream(
                 &options.hostname,
-                bertie::tls13crypto::SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519,
+                bertie_tls::tls13crypto::SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519,
                 stream,
             )
             .unwrap();
@@ -238,7 +238,7 @@ fn main() {
                 &options.hostname,
                 options.port,
                 stream,
-                bertie::tls13crypto::SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519,
+                bertie_tls::tls13crypto::SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519,
                 &cert_file,
                 &key_file,
             )

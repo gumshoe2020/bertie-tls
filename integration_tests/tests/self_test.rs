@@ -1,6 +1,6 @@
 use std::net::TcpListener;
 
-use bertie::{
+use bertie_tls::{
     stream::BertieStream,
     tls13crypto::{
         SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_P256,
@@ -21,7 +21,7 @@ fn test_sha256_chacha20_poly1305_ecdsa_secp256r1_sha256_x25519mlkem768() {
 fn test_sha256_chacha20_poly1305_ecdsa_secp256r1_sha256_p256() {
     self_test_algorithm(SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_P256);
 }
-fn self_test_algorithm(ciphersuite: bertie::tls13crypto::Algorithms) {
+fn self_test_algorithm(ciphersuite: bertie_tls::tls13crypto::Algorithms) {
     let _ = tracing_subscriber::fmt::try_init();
 
     let (tx, rx) = std::sync::mpsc::channel();

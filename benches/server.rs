@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
 
-use bertie::{
+use bertie_tls::{
     stream::init_db,
     tls13crypto::{
         Algorithms, SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_P256,
@@ -49,10 +49,10 @@ af 2c 00 2b 00 03 02 03 04 00 0d 00 20 00 1e 04 03 05 03 06 03
 
     const ITERATIONS: usize = 1000000;
 
-    let ch = bertie::HandshakeData::from(Bytes::from_hex(CLIENT_HELLO));
+    let ch = bertie_tls::HandshakeData::from(Bytes::from_hex(CLIENT_HELLO));
     let start = Instant::now();
     for _ in 0..ITERATIONS {
-        let _res = bertie::bench_parse_client_hello(&ch);
+        let _res = bertie_tls::bench_parse_client_hello(&ch);
     }
     let end = Instant::now();
     println!(

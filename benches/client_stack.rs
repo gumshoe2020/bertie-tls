@@ -4,7 +4,7 @@ use bytesize::ByteSize;
 use std::alloc;
 use std::net::TcpListener;
 
-use bertie::{
+use bertie_tls::{
     stream::BertieStream,
     tls13crypto::{
         Algorithms, SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_P256,

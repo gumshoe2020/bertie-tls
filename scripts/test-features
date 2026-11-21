@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+for feature in chacha20poly1305 ecdsa-p256 rsa ed25519 x25519 p256 mlkem768 sha256 sha384 sha512; do
+  cargo test --locked -p bertie-tls --no-default-features --features "$feature"
+done
