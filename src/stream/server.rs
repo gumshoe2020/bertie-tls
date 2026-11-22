@@ -118,7 +118,11 @@ impl BertieStream<ServerState<TcpStream>> {
     /// use rand::thread_rng;
     ///
     /// let host = "localhost";
-    /// let port = 3443;
+    ///
+    /// // Bind before starting the client, so the client can't try to connect
+    /// // before anything is listening. Port 0 lets the OS pick a free port.
+    /// let listener = TcpListener::bind((host, 0)).unwrap();
+    /// let port = listener.local_addr().unwrap().port();
     ///
     /// // Run a client
     /// eprintln!("[Client] Starting ...");
@@ -132,8 +136,7 @@ impl BertieStream<ServerState<TcpStream>> {
     ///     );
     /// });
     ///
-    /// // Listen on and open TCP connection
-    /// let listener = TcpListener::bind((host, port)).unwrap();
+    /// // Accept the client's TCP connection
     /// let (server_tcp_stream, _adr) = listener.accept().unwrap();
     ///
     /// // Server is waiting for the incoming TLS handshake.
