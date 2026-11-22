@@ -91,6 +91,10 @@ def main():
         shutil.copytree(source / 'rust_primitives', libs / 'rust_primitives')
         shutil.copytree(Path(os.environ['HAX_LIB_PROOFS']), libs / 'hax-lib')
     shutil.copytree(ws / 'proofs/fstar/libcrux-models', libs / 'libcrux-models')
+    # Pinned sources may be read-only (e.g. a Nix store path); copytree keeps
+    # those modes, so make the copies owner-writable before pruning them.
+    for p in [libs, *libs.rglob('*')]:
+        p.chmod(p.stat().st_mode | 0o200)
     for p in libs.rglob('*'):
         if p.is_file() and p.suffix not in ('.fst', '.fsti'):
             p.unlink()
