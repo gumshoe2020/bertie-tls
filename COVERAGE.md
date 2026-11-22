@@ -29,14 +29,14 @@ honest one. The drop is recorded under Exceptions. Full comparison: formal-cover
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 549 | 10.34% |
-| tested | 534 | 10.06% |
-| unverified | 4225 | 79.60% |
+| proven | 730 | 13.75% |
+| tested | 517 | 9.74% |
+| unverified | 4061 | 76.51% |
 
 Total: **5308** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (549 lines); Verus proven: 0 lines.
+`proven-extracted` hax credit (730 lines); Verus proven: 0 lines.
 
-Proof-to-code ratio: **0.93** (509 proof SLoC / 549 proven + proven-extracted runtime SLoC); informational, never blocking.
+Proof-to-code ratio: **0.70** (509 proof SLoC / 730 proven + proven-extracted runtime SLoC); informational, never blocking.
 
 Proof components: 268 hax annotation SLoC, 197 standalone `cfg(hax)` proof-code SLoC, and 57 inline `cfg(hax)` SLoC (overlaps count once). F* models: 18 SLoC of trusted assumptions, excluded from the ratio.
 
@@ -52,6 +52,7 @@ Proof components: 268 hax annotation SLoC, 197 standalone `cfg(hax)` proof-code 
 | bertie_tls::tls13formats::handshake_data::HandshakeData | 0 | 12 | n/a |
 | bertie_tls::tls13handshake | 288 | 1 | 0.00 |
 | bertie_tls::tls13keyscheduler | 114 | 0 | 0.00 |
+| bertie_tls::tls13keyscheduler::key_schedule | 181 | 0 | 0.00 |
 | bertie_tls::tls13record | 0 | 6 | n/a |
 | bertie_tls::tls13utils | 0 | 69 | n/a |
 | bertie_tls::tls13utils::<constC:usize>From<&[u8 ; C]>forBytes | 0 | 1 | n/a |
@@ -87,9 +88,13 @@ Only `get_psk_extensions` in `tls13formats.rs` still carries the inherited
 `verification_status(lax)`, which hax extracts as `--admit_smt_queries true`.
 Its ensures is false; see TRUSTED.md, "Known defects in unreachable PSK code".
 The tool treats this escape as a hazard, so the affected F* module gets no credit.
-`XTR` is now strictly verified, but `Tls13keyscheduler.Key_schedule` remains a
-hazard because of hax-generated derived-trait `assume val` lines, so XTR earns
-no proof credit yet.
+`Tls13keyscheduler.Key_schedule` now has no derived-trait assumptions; those
+remaining after hiding Debug from hax live in the declaration-only
+`Tls13keyscheduler.Key_names` module, which remains a hazard. The credit gain
+comes from proofs that already existed (strict XTR and the rest of the module)
+being separated from trusted declarations, not from new proofs. F* verifies
+XTR strictly, but formal-coverage still leaves its extracted `v_XTR` unmapped,
+so that function receives no runtime proof credit.
 
 `Tls13crypto.fsti` is an interface-only F* module. F* does not print the
 `Verified module:` line formal-coverage requires for it, so it is checked by
@@ -136,7 +141,7 @@ scripts/coverage-ratchet MERGE_BASE_BASELINE target/ci-logs/report.json DIFF
 For the local rebuilt toolchain, prefix verification with
 `BERTIE_DOCKER_TOOLS=/Users/gumshoe/src/bertie-toolchain`. It copies the project to
 `target/ci-logs/fstar/workspace`, fetches locked dependencies into a disposable
-cache, extracts frozen sources and checks seven strict F* roots. No proof patch,
+cache, extracts frozen sources and checks eight strict F* roots. No proof patch,
 admission, lax check or checked cache is used. The original upstream snapshots
 remain in git as historical artifacts; they are not inputs to this verification.
 
