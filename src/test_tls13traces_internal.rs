@@ -734,3 +734,31 @@ fn test_finished() {
     }
     assert!(b);
 }
+
+#[test]
+fn test_client_hello_psk_trunc_len_matches_parser() {
+    // trunc_len from the ClientHello builder must equal the binder offset the parser computes
+    // (ch.len() - hash_len - 3), for any server name length.
+    let algs = Algorithms::new(
+        HashAlgorithm::SHA256,
+        AeadAlgorithm::Chacha20Poly1305,
+        SignatureScheme::EcdsaSecp256r1Sha256,
+        KemScheme::X25519,
+        true,
+        false,
+    );
+    let gx = Bytes::from_hex(client_x25519_pub);
+    let ticket = Some(Bytes::zeroes(32));
+    for sn_len in [0usize, 11, 16, 23, 32, 64, 255] {
+        let sn = Bytes::zeroes(sn_len);
+        let (ch, built) =
+            crate::tls13formats::client_hello(&algs, Random::zeroes(32), &gx, &sn, &ticket)
+                .expect("build");
+        let parsed = parse_client_hello(&algs, &ch).expect("parse").6;
+        println!(
+            "sn_len={sn_len} ch_len={} built={built} parsed={parsed}",
+            ch.len()
+        );
+        assert_eq!(built, parsed, "sn_len={sn_len}");
+    }
+}
