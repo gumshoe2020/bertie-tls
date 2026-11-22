@@ -1446,7 +1446,7 @@
       "line": 406
     },
     {
-      "end_line": 471,
+      "end_line": 470,
       "file": "src/tls13keyscheduler/key_schedule.rs",
       "line": 414
     },
@@ -1983,10 +1983,10 @@
     "proven-extracted": 549,
     "proven-upstream": 0,
     "tested": 534,
-    "trusted": 2189,
+    "trusted": 2188,
     "unverified": 2037
   },
   "tested": 534,
-  "total": 5309,
-  "unverified": 4226
+  "total": 5308,
+  "unverified": 4225
 }

@@ -31,9 +31,9 @@ honest one. The drop is recorded under Exceptions. Full comparison: formal-cover
 | --- | ---: | ---: |
 | proven | 549 | 10.34% |
 | tested | 534 | 10.06% |
-| unverified | 4226 | 79.60% |
+| unverified | 4225 | 79.60% |
 
-Total: **5309** first-party security runtime SLoC. Proven includes explicitly labelled
+Total: **5308** first-party security runtime SLoC. Proven includes explicitly labelled
 `proven-extracted` hax credit (549 lines); Verus proven: 0 lines.
 
 Proof-to-code ratio: **0.93** (509 proof SLoC / 549 proven + proven-extracted runtime SLoC); informational, never blocking.
@@ -83,12 +83,13 @@ about 330 lines), and the renamed crate. The old v1.7 run credited zero when its
 external scratch-server lock-closure audit rejected extraction; this standalone run
 freezes its own committed lockfile and checks its hash before and after extraction.
 
-Two inherited functions carry `verification_status(lax)` in Rust
-(`get_psk_extensions` in `tls13formats.rs`, `XTR` in `key_schedule.rs`), which hax
-extracts as `--admit_smt_queries true`. The tool treats these as escapes and flags
-the affected F* modules as hazards, so their definitions get no credit. They are
-inherited, not added here, and removing them needs real proofs. They will also keep
-those modules hazardous until proven.
+Only `get_psk_extensions` in `tls13formats.rs` still carries the inherited
+`verification_status(lax)`, which hax extracts as `--admit_smt_queries true`.
+Its ensures is false; see TRUSTED.md, "Known defects in unreachable PSK code".
+The tool treats this escape as a hazard, so the affected F* module gets no credit.
+`XTR` is now strictly verified, but `Tls13keyscheduler.Key_schedule` remains a
+hazard because of hax-generated derived-trait `assume val` lines, so XTR earns
+no proof credit yet.
 
 `Tls13crypto.fsti` is an interface-only F* module. F* does not print the
 `Verified module:` line formal-coverage requires for it, so it is checked by
