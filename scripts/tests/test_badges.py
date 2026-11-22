@@ -1,6 +1,11 @@
 import importlib.util
 from pathlib import Path
 import unittest
+import sys
+
+sys.path.insert(0, str(Path(__file__).parents[1]))
+from coverage_metrics import snapshot
+from test_ratchet import fixture
 
 spec = importlib.util.spec_from_file_location('write_badges', Path(__file__).parents[1] / 'write-badges.py')
 write_badges = importlib.util.module_from_spec(spec)
@@ -26,8 +31,14 @@ class BadgeTests(unittest.TestCase):
         self.assertEqual((badge['message'], badge['color']), ('n/a', 'lightgrey'))
 
     def test_ratio_never_red(self):
-        for ratio in (0.1, 9.0, 80.0):
+        for ratio in (0.0, 0.1, 9.0, 80.0):
             self.assertNotEqual(write_badges.ratio_badge(ratio)[1], 'red')
+
+    def test_schema_4_native_ratio_reaches_badge(self):
+        report = fixture()
+        report['proof_ratio']['ratio'] = 0.927
+        badge = write_badges.build(snapshot(report), 'pass')['proof-ratio']
+        self.assertEqual((badge['message'], badge['color']), ('0.9', 'yellow'))
 
     def test_ratchet_fail_is_red(self):
         badge = write_badges.build(BASE, 'fail')['ratchet']
