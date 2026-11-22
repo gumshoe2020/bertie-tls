@@ -96,10 +96,10 @@ those modules hazardous until proven.
 listed as a credited module in the receipt. It is trusted abstract-interface code
 either way.
 
-Proof-to-code ratio: formal-coverage v1.7.3 counts proof lines only for Verus
-proofs, so it reports 0 proof lines for this hax/F* repository. We show "not
-measured" rather than 0, which would wrongly suggest free proofs. Measuring F*
-proof cost needs support in the tool; this is for Andrew to decide.
+Proof-to-code ratio: formal-coverage v1.8 measures hax/F* proof (annotations,
+`cfg(hax)` proof code), so the ratio above is measured, not estimated. About 213 of
+the 509 proof lines are annotations on functions F* does not yet verify, so the
+ratio flatters the verified code somewhat.
 
 No historical patched/lax F* snapshots, ProVerif/SSProve models, abstract crypto
 interfaces, KEM RNG glue or libcrux implementations receive Rust proof credit from
@@ -109,8 +109,8 @@ Any rejected receipt or unmapped function retains zero credit; see the full repo
 
 ## Reproduction and pins
 
-- formal-coverage commit `1362183` (private) / `f7cc4ea32837a52e7c8ab384029852bb7704db24`
-  (public tag v1.7.3, identical tree; CI uses the public commit; version string `1.7.3`).
+- formal-coverage commit `7a60142` (private) / `1ac470e6dc9f52700821fb5ccd7f059027739be5`
+  (public tag v1.8.1, identical tree; CI uses the public commit; version string `1.8.1`).
 - hax `0.4.2`, source `5ccf89dd2e996c9f88f2267eaa2a64739c4ca41a`.
 - Rust extraction toolchain `nightly-2025-11-08`; F* `2025.10.06`, Z3 `4.13.3`.
 - Local container images: `fc-verify-hax:v17` (aarch64) and
@@ -177,6 +177,7 @@ On main, `coverage.yml` writes shields.io endpoint JSON to the `badges` branch
 
 | Commit | Approving maintainer | Reason | Restoration obligation |
 | --- | --- | --- | --- |
+| df7732434fc8321d4b688e46379e93da5fdecace | Andrew VanLoo | formal-coverage v1.8.1 moved cfg(hax) lemmas out of the runtime count. The measurement changed, not the code: the DER lemmas in `src/der.rs` only exist for F* checking and were previously counted as proven runtime, so proven share fell from 14.16% to 10.34% on identical source and F* receipt. | None: no code regressed. The v1.8.1 measurement is the new floor. |
 
 ## Badges and proof-cost guidance
 
