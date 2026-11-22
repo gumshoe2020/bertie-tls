@@ -82,7 +82,8 @@ pub struct TLSkeyscheduler {
     pub keys: HashMap<(TLSnames, HashAlgorithm, u8), Key>,
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
+#[derive(Copy, Clone, PartialEq, Eq, Hash)]
+#[cfg_attr(not(hax), derive(Debug))]
 #[allow(clippy::upper_case_acronyms)]
 pub enum TLSnames {
     ES,
@@ -161,7 +162,8 @@ impl KeySchedule<TLSnames> for TLSkeyscheduler {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(PartialEq, Eq)]
+#[cfg_attr(not(hax), derive(Debug))]
 #[allow(non_camel_case_types)]
 #[allow(clippy::just_underscores_and_digits)]
 pub(crate) enum Label {
@@ -281,7 +283,8 @@ pub(crate) fn xpd(k1: &TagKey, label: Bytes, d: &Digest) -> Result<TagKey, TLSEr
     })
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
+#[cfg_attr(not(hax), derive(Debug))]
 pub struct Handle {
     pub name: TLSnames,
     pub alg: HashAlgorithm,
