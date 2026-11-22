@@ -15,18 +15,50 @@ Proven moved from 884 (13.85%) to 824 (14.16%), and tested from 746 (11.69%) to
 (e.g. `server`: 73 to 20 lines). Full comparison: formal-coverage
 `dev/v173/compare.md` at tag v1.7.3.
 
+**Re-baselined for formal-coverage v1.8.1 (2026-11-21).** Again the tool changed, not the
+code. v1.8 counts hax/F* proof: `hax_lib` annotations move out of the runtime count, and
+v1.8.1 classifies `#[cfg(hax)]` items (the DER lemmas in `src/der.rs`, which only exist for
+F* checking and are never compiled) as proof code instead of runtime. On the same source and
+an identical F* receipt, security runtime fell from 5,818 to 5,309 lines and proven from 824
+(14.16%) to 549 (10.34%); no unit outside those rules changed tier or size. The proven share
+fell because lemma code was previously counted as proven runtime; the lower figure is the
+honest one. The drop is recorded under Exceptions. Full comparison: formal-coverage
+`dev/v181/compare.md` at tag v1.8.1.
+
 <!-- measured coverage: begin -->
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 824 | 14.16% |
-| tested | 548 | 9.42% |
-| unverified | 4446 | 76.42% |
+| proven | 549 | 10.34% |
+| tested | 534 | 10.06% |
+| unverified | 4226 | 79.60% |
 
-Total: **5818** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (824 lines); Verus proven: 0 lines.
+Total: **5309** first-party security runtime SLoC. Proven includes explicitly labelled
+`proven-extracted` hax credit (549 lines); Verus proven: 0 lines.
 
-Proof-to-code ratio: **not measured**. formal-coverage counts proof lines only for Verus proofs; the hax/F* proofs here are not counted, so the tool reports 0 proof lines. Reporting 0 would be wrong, so the ratio is left unreported (informational only; it never blocks).
+Proof-to-code ratio: **0.93** (509 proof SLoC / 549 proven + proven-extracted runtime SLoC); informational, never blocking.
+
+Proof components: 268 hax annotation SLoC, 197 standalone `cfg(hax)` proof-code SLoC, and 57 inline `cfg(hax)` SLoC (overlaps count once). F* models: 18 SLoC of trusted assumptions, excluded from the ratio.
+
+| Module | Proven runtime | Proof SLoC | Proof / proven runtime |
+| --- | ---: | ---: | ---: |
+| bertie_tls::der | 147 | 296 | 2.01 |
+| bertie_tls::tls13cert | 0 | 16 | n/a |
+| bertie_tls::tls13crypto::Algorithms | 0 | 13 | n/a |
+| bertie_tls::tls13crypto::HashAlgorithm | 0 | 1 | n/a |
+| bertie_tls::tls13formats | 0 | 74 | n/a |
+| bertie_tls::tls13formats::Transcript | 0 | 1 | n/a |
+| bertie_tls::tls13formats::handshake_data | 0 | 3 | n/a |
+| bertie_tls::tls13formats::handshake_data::HandshakeData | 0 | 12 | n/a |
+| bertie_tls::tls13handshake | 288 | 1 | 0.00 |
+| bertie_tls::tls13keyscheduler | 114 | 0 | 0.00 |
+| bertie_tls::tls13record | 0 | 6 | n/a |
+| bertie_tls::tls13utils | 0 | 69 | n/a |
+| bertie_tls::tls13utils::<constC:usize>From<&[u8 ; C]>forBytes | 0 | 1 | n/a |
+| bertie_tls::tls13utils::<constC:usize>From<[u8 ; C]>forBytes | 0 | 1 | n/a |
+| bertie_tls::tls13utils::Bytes | 0 | 13 | n/a |
+| bertie_tls::tls13utils::From<&[u8]>forBytes | 0 | 1 | n/a |
+| bertie_tls::tls13utils::core::ops::Index<Range<usize>>forBytes | 0 | 1 | n/a |
 
 <!-- measured coverage: end -->
 
@@ -64,10 +96,10 @@ those modules hazardous until proven.
 listed as a credited module in the receipt. It is trusted abstract-interface code
 either way.
 
-Proof-to-code ratio: formal-coverage v1.7.3 counts proof lines only for Verus
-proofs, so it reports 0 proof lines for this hax/F* repository. We show "not
-measured" rather than 0, which would wrongly suggest free proofs. Measuring F*
-proof cost needs support in the tool; this is for Andrew to decide.
+Proof-to-code ratio: formal-coverage v1.8 measures hax/F* proof (annotations,
+`cfg(hax)` proof code), so the ratio above is measured, not estimated. About 213 of
+the 509 proof lines are annotations on functions F* does not yet verify, so the
+ratio flatters the verified code somewhat.
 
 No historical patched/lax F* snapshots, ProVerif/SSProve models, abstract crypto
 interfaces, KEM RNG glue or libcrux implementations receive Rust proof credit from
@@ -77,8 +109,8 @@ Any rejected receipt or unmapped function retains zero credit; see the full repo
 
 ## Reproduction and pins
 
-- formal-coverage commit `1362183` (private) / `f7cc4ea32837a52e7c8ab384029852bb7704db24`
-  (public tag v1.7.3, identical tree; CI uses the public commit; version string `1.7.3`).
+- formal-coverage commit `7a60142` (private) / `1ac470e6dc9f52700821fb5ccd7f059027739be5`
+  (public tag v1.8.1, identical tree; CI uses the public commit; version string `1.8.1`).
 - hax `0.4.2`, source `5ccf89dd2e996c9f88f2267eaa2a64739c4ca41a`.
 - Rust extraction toolchain `nightly-2025-11-08`; F* `2025.10.06`, Z3 `4.13.3`.
 - Local container images: `fc-verify-hax:v17` (aarch64) and
@@ -143,8 +175,14 @@ On main, `coverage.yml` writes shields.io endpoint JSON to the `badges` branch
 
 ## Exceptions
 
+An urgent security fix may skip the ratchet only if a maintainer lists the exact
+40-character commit here, with the approver and what restores the ratchet. The only
+entry so far is not a security fix: it is a one-time exception Andrew approved for a
+tool measurement change, with the reason in the row.
+
 | Commit | Approving maintainer | Reason | Restoration obligation |
 | --- | --- | --- | --- |
+| df7732434fc8321d4b688e46379e93da5fdecace | Andrew VanLoo | formal-coverage v1.8.1 moved cfg(hax) lemmas out of the runtime count. The measurement changed, not the code: the DER lemmas in `src/der.rs` only exist for F* checking and were previously counted as proven runtime, so proven share fell from 14.16% to 10.34% on identical source and F* receipt. | None: no code regressed. The v1.8.1 measurement is the new floor. |
 
 ## Badges and proof-cost guidance
 
@@ -160,11 +198,3 @@ proof, audit, test, check and lint remains blocking.
 Main-only badge publication uses GITHUB_TOKEN and writes endpoint JSON to the
 `badges` branch. No service token is needed. These files are generated only by
 an authorized future workflow; nothing has been pushed or published locally.
-
-## Exceptions
-
-An urgent security fix may skip the ratchet only if a maintainer lists the exact
-40-character commit here, with the approver and what restores the ratchet. None so far.
-
-| Commit | Approving maintainer | Reason | Restores ratchet in |
-| --- | --- | --- | --- |

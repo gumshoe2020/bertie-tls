@@ -13,10 +13,10 @@ EXCEPTION = f'## Exceptions\n\n| Commit | Approving maintainer | Reason | Restor
 
 
 def fixture(proven=20, tested=30, unverified=50):
-    return dict(schema=3, dependency_inventory_complete=True, unparseable_files=[],
+    return dict(schema=4, dependency_inventory_complete=True, unparseable_files=[],
                 summary=dict(first_party=dict(security_relevant=dict(sloc=proven+tested+unverified,
                     statuses={'proven': 0, 'proven-extracted': proven, 'tested': tested, 'unverified': unverified}))),
-                proof_ratio=dict(proof_sloc=200, ratio=None),
+                proof_ratio=dict(proof_sloc=200, ratio=200/proven if proven else None),
                 units=[dict(file='src/parser.rs', line=8, end_line=20, first_party=True, security=True, category='runtime')])
 
 
@@ -71,7 +71,26 @@ class RatchetTests(unittest.TestCase):
 
     def test_ratio_is_informational(self):
         self.report['proof_ratio']['proof_sloc'] = 999999
+        self.report['proof_ratio']['ratio'] = 999999
         self.assertEqual(self.run_check(), [])
+
+    def test_schema_3_is_rejected(self):
+        self.report['schema'] = 3
+        with self.assertRaisesRegex(ValueError, 'schema 3: expected schema 4'):
+            snapshot(self.report)
+
+    def test_native_ratio_is_preserved(self):
+        for ratio in (0.927, 0.0, None):
+            self.report['proof_ratio']['ratio'] = ratio
+            measured = snapshot(self.report)
+            self.assertEqual(measured['proof_ratio'], ratio)
+            self.assertNotIn('native_proof_ratio', measured)
+
+    def test_proof_code_is_excluded_from_runtime_inventory(self):
+        proof = dict(self.report['units'][0], line=30, end_line=40,
+                     category='proof-code', status='verified')
+        self.report['units'].append(proof)
+        self.assertEqual(snapshot(self.report), self.floor)
 
     def test_deleted_security_is_classified_from_old_inventory(self):
         diff = SECURITY_DIFF.replace('+++ b/src/parser.rs', '+++ /dev/null').replace('@@ -10 +10 @@', '@@ -10 +0,0 @@')

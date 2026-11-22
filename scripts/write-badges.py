@@ -3,7 +3,8 @@
 
 usage: write-badges.py BASELINE_JSON OUT_DIR RATCHET_RESULT   (RATCHET_RESULT: pass|fail)
 Colors follow the plain thresholds documented in COVERAGE.md and never flatter.
-The proof-to-code ratio badge is informational: it is never red.
+The proof-to-code ratio is formal-coverage's native ratio, projected into the
+baseline by coverage_metrics. Its badge is informational: it is never red.
 """
 import json
 from pathlib import Path
