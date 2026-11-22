@@ -11,14 +11,9 @@ use crate::{
     tls13utils::{check_eq, eq, parse_failed, Bytes, TLSError, PSK_MODE_MISMATCH},
 };
 
-/// The Server Database
-#[derive(Debug, Clone, Default)]
-pub struct ServerDB {
-    pub(crate) server_name: Bytes,
-    pub(crate) cert: Bytes,
-    pub(crate) sk: SignatureKey,
-    pub(crate) psk_opt: Option<(Bytes, Psk)>,
-}
+mod server_db;
+
+pub use server_db::ServerDB;
 
 impl ServerDB {
     /// Create a new server database.

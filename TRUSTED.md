@@ -46,3 +46,14 @@ are trusted existence-only declarations with no behavioral claims; F*
 proofs cannot use any property of them. Clone is extracted as code, and
 Debug is derived only outside hax. Key-schedule logic stays in
 `key_schedule.rs`, separated from these trusted declarations.
+
+`src/tls13formats/handshake_type.rs` holds the `HandshakeType` declaration
+with its original `repr(u8)` and `hax-pv` opaque attributes. hax assumes
+Copy, StructuralPartialEq and PartialEq instances there.
+`src/server/server_db.rs` holds the `ServerDB` declaration and its fields;
+hax assumes its Default instance there. Clone is extracted as code for
+both types, and Debug is derived only outside hax. These are the same
+trusted existence-only declarations described above. All handwritten
+functions and impl blocks remain in `handshake_data.rs` and `server.rs`;
+no new proofs were added. The coverage gain comes from making
+`Handshake_data` and `Server` strict F* roots (see COVERAGE.md).
