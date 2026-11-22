@@ -106,51 +106,6 @@
       "line": 181
     },
     {
-      "end_line": 215,
-      "file": "src/der.rs",
-      "line": 205
-    },
-    {
-      "end_line": 227,
-      "file": "src/der.rs",
-      "line": 217
-    },
-    {
-      "end_line": 239,
-      "file": "src/der.rs",
-      "line": 229
-    },
-    {
-      "end_line": 247,
-      "file": "src/der.rs",
-      "line": 241
-    },
-    {
-      "end_line": 253,
-      "file": "src/der.rs",
-      "line": 249
-    },
-    {
-      "end_line": 264,
-      "file": "src/der.rs",
-      "line": 255
-    },
-    {
-      "end_line": 276,
-      "file": "src/der.rs",
-      "line": 266
-    },
-    {
-      "end_line": 288,
-      "file": "src/der.rs",
-      "line": 278
-    },
-    {
-      "end_line": 311,
-      "file": "src/der.rs",
-      "line": 290
-    },
-    {
       "end_line": 330,
       "file": "src/der.rs",
       "line": 313
@@ -176,54 +131,9 @@
       "line": 419
     },
     {
-      "end_line": 468,
-      "file": "src/der.rs",
-      "line": 464
-    },
-    {
-      "end_line": 480,
-      "file": "src/der.rs",
-      "line": 470
-    },
-    {
-      "end_line": 492,
-      "file": "src/der.rs",
-      "line": 482
-    },
-    {
-      "end_line": 510,
-      "file": "src/der.rs",
-      "line": 494
-    },
-    {
-      "end_line": 525,
-      "file": "src/der.rs",
-      "line": 512
-    },
-    {
-      "end_line": 537,
-      "file": "src/der.rs",
-      "line": 527
-    },
-    {
-      "end_line": 547,
-      "file": "src/der.rs",
-      "line": 539
-    },
-    {
-      "end_line": 554,
-      "file": "src/der.rs",
-      "line": 549
-    },
-    {
       "end_line": 592,
       "file": "src/der.rs",
       "line": 556
-    },
-    {
-      "end_line": 630,
-      "file": "src/der.rs",
-      "line": 594
     },
     {
       "end_line": 39,
@@ -2061,23 +1971,22 @@
       "line": 976
     }
   ],
-  "native_proof_ratio": null,
-  "proof_ratio": null,
-  "proof_sloc": 0,
-  "proven": 824,
+  "proof_ratio": 0.9271402550091075,
+  "proof_sloc": 509,
+  "proven": 549,
   "schema": 1,
   "scope": "first-party security runtime",
   "statuses": {
     "hazard": 0,
     "proven": 0,
     "proven-bounded": 0,
-    "proven-extracted": 824,
+    "proven-extracted": 549,
     "proven-upstream": 0,
-    "tested": 548,
-    "trusted": 2329,
-    "unverified": 2117
+    "tested": 534,
+    "trusted": 2189,
+    "unverified": 2037
   },
-  "tested": 548,
-  "total": 5818,
-  "unverified": 4446
+  "tested": 534,
+  "total": 5309,
+  "unverified": 4226
 }

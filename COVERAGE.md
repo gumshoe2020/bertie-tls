@@ -15,18 +15,50 @@ Proven moved from 884 (13.85%) to 824 (14.16%), and tested from 746 (11.69%) to
 (e.g. `server`: 73 to 20 lines). Full comparison: formal-coverage
 `dev/v173/compare.md` at tag v1.7.3.
 
+**Re-baselined for formal-coverage v1.8.1 (2026-11-21).** Again the tool changed, not the
+code. v1.8 counts hax/F* proof: `hax_lib` annotations move out of the runtime count, and
+v1.8.1 classifies `#[cfg(hax)]` items (the DER lemmas in `src/der.rs`, which only exist for
+F* checking and are never compiled) as proof code instead of runtime. On the same source and
+an identical F* receipt, security runtime fell from 5,818 to 5,309 lines and proven from 824
+(14.16%) to 549 (10.34%); no unit outside those rules changed tier or size. The proven share
+fell because lemma code was previously counted as proven runtime; the lower figure is the
+honest one. The drop is recorded under Exceptions. Full comparison: formal-coverage
+`dev/v181/compare.md` at tag v1.8.1.
+
 <!-- measured coverage: begin -->
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 824 | 14.16% |
-| tested | 548 | 9.42% |
-| unverified | 4446 | 76.42% |
+| proven | 549 | 10.34% |
+| tested | 534 | 10.06% |
+| unverified | 4226 | 79.60% |
 
-Total: **5818** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (824 lines); Verus proven: 0 lines.
+Total: **5309** first-party security runtime SLoC. Proven includes explicitly labelled
+`proven-extracted` hax credit (549 lines); Verus proven: 0 lines.
 
-Proof-to-code ratio: **not measured**. formal-coverage counts proof lines only for Verus proofs; the hax/F* proofs here are not counted, so the tool reports 0 proof lines. Reporting 0 would be wrong, so the ratio is left unreported (informational only; it never blocks).
+Proof-to-code ratio: **0.93** (509 proof SLoC / 549 proven + proven-extracted runtime SLoC); informational, never blocking.
+
+Proof components: 268 hax annotation SLoC, 197 standalone `cfg(hax)` proof-code SLoC, and 57 inline `cfg(hax)` SLoC (overlaps count once). F* models: 18 SLoC of trusted assumptions, excluded from the ratio.
+
+| Module | Proven runtime | Proof SLoC | Proof / proven runtime |
+| --- | ---: | ---: | ---: |
+| bertie_tls::der | 147 | 296 | 2.01 |
+| bertie_tls::tls13cert | 0 | 16 | n/a |
+| bertie_tls::tls13crypto::Algorithms | 0 | 13 | n/a |
+| bertie_tls::tls13crypto::HashAlgorithm | 0 | 1 | n/a |
+| bertie_tls::tls13formats | 0 | 74 | n/a |
+| bertie_tls::tls13formats::Transcript | 0 | 1 | n/a |
+| bertie_tls::tls13formats::handshake_data | 0 | 3 | n/a |
+| bertie_tls::tls13formats::handshake_data::HandshakeData | 0 | 12 | n/a |
+| bertie_tls::tls13handshake | 288 | 1 | 0.00 |
+| bertie_tls::tls13keyscheduler | 114 | 0 | 0.00 |
+| bertie_tls::tls13record | 0 | 6 | n/a |
+| bertie_tls::tls13utils | 0 | 69 | n/a |
+| bertie_tls::tls13utils::<constC:usize>From<&[u8 ; C]>forBytes | 0 | 1 | n/a |
+| bertie_tls::tls13utils::<constC:usize>From<[u8 ; C]>forBytes | 0 | 1 | n/a |
+| bertie_tls::tls13utils::Bytes | 0 | 13 | n/a |
+| bertie_tls::tls13utils::From<&[u8]>forBytes | 0 | 1 | n/a |
+| bertie_tls::tls13utils::core::ops::Index<Range<usize>>forBytes | 0 | 1 | n/a |
 
 <!-- measured coverage: end -->
 
