@@ -900,3 +900,32 @@ mod proverif_extra {
         let b = Bytes::new();
     }
 }
+
+#[cfg(test)]
+mod psk_binder_tests {
+    use super::*;
+    use crate::tls13crypto::{AeadAlgorithm, HashAlgorithm, KemScheme};
+    use std::collections::HashMap;
+
+    /// A server in PSK mode must reject a ClientHello whose binder is wrong.
+    #[test]
+    fn server_rejects_wrong_psk_binder() {
+        let algs = Algorithms::new(
+            HashAlgorithm::SHA256,
+            AeadAlgorithm::Chacha20Poly1305,
+            SignatureScheme::EcdsaSecp256r1Sha256,
+            KemScheme::X25519,
+            true,
+            false,
+        );
+        let mut ks = TLSkeyscheduler {
+            keys: HashMap::new(),
+        };
+        let th_trunc = Bytes::zeroes(32);
+        let th = Bytes::zeroes(32);
+        let psk = Some(Bytes::zeroes(32));
+        let bogus_binder = Some(Bytes::from(&[U8(0xAA); 32]));
+        let res = process_psk_binder_zero_rtt(algs, th_trunc, th, &psk, bogus_binder, &mut ks);
+        assert!(res.is_err(), "server accepted a bogus PSK binder");
+    }
+}
