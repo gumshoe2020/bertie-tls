@@ -35,3 +35,14 @@ per AGENTS.md).
 
 Failing regression tests for both live on branch `fix/psk-trunc-len`; they
 are not on main because they fail by design until the fix lands.
+
+## Derived-trait instances
+
+`src/tls13keyscheduler/key_names.rs` holds declarations only: `TLSnames`
+and `Label`, with their derive attributes. hax assumes the existence of
+Copy, StructuralPartialEq, PartialEq, Eq and Hash instances for `TLSnames`,
+and StructuralPartialEq, PartialEq and Eq instances for `Label`. These
+are trusted existence-only declarations with no behavioral claims; F*
+proofs cannot use any property of them. Clone is extracted as code, and
+Debug is derived only outside hax. Key-schedule logic stays in
+`key_schedule.rs`, separated from these trusted declarations.
