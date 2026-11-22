@@ -175,6 +175,11 @@ On main, `coverage.yml` writes shields.io endpoint JSON to the `badges` branch
 
 ## Exceptions
 
+An urgent security fix may skip the ratchet only if a maintainer lists the exact
+40-character commit here, with the approver and what restores the ratchet. The only
+entry so far is not a security fix: it is a one-time exception Andrew approved for a
+tool measurement change, with the reason in the row.
+
 | Commit | Approving maintainer | Reason | Restoration obligation |
 | --- | --- | --- | --- |
 | df7732434fc8321d4b688e46379e93da5fdecace | Andrew VanLoo | formal-coverage v1.8.1 moved cfg(hax) lemmas out of the runtime count. The measurement changed, not the code: the DER lemmas in `src/der.rs` only exist for F* checking and were previously counted as proven runtime, so proven share fell from 14.16% to 10.34% on identical source and F* receipt. | None: no code regressed. The v1.8.1 measurement is the new floor. |
@@ -193,11 +198,3 @@ proof, audit, test, check and lint remains blocking.
 Main-only badge publication uses GITHUB_TOKEN and writes endpoint JSON to the
 `badges` branch. No service token is needed. These files are generated only by
 an authorized future workflow; nothing has been pushed or published locally.
-
-## Exceptions
-
-An urgent security fix may skip the ratchet only if a maintainer lists the exact
-40-character commit here, with the approver and what restores the ratchet. None so far.
-
-| Commit | Approving maintainer | Reason | Restores ratchet in |
-| --- | --- | --- | --- |
