@@ -2,3 +2,7 @@
 min = 5.0
 max = 15.0
 reason = "Development code: Andrew's review range is 5–15 proof lines per proven runtime line. Informational only. Established code uses 10–20; established modules above 20 require review. This project is alpha."
+
+[fstar.proof]
+# Hand-written F* models of libcrux: trusted assumptions, reported, never counted as proof.
+models = ["proofs/fstar/libcrux-models/*.fsti"]

@@ -121,7 +121,7 @@ typechecks in "lax" mode, that is all its functions are well-typed when ignoring
 the pre- and post-conditions. This is a basic well-formedness check akin
 to typechecking the code in a language like Rust or OCaml. It also ensures
 that all the dependencies of the code have been defined and correctly extracted.
-The code in the `proofs/fstar/extraction-lax` directory has been lax-typechecked.
+CI now skips the lax step and verifies the fresh extraction strictly; see `proofs/fstar/README.md`.
 
 Then, the main correctness guarantee we prove for the Rust code is
 that it never panics and that each function meets its specificaiton.
@@ -153,12 +153,10 @@ proofs are when we try to prove that the formatting and parsing functions
 do not overflow. Indeed, by typechecking in F*, we found a number of
 bugs in our packet parsing code.
 
-The code in the `proofs/fstar/extraction-panic-free` directory has
-been verified for panic freedom on all possible inputs. This means that
-even in the presence of an attacker sending Bertie malformed messages,
-the verified code will never create a panic. Of course, there is other
-code outside the verification boundary that may yet panic and we intend
-to expand the scope of our verification ocer time.
+Upstream Bertie proved panic freedom for a hand-edited snapshot of the extraction. That
+snapshot targeted older module names and is no longer checked, so bertie-tls makes no
+claim from it. What CI verifies today is the module list in `scripts/verify-fstar.py`,
+checked strictly on fresh extraction; `COVERAGE.md` reports which functions that credits.
 
 ### Security Proofs in ProVerif
 
