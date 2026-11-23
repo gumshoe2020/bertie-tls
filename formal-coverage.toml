@@ -6,3 +6,8 @@ reason = "Development code: Andrew's review range is 5–15 proof lines per prov
 [fstar.proof]
 # Hand-written F* models of libcrux: trusted assumptions, reported, never counted as proof.
 models = ["proofs/fstar/libcrux-models/*.fsti"]
+
+[fstar.extraction]
+# hax-pv gates ProverIf-only attributes; F* extraction never enables it.
+inactive_features = ["hax-pv"]
+reason = "hax-driver.py enables hax-pv only for ProverIf extraction (cargo_hax_into_pv); extract-fstar uses cargo_hax_into without it"

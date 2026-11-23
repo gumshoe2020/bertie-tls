@@ -25,18 +25,28 @@ fell because lemma code was previously counted as proven runtime; the lower figu
 honest one. The drop is recorded under Exceptions. Full comparison: formal-coverage
 `dev/v181/compare.md` at tag v1.8.1.
 
+**Re-measured with formal-coverage v1.8.2 (2026-11-22).** The tool changed, not the code, and
+this time the share went up. v1.8.1 marked every function carrying a ProverIf-only attribute
+(`proverif::replace`, `replace_body`, or `opaque` under `cfg_attr(feature = "hax-pv")`) as
+trusted, although the F* extraction keeps and checks the real Rust body. It also never matched
+hax's `impl_<Type>__<method>` names, so no impl method could be credited. On identical source
+and F* receipt, proven moved from 791 (14.90%) to 1,079 (20.33%) lines. 40 methods now link to
+interface-only F* declarations and are trusted, which is the same rule free functions follow.
+ProverIf attributes are still listed, as non-F* trust, in the full report. Full comparison:
+formal-coverage `dev/v182/compare.md` at tag v1.8.2.
+
 <!-- measured coverage: begin -->
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 791 | 14.90% |
-| tested | 517 | 9.74% |
-| unverified | 4000 | 75.36% |
+| proven | 1079 | 20.33% |
+| tested | 796 | 15.00% |
+| unverified | 3433 | 64.68% |
 
 Total: **5308** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (791 lines); Verus proven: 0 lines.
+`proven-extracted` hax credit (1079 lines); Verus proven: 0 lines.
 
-Proof-to-code ratio: **0.64** (509 proof SLoC / 791 proven + proven-extracted runtime SLoC); informational, never blocking.
+Proof-to-code ratio: **0.47** (509 proof SLoC / 1079 proven + proven-extracted runtime SLoC); informational, never blocking.
 
 Proof components: 268 hax annotation SLoC, 197 standalone `cfg(hax)` proof-code SLoC, and 57 inline `cfg(hax)` SLoC (overlaps count once). F* models: 18 SLoC of trusted assumptions, excluded from the ratio.
 
@@ -44,15 +54,16 @@ Proof components: 268 hax annotation SLoC, 197 standalone `cfg(hax)` proof-code 
 | --- | ---: | ---: | ---: |
 | bertie_tls::der | 147 | 296 | 2.01 |
 | bertie_tls::server | 32 | 0 | 0.00 |
+| bertie_tls::tls13api::Server | 63 | 0 | 0.00 |
 | bertie_tls::tls13cert | 0 | 16 | n/a |
 | bertie_tls::tls13crypto::Algorithms | 0 | 13 | n/a |
 | bertie_tls::tls13crypto::HashAlgorithm | 0 | 1 | n/a |
 | bertie_tls::tls13formats | 0 | 74 | n/a |
 | bertie_tls::tls13formats::Transcript | 0 | 1 | n/a |
-| bertie_tls::tls13formats::handshake_data | 29 | 3 | 0.10 |
-| bertie_tls::tls13formats::handshake_data::HandshakeData | 0 | 12 | n/a |
+| bertie_tls::tls13formats::handshake_data | 94 | 3 | 0.03 |
+| bertie_tls::tls13formats::handshake_data::HandshakeData | 73 | 12 | 0.16 |
 | bertie_tls::tls13handshake | 288 | 1 | 0.00 |
-| bertie_tls::tls13keyscheduler | 114 | 0 | 0.00 |
+| bertie_tls::tls13keyscheduler | 201 | 0 | 0.00 |
 | bertie_tls::tls13keyscheduler::key_schedule | 181 | 0 | 0.00 |
 | bertie_tls::tls13record | 0 | 6 | n/a |
 | bertie_tls::tls13utils | 0 | 69 | n/a |
@@ -113,7 +124,7 @@ listed as a credited module in the receipt. It is trusted abstract-interface cod
 either way.
 
 Proof-to-code ratio: formal-coverage v1.8 measures hax/F* proof (annotations,
-`cfg(hax)` proof code), so the ratio above is measured, not estimated. About 213 of
+`cfg(hax)` proof code), so the ratio above is measured, not estimated. About 200 of
 the 509 proof lines are annotations on functions F* does not yet verify, so the
 ratio flatters the verified code somewhat.
 
@@ -125,8 +136,8 @@ Any rejected receipt or unmapped function retains zero credit; see the full repo
 
 ## Reproduction and pins
 
-- formal-coverage commit `7a60142` (private) / `1ac470e6dc9f52700821fb5ccd7f059027739be5`
-  (public tag v1.8.1, identical tree; CI uses the public commit; version string `1.8.1`).
+- formal-coverage commit `ff72a88` (private) / `4f85c8e313bbeaa969f6cd0365e8a98908d9acc8`
+  (public tag v1.8.2, identical tree; CI uses the public commit; version string `1.8.2`).
 - hax `0.4.2`, source `5ccf89dd2e996c9f88f2267eaa2a64739c4ca41a`.
 - Rust extraction toolchain `nightly-2025-11-08`; F* `2025.10.06`, Z3 `4.13.3`.
 - Local container images: `fc-verify-hax:v17` (aarch64) and

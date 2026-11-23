@@ -17,7 +17,7 @@ permissions:
 env:
   CARGO_TERM_COLOR: always
   HAX_COMMIT: 5ccf89dd2e996c9f88f2267eaa2a64739c4ca41a
-  FORMAL_COVERAGE_COMMIT: 1ac470e6dc9f52700821fb5ccd7f059027739be5 # public v1.8.1; same tree as private 7a60142
+  FORMAL_COVERAGE_COMMIT: 4f85c8e313bbeaa969f6cd0365e8a98908d9acc8 # public v1.8.2; same tree as private ff72a88
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
