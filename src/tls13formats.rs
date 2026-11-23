@@ -6,18 +6,19 @@ use crate::tls13utils::Declassify;
 
 // #[cfg(not(feature = "secret_integers"))]
 use crate::{
-    tls13crypto::{
-        hash, zero_key, Algorithms, Digest, HashAlgorithm, Hmac, KemPk, Random, SignatureScheme,
-    },
+    tls13crypto::{hash, Algorithms, Digest, HashAlgorithm, Hmac, KemPk, Random, SignatureScheme},
     tls13utils::*,
 };
 
 pub(crate) mod handshake_data;
 mod handshake_type;
+mod wire_types;
+
 #[cfg(not(bench))]
 use handshake_data::{HandshakeData, HandshakeType};
 #[cfg(bench)]
 pub use handshake_data::{HandshakeData, HandshakeType};
+pub use wire_types::{AlertDescription, AlertLevel, ContentType};
 
 #[cfg(hax)]
 use hax_lib::ToInt;
@@ -132,11 +133,6 @@ fn check_signature_algorithms(algs: &Algorithms, ch: &[U8]) -> Result<(), TLSErr
     check_mem(algs.signature_algorithm()?.as_raw(), &ch[2..ch.len()])
 }
 
-fn psk_key_exchange_modes() -> Result<Bytes, TLSError> {
-    const PSK_MODE_PREFIX: &[U8; 2] = &[U8(0), U8(0x2d)];
-    Ok(encode_length_u16(encode_length_u8(&[U8(1)])?)?.prefix(PSK_MODE_PREFIX))
-}
-
 fn check_psk_key_exchange_modes(client_hello: &[U8]) -> Result<(), TLSError> {
     check_length_encoding_u8_slice(client_hello)?;
     check_eq_with_slice(&[U8(1)], client_hello, 1, 2)
@@ -180,17 +176,6 @@ fn check_server_key_share(algs: &Algorithms, b: &[U8]) -> Result<Bytes, TLSError
     } else {
         tlserr(parse_failed())
     }
-}
-
-fn pre_shared_key(algs: &Algorithms, session_ticket: &Bytes) -> Result<(Bytes, usize), TLSError> {
-    let identities = encode_length_u16(
-        encode_length_u16(session_ticket.clone())?.concat_array(u32_as_be_bytes(U32(0xffffffff))),
-    )?;
-    let binders = encode_length_u16(encode_length_u8(zero_key(&algs.hash()).as_raw())?)?;
-    let binders_len = binders.len();
-    let ext = bytes2(0, 41).concat(encode_length_u16(identities.concat(binders))?);
-    let ext_len = ext.len();
-    Ok((ext, ext_len + binders_len + 199 - 16 - 82)) // binders_len+199-76+41))
 }
 
 // Return ticket (tkt) and binder
@@ -390,20 +375,6 @@ fn check_server_extensions(algs: &Algorithms, b: &[U8]) -> Result<Option<Bytes>,
 // } Alert;
 // ```
 
-/// ```TLS
-/// enum {
-///     warning(1),
-///     fatal(2),
-///     (255)
-/// } AlertLevel;
-/// ```
-#[derive(Clone, Copy, Debug, PartialEq)]
-#[repr(u8)]
-pub enum AlertLevel {
-    Warning = 1,
-    Fatal = 2,
-}
-
 impl TryFrom<u8> for AlertLevel {
     type Error = TLSError;
 
@@ -414,69 +385,6 @@ impl TryFrom<u8> for AlertLevel {
             _ => tlserr(parse_failed()),
         }
     }
-}
-
-/// ```TLS
-/// enum {
-///     close_notify(0),
-///     unexpected_message(10),
-///     bad_record_mac(20),
-///     record_overflow(22),
-///     handshake_failure(40),
-///     bad_certificate(42),
-///     unsupported_certificate(43),
-///     certificate_revoked(44),
-///     certificate_expired(45),
-///     certificate_unknown(46),
-///     illegal_parameter(47),
-///     unknown_ca(48),
-///     access_denied(49),
-///     decode_error(50),
-///     decrypt_error(51),
-///     protocol_version(70),
-///     insufficient_security(71),
-///     internal_error(80),
-///     inappropriate_fallback(86),
-///     user_canceled(90),
-///     missing_extension(109),
-///     unsupported_extension(110),
-///     unrecognized_name(112),
-///     bad_certificate_status_response(113),
-///     unknown_psk_identity(115),
-///     certificate_required(116),
-///     no_application_protocol(120),
-///     (255)
-/// } AlertDescription;
-#[derive(Clone, Copy, Debug, PartialEq)]
-#[repr(u8)]
-pub enum AlertDescription {
-    CloseNotify = 0,
-    UnexpectedMessage = 10,
-    BadRecordMac = 20,
-    RecordOverflow = 22,
-    HandshakeFailure = 40,
-    BadCertificate = 42,
-    UnsupportedCertificate = 43,
-    CertificateRevoked = 44,
-    CertificateExpired = 45,
-    CertificateUnknown = 46,
-    IllegalParameter = 47,
-    UnknownCa = 48,
-    AccessDenied = 49,
-    DecodeError = 50,
-    DecryptError = 51,
-    ProtocolVersion = 70,
-    InsufficientSecurity = 71,
-    InternalError = 80,
-    InappropriateFallback = 86,
-    UserCanceled = 90,
-    MissingExtension = 109,
-    UnsupportedExtension = 110,
-    UnrecognizedName = 112,
-    BadCertificateStatusResponse = 113,
-    UnknownPskIdentity = 115,
-    CertificateRequired = 116,
-    NoApplicationProtocol = 120,
 }
 
 impl AlertDescription {}
@@ -533,21 +441,6 @@ pub fn bench_client_hello(
         server_name,
         session_ticket,
     )
-}
-
-#[hax_lib::fstar::verification_status(lax)]
-#[hax_lib::ensures(|result| match result {
-                            Ok((len, extensions)) => len <= extensions.len(),
-                            _ => true})]
-fn get_psk_extensions(
-    algorithms: &Algorithms,
-    session_ticket: &Bytes,
-    mut extensions: Bytes,
-) -> Result<(usize, Bytes), TLSError> {
-    let pskm = psk_key_exchange_modes()?;
-    let (psk, len) = pre_shared_key(algorithms, session_ticket)?;
-    extensions = extensions.concat(pskm).concat(psk);
-    Ok((len, extensions))
 }
 
 /// Build a ClientHello message.
@@ -610,7 +503,7 @@ pub(crate) fn client_hello(
         key_shares
     );
     let (trunc_len, extensions) = (match (algorithms.psk_mode(), session_ticket) {
-        (true, Some(session_ticket)) => get_psk_extensions(algorithms, session_ticket, extensions),
+        (true, Some(_)) => tlserr(UNSUPPORTED_ALGORITHM),
         (false, None) => Ok((0, extensions)),
         _ => tlserr(PSK_MODE_MISMATCH),
     })?;
@@ -1292,25 +1185,6 @@ pub(crate) fn parse_finished(finished: &HandshakeData) -> Result<Bytes, TLSError
 // }
 
 /* Record Layer Serialization and Parsing */
-/// ```TLS
-/// enum {
-///     invalid(0),
-///     change_cipher_spec(20),
-///     alert(21),
-///     handshake(22),
-///     application_data(23),
-///     (255)
-/// } ContentType;
-/// ```
-#[derive(Clone, Copy, Debug, PartialEq)]
-#[repr(u8)]
-pub enum ContentType {
-    Invalid = 0,
-    ChangeCipherSpec = 20,
-    Alert = 21,
-    Handshake = 22,
-    ApplicationData = 23,
-}
 
 impl ContentType {
     /// Get the [`ContentType`] from the `u8` representation.
@@ -1436,5 +1310,25 @@ impl Transcript {
                 .clone()
                 .concat(client_hello.0.slice_range(0..trunc_len)),
         )
+    }
+}
+
+#[cfg(test)]
+mod psk_tests {
+    use super::*;
+    use crate::tls13crypto::SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519;
+
+    #[test]
+    fn client_hello_refuses_psk() {
+        let mut algorithms = SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519;
+        algorithms.psk_mode = true;
+        let result = client_hello(
+            &algorithms,
+            [0; 32].into(),
+            &[1; 32].into(),
+            &b"example.com".into(),
+            &Some(b"ticket".into()),
+        );
+        assert!(matches!(result, Err(UNSUPPORTED_ALGORITHM)));
     }
 }
