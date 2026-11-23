@@ -1951,22 +1951,22 @@
       "line": 976
     }
   ],
-  "proof_ratio": 0.25776872134488027,
+  "proof_ratio": 0.205607476635514,
   "proof_sloc": 506,
-  "proven": 1963,
+  "proven": 2461,
   "schema": 1,
   "scope": "first-party security runtime",
   "statuses": {
     "hazard": 0,
     "proven": 0,
     "proven-bounded": 0,
-    "proven-extracted": 1963,
+    "proven-extracted": 2461,
     "proven-upstream": 0,
-    "tested": 309,
+    "tested": 241,
     "trusted": 1520,
-    "unverified": 1480
+    "unverified": 1050
   },
-  "tested": 309,
+  "tested": 241,
   "total": 5272,
-  "unverified": 3000
+  "unverified": 2570
 }
