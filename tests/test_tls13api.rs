@@ -425,3 +425,12 @@ fn removed_wire_offers_fail_cleanly() {
         assert!(Server::accept(algs, db, &wire.into(), &mut rng, &mut server_ks).is_err());
     }
 }
+
+#[test]
+fn bytes_declassify_preserves_values_and_order() {
+    for input in [Vec::new(), (0u8..=255).collect(), vec![255, 0, 128, 1, 255]] {
+        let bytes = Bytes::from(input.as_slice());
+        assert_eq!(bytes.declassify(), input);
+        assert_eq!(bytes.declassify(), input);
+    }
+}

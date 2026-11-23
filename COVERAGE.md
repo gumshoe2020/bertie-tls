@@ -39,16 +39,16 @@ formal-coverage `dev/v182/compare.md` at tag v1.8.2.
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 2461 | 46.68% |
-| tested | 241 | 4.57% |
-| unverified | 2570 | 48.75% |
+| proven | 2761 | 52.16% |
+| tested | 343 | 6.48% |
+| unverified | 2189 | 41.36% |
 
-Total: **5272** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (2461 lines); Verus proven: 0 lines.
+Total: **5293** first-party security runtime SLoC. Proven includes explicitly labelled
+`proven-extracted` hax credit (2761 lines); Verus proven: 0 lines.
 
-Proof-to-code ratio: **0.21** (506 proof SLoC / 2461 proven + proven-extracted runtime SLoC); informational, never blocking.
+Proof-to-code ratio: **0.20** (558 proof SLoC / 2761 proven + proven-extracted runtime SLoC); informational, never blocking.
 
-Proof components: 265 hax annotation SLoC, 197 standalone `cfg(hax)` proof-code SLoC, and 57 inline `cfg(hax)` SLoC (overlaps count once). F* models: 18 SLoC of trusted assumptions, excluded from the ratio.
+Proof components: 293 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code SLoC, and 61 inline `cfg(hax)` SLoC (overlaps count once). F* models: 18 SLoC of trusted assumptions, excluded from the ratio.
 
 | Module | Proven runtime | Proof SLoC | Proof / proven runtime |
 | --- | ---: | ---: | ---: |
@@ -62,21 +62,30 @@ Proof components: 265 hax annotation SLoC, 197 standalone `cfg(hax)` proof-code 
 | bertie_tls::tls13crypto::HashAlgorithm | 0 | 1 | n/a |
 | bertie_tls::tls13formats | 834 | 71 | 0.09 |
 | bertie_tls::tls13formats::Extensions | 8 | 0 | 0.00 |
-| bertie_tls::tls13formats::Transcript | 50 | 1 | 0.02 |
-| bertie_tls::tls13formats::handshake_data | 94 | 3 | 0.03 |
-| bertie_tls::tls13formats::handshake_data::HandshakeData | 73 | 12 | 0.16 |
-| bertie_tls::tls13handshake | 702 | 1 | 0.00 |
+| bertie_tls::tls13formats::Transcript | 53 | 1 | 0.02 |
+| bertie_tls::tls13formats::handshake_data | 94 | 4 | 0.04 |
+| bertie_tls::tls13formats::handshake_data::HandshakeData | 76 | 13 | 0.17 |
+| bertie_tls::tls13handshake | 708 | 1 | 0.00 |
 | bertie_tls::tls13keyscheduler | 201 | 0 | 0.00 |
 | bertie_tls::tls13keyscheduler::key_schedule | 181 | 0 | 0.00 |
 | bertie_tls::tls13record | 0 | 6 | n/a |
-| bertie_tls::tls13utils | 0 | 69 | n/a |
+| bertie_tls::tls13utils | 288 | 106 | 0.37 |
 | bertie_tls::tls13utils::<constC:usize>From<&[u8 ; C]>forBytes | 0 | 1 | n/a |
 | bertie_tls::tls13utils::<constC:usize>From<[u8 ; C]>forBytes | 0 | 1 | n/a |
-| bertie_tls::tls13utils::Bytes | 0 | 13 | n/a |
+| bertie_tls::tls13utils::Bytes | 0 | 26 | n/a |
 | bertie_tls::tls13utils::From<&[u8]>forBytes | 0 | 1 | n/a |
 | bertie_tls::tls13utils::core::ops::Index<Range<usize>>forBytes | 0 | 1 | n/a |
 
 <!-- measured coverage: end -->
+
+The `tls13utils` bodies are now extracted and checked by strict F*, including
+byte conversion, length encoding, bounds and equality helpers. The four affected
+caller roots also verify, using checked length guards for unbounded inputs and
+stronger length postconditions. Numeric impl-method mappings still receive no
+coverage credit; no mapping workaround was used. `from_hex` and `random_bytes`
+remain excluded and unproven, and the byte type declarations retain six inherited
+derived-trait assumptions in their declaration-only module.
+
 
 ## Meaning and limits
 
@@ -170,7 +179,7 @@ scripts/coverage-ratchet MERGE_BASE_BASELINE target/ci-logs/report.json DIFF
 For the local rebuilt toolchain, prefix verification with
 `BERTIE_DOCKER_TOOLS=/Users/gumshoe/src/bertie-toolchain`. It copies the project to
 `target/ci-logs/fstar/workspace`, fetches locked dependencies into a disposable
-cache, extracts frozen sources and checks thirteen strict F* roots. No proof patch,
+cache, extracts frozen sources and checks fifteen strict F* roots. No proof patch,
 admission, lax check or checked cache is used. The original upstream snapshots
 remain in git as historical artifacts; they are not inputs to this verification.
 

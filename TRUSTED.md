@@ -67,3 +67,31 @@ conversions, parsing and serialization stay in `tls13formats.rs`, which
 re-exports the three types at their original paths. These are the same
 trusted existence-only declarations described above; no new proofs were
 added.
+
+## Hexadecimal debugging constructor
+
+`Bytes::from_hex` in `src/tls13utils.rs::non_hax` is excluded from F*
+extraction. It retains its public path and signature and its existing whitespace
+handling and panic behavior for invalid hex. The string iterator model required
+by `split_whitespace` is unavailable in the pinned hax library. This debugging
+constructor remains unproven; stream callers use it to build a constant.
+
+## External randomness helper
+
+`random_bytes` in `src/tls13utils.rs::non_hax` is excluded from F* extraction
+and re-exported at its original public path with its signature unchanged. It
+calls `rand::random`, an external OS-backed randomness effect that the pinned
+hax/F* libraries cannot model (`Rand` cannot be resolved). No library function
+in `src/` calls it; integration tests use it. Entropy and this helper remain
+unproven; the library receives randomness as parameters.
+
+## Byte type declarations
+
+`src/tls13utils/byte_types.rs` contains the `Bytes` and `AppData` declarations,
+re-exported at their original public paths. hax assumes StructuralPartialEq
+and PartialEq for both types, plus Debug and Default for Bytes (six
+existence-only instances). Clone is extracted as code; Debug for Error is
+derived only outside hax. Bytes retains Debug because the extracted crypto
+interface derives Debug for a type containing Bytes. All handwritten logic stays in `tls13utils.rs`, whose bodies
+are extracted for strict checking rather than trusted as interface-only. The
+excluded `from_hex` and `random_bytes` helpers remain unproven as described above.

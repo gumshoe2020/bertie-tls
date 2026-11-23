@@ -20,7 +20,7 @@ pub(crate) fn hkdf_expand_label(
     context: &Bytes,
     len: usize,
 ) -> Result<Key, TLSError> {
-    if len >= 65536 {
+    if len >= 65536 || label.len() > 255 - LABEL_TLS13.len() {
         Err(PAYLOAD_TOO_LONG)
     } else {
         let lenb = u16_as_be_bytes(U16(len as u16));
@@ -429,4 +429,40 @@ pub(crate) fn XTR(
     )?;
     ks.set(name, level, (h.name, h.alg, h.level), k.val);
     Ok(h)
+}
+
+#[cfg(all(test, feature = "sha256"))]
+mod label_tests {
+    use super::*;
+
+    #[test]
+    fn hkdf_label_wire_length_bound() {
+        let key = Bytes::zeroes(32);
+        let context = Bytes::zeroes(32);
+        for label in [Bytes::from_slice(b"derived"), Bytes::zeroes(249)] {
+            let info = encode_length_u8(
+                Bytes::from_slice(&LABEL_TLS13)
+                    .concat(label.clone())
+                    .as_raw(),
+            )
+            .unwrap()
+            .concat(encode_length_u8(context.as_raw()).unwrap())
+            .prefix(&u16_as_be_bytes(U16(32)));
+            let expected = hkdf_expand(&HashAlgorithm::SHA256, &key, &info, 32).unwrap();
+            assert_eq!(
+                hkdf_expand_label(&HashAlgorithm::SHA256, &key, label, &context, 32).unwrap(),
+                expected
+            );
+        }
+        assert!(matches!(
+            hkdf_expand_label(
+                &HashAlgorithm::SHA256,
+                &key,
+                Bytes::zeroes(250),
+                &context,
+                32,
+            ),
+            Err(PAYLOAD_TOO_LONG)
+        ));
+    }
 }

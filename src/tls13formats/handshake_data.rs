@@ -2,7 +2,7 @@ pub use super::handshake_type::HandshakeType;
 
 use crate::tls13utils::{
     check_eq1, encode_length_u24, eq1, length_u24_encoded, parse_failed, tlserr, Bytes, TLSError,
-    U8,
+    PAYLOAD_TOO_LONG, U8,
 };
 #[allow(unused_imports)]
 use hax_lib::ToInt;
@@ -112,6 +112,7 @@ pub(crate) fn from_bytes_inner(
 }
 
 #[cfg_attr(feature = "hax-pv", pv_constructor)]
+#[hax_lib::ensures(|result| result.len() == hs.len())]
 pub(crate) fn to_bytes_inner(hs: &HandshakeData) -> Bytes {
     hs.0.clone()
 }
@@ -137,6 +138,7 @@ impl HandshakeData {
     }
 
     /// Returns the handshake data bytes.
+    #[hax_lib::ensures(|result| result.len() == self.len())]
     pub(crate) fn to_bytes(&self) -> Bytes {
         to_bytes_inner(self)
     }
@@ -144,12 +146,15 @@ impl HandshakeData {
     /// Returns a new [`HandshakeData`] that contains the bytes of
     /// `other` appended to the bytes of `self`.
     #[hax_lib::pv_constructor]
-    pub(crate) fn concat(self, other: &HandshakeData) -> HandshakeData {
+    pub(crate) fn concat(self, other: &HandshakeData) -> Result<HandshakeData, TLSError> {
+        if other.len() > usize::MAX - self.len() {
+            return Err(PAYLOAD_TOO_LONG);
+        }
         let mut message1 = self.to_bytes();
         let message2 = other.to_bytes();
 
         message1.extend_from_slice(&message2);
-        HandshakeData::from(message1)
+        Ok(HandshakeData::from(message1))
     }
 
     /// Attempt to parse exactly one handshake message of the `expected_type` from
@@ -249,5 +254,22 @@ impl From<Bytes> for HandshakeData {
     #[ensures(|result| fstar!("result._0 = value"))]
     fn from(value: Bytes) -> Self {
         HandshakeData(value)
+    }
+}
+
+#[cfg(test)]
+mod capacity_tests {
+    use super::*;
+
+    #[test]
+    fn concatenation_preserves_valid_messages() {
+        let first = HandshakeData::from_bytes(HandshakeType::Finished, &Bytes::zeroes(32)).unwrap();
+        let second =
+            HandshakeData::from_bytes(HandshakeType::Finished, &Bytes::zeroes(48)).unwrap();
+        let expected = first.to_bytes().concat(second.to_bytes());
+        let combined = first.concat(&second).unwrap();
+        assert_eq!(combined.to_bytes(), expected);
+        let empty = HandshakeData::from(Bytes::new());
+        assert_eq!(combined.concat(&empty).unwrap().to_bytes(), expected);
     }
 }
