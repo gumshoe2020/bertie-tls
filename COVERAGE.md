@@ -39,11 +39,11 @@ formal-coverage `dev/v182/compare.md` at tag v1.8.2.
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 2761 | 52.17% |
-| tested | 342 | 6.46% |
+| proven | 2761 | 52.16% |
+| tested | 343 | 6.48% |
 | unverified | 2189 | 41.36% |
 
-Total: **5292** first-party security runtime SLoC. Proven includes explicitly labelled
+Total: **5293** first-party security runtime SLoC. Proven includes explicitly labelled
 `proven-extracted` hax credit (2761 lines); Verus proven: 0 lines.
 
 Proof-to-code ratio: **0.20** (558 proof SLoC / 2761 proven + proven-extracted runtime SLoC); informational, never blocking.
