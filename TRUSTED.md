@@ -57,3 +57,13 @@ trusted existence-only declarations described above. All handwritten
 functions and impl blocks remain in `handshake_data.rs` and `server.rs`;
 no new proofs were added. The coverage gain comes from making
 `Handshake_data` and `Server` strict F* roots (see COVERAGE.md).
+
+`src/tls13formats/wire_types.rs` holds only the `AlertLevel`,
+`AlertDescription` and `ContentType` enum declarations, with their original
+wire values, `repr(u8)` and doc comments. For each enum, hax assumes Copy,
+StructuralPartialEq and PartialEq instances (nine instances total). Clone
+is extracted as code; Debug is derived only outside hax. All handwritten
+conversions, parsing and serialization stay in `tls13formats.rs`, which
+re-exports the three types at their original paths. These are the same
+trusted existence-only declarations described above; no new proofs were
+added.

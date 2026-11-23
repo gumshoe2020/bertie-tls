@@ -39,27 +39,28 @@ formal-coverage `dev/v182/compare.md` at tag v1.8.2.
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 1079 | 20.33% |
-| tested | 796 | 15.00% |
-| unverified | 3433 | 64.68% |
+| proven | 1963 | 37.23% |
+| tested | 309 | 5.86% |
+| unverified | 3000 | 56.90% |
 
-Total: **5308** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (1079 lines); Verus proven: 0 lines.
+Total: **5272** first-party security runtime SLoC. Proven includes explicitly labelled
+`proven-extracted` hax credit (1963 lines); Verus proven: 0 lines.
 
-Proof-to-code ratio: **0.47** (509 proof SLoC / 1079 proven + proven-extracted runtime SLoC); informational, never blocking.
+Proof-to-code ratio: **0.26** (506 proof SLoC / 1963 proven + proven-extracted runtime SLoC); informational, never blocking.
 
-Proof components: 268 hax annotation SLoC, 197 standalone `cfg(hax)` proof-code SLoC, and 57 inline `cfg(hax)` SLoC (overlaps count once). F* models: 18 SLoC of trusted assumptions, excluded from the ratio.
+Proof components: 265 hax annotation SLoC, 197 standalone `cfg(hax)` proof-code SLoC, and 57 inline `cfg(hax)` SLoC (overlaps count once). F* models: 18 SLoC of trusted assumptions, excluded from the ratio.
 
 | Module | Proven runtime | Proof SLoC | Proof / proven runtime |
 | --- | ---: | ---: | ---: |
 | bertie_tls::der | 147 | 296 | 2.01 |
-| bertie_tls::server | 32 | 0 | 0.00 |
+| bertie_tls::server | 24 | 0 | 0.00 |
 | bertie_tls::tls13api::Server | 63 | 0 | 0.00 |
 | bertie_tls::tls13cert | 0 | 16 | n/a |
 | bertie_tls::tls13crypto::Algorithms | 0 | 13 | n/a |
 | bertie_tls::tls13crypto::HashAlgorithm | 0 | 1 | n/a |
-| bertie_tls::tls13formats | 0 | 74 | n/a |
-| bertie_tls::tls13formats::Transcript | 0 | 1 | n/a |
+| bertie_tls::tls13formats | 834 | 71 | 0.09 |
+| bertie_tls::tls13formats::Extensions | 8 | 0 | 0.00 |
+| bertie_tls::tls13formats::Transcript | 50 | 1 | 0.02 |
 | bertie_tls::tls13formats::handshake_data | 94 | 3 | 0.03 |
 | bertie_tls::tls13formats::handshake_data::HandshakeData | 73 | 12 | 0.16 |
 | bertie_tls::tls13handshake | 288 | 1 | 0.00 |
@@ -96,10 +97,15 @@ about 330 lines), and the renamed crate. The old v1.7 run credited zero when its
 external scratch-server lock-closure audit rejected extraction; this standalone run
 freezes its own committed lockfile and checks its hash before and after extraction.
 
-Only `get_psk_extensions` in `tls13formats.rs` still carries the inherited
-`verification_status(lax)`, which hax extracts as `--admit_smt_queries true`.
-Its ensures is false; see TRUSTED.md, "Known defects in unreachable PSK code".
-The tool treats this escape as a hazard, so the affected F* module gets no credit.
+Client PSK construction and its false lax truncation claim have been removed;
+PSK now fails closed in both `client_hello` and server `lookup_db`.
+`Tls13formats` no longer shares a module with that false claim or the
+assumed derived-trait declarations for `AlertLevel`, `AlertDescription` and
+`ContentType`. Those declarations now live in the declaration-only
+`Tls13formats.Wire_types` module, which remains a hazard. The coverage gain
+comes from existing proofs becoming separately measurable, not from new
+proofs. No proof annotations were added.
+
 `Tls13keyscheduler.Key_schedule` now has no derived-trait assumptions; those
 remaining after hiding Debug from hax live in the declaration-only
 `Tls13keyscheduler.Key_names` module, which remains a hazard. The credit gain
@@ -162,7 +168,7 @@ scripts/coverage-ratchet MERGE_BASE_BASELINE target/ci-logs/report.json DIFF
 For the local rebuilt toolchain, prefix verification with
 `BERTIE_DOCKER_TOOLS=/Users/gumshoe/src/bertie-toolchain`. It copies the project to
 `target/ci-logs/fstar/workspace`, fetches locked dependencies into a disposable
-cache, extracts frozen sources and checks twelve strict F* roots. No proof patch,
+cache, extracts frozen sources and checks thirteen strict F* roots. No proof patch,
 admission, lax check or checked cache is used. The original upstream snapshots
 remain in git as historical artifacts; they are not inputs to this verification.
 
