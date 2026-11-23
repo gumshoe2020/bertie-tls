@@ -246,6 +246,8 @@ impl Bytes {
 
     /// Declassify these bytes and return a copy of [`u8`].
     #[hax_lib::ensures(|result| result.len() == self.0.len())]
+    // Indexed loop so hax can state the loop invariant behind the length postcondition.
+    #[allow(clippy::needless_range_loop)]
     pub fn declassify(&self) -> Vec<u8> {
         let mut out = Vec::with_capacity(self.0.len());
         for i in 0..self.0.len() {
