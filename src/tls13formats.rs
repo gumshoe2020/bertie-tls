@@ -6,9 +6,7 @@ use crate::tls13utils::Declassify;
 
 // #[cfg(not(feature = "secret_integers"))]
 use crate::{
-    tls13crypto::{
-        hash, zero_key, Algorithms, Digest, HashAlgorithm, Hmac, KemPk, Random, SignatureScheme,
-    },
+    tls13crypto::{hash, Algorithms, Digest, HashAlgorithm, Hmac, KemPk, Random, SignatureScheme},
     tls13utils::*,
 };
 
@@ -132,11 +130,6 @@ fn check_signature_algorithms(algs: &Algorithms, ch: &[U8]) -> Result<(), TLSErr
     check_mem(algs.signature_algorithm()?.as_raw(), &ch[2..ch.len()])
 }
 
-fn psk_key_exchange_modes() -> Result<Bytes, TLSError> {
-    const PSK_MODE_PREFIX: &[U8; 2] = &[U8(0), U8(0x2d)];
-    Ok(encode_length_u16(encode_length_u8(&[U8(1)])?)?.prefix(PSK_MODE_PREFIX))
-}
-
 fn check_psk_key_exchange_modes(client_hello: &[U8]) -> Result<(), TLSError> {
     check_length_encoding_u8_slice(client_hello)?;
     check_eq_with_slice(&[U8(1)], client_hello, 1, 2)
@@ -180,17 +173,6 @@ fn check_server_key_share(algs: &Algorithms, b: &[U8]) -> Result<Bytes, TLSError
     } else {
         tlserr(parse_failed())
     }
-}
-
-fn pre_shared_key(algs: &Algorithms, session_ticket: &Bytes) -> Result<(Bytes, usize), TLSError> {
-    let identities = encode_length_u16(
-        encode_length_u16(session_ticket.clone())?.concat_array(u32_as_be_bytes(U32(0xffffffff))),
-    )?;
-    let binders = encode_length_u16(encode_length_u8(zero_key(&algs.hash()).as_raw())?)?;
-    let binders_len = binders.len();
-    let ext = bytes2(0, 41).concat(encode_length_u16(identities.concat(binders))?);
-    let ext_len = ext.len();
-    Ok((ext, ext_len + binders_len + 199 - 16 - 82)) // binders_len+199-76+41))
 }
 
 // Return ticket (tkt) and binder
@@ -535,21 +517,6 @@ pub fn bench_client_hello(
     )
 }
 
-#[hax_lib::fstar::verification_status(lax)]
-#[hax_lib::ensures(|result| match result {
-                            Ok((len, extensions)) => len <= extensions.len(),
-                            _ => true})]
-fn get_psk_extensions(
-    algorithms: &Algorithms,
-    session_ticket: &Bytes,
-    mut extensions: Bytes,
-) -> Result<(usize, Bytes), TLSError> {
-    let pskm = psk_key_exchange_modes()?;
-    let (psk, len) = pre_shared_key(algorithms, session_ticket)?;
-    extensions = extensions.concat(pskm).concat(psk);
-    Ok((len, extensions))
-}
-
 /// Build a ClientHello message.
 
 #[cfg_attr(
@@ -610,7 +577,7 @@ pub(crate) fn client_hello(
         key_shares
     );
     let (trunc_len, extensions) = (match (algorithms.psk_mode(), session_ticket) {
-        (true, Some(session_ticket)) => get_psk_extensions(algorithms, session_ticket, extensions),
+        (true, Some(_)) => tlserr(UNSUPPORTED_ALGORITHM),
         (false, None) => Ok((0, extensions)),
         _ => tlserr(PSK_MODE_MISMATCH),
     })?;
@@ -1436,5 +1403,25 @@ impl Transcript {
                 .clone()
                 .concat(client_hello.0.slice_range(0..trunc_len)),
         )
+    }
+}
+
+#[cfg(test)]
+mod psk_tests {
+    use super::*;
+    use crate::tls13crypto::SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519;
+
+    #[test]
+    fn client_hello_refuses_psk() {
+        let mut algorithms = SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519;
+        algorithms.psk_mode = true;
+        let result = client_hello(
+            &algorithms,
+            [0; 32].into(),
+            &[1; 32].into(),
+            &b"example.com".into(),
+            &Some(b"ticket".into()),
+        );
+        assert!(matches!(result, Err(UNSUPPORTED_ALGORITHM)));
     }
 }

@@ -21,20 +21,20 @@ No proof item, assumption, or generated proof patch is changed by this repair.
 Recorded 2026-11-22. PSK and 0-RTT are disabled: `Algorithms::validate`
 (`src/tls13crypto.rs`) rejects `psk_mode` and `zero_rtt` on every public
 entry point (`Client::connect`, `Server::accept` and the stream wrappers).
-The PSK code below is therefore unreachable, but it is wrong and must be
-fixed against RFC 8448 before PSK is ever re-enabled (ask in an issue first,
-per AGENTS.md).
+Client PSK construction (`get_psk_extensions`, `pre_shared_key` and
+`psk_key_exchange_modes`) has been removed, including the false lax truncation
+claim and hard-coded offsets. `client_hello` now returns
+`UNSUPPORTED_ALGORITHM` for PSK mode with a ticket. The server also refuses
+PSK acceptance in `lookup_db` with `UNSUPPORTED_ALGORITHM`; with PSK mode
+false it continues to ignore a client's ticket.
 
-- `pre_shared_key` (`src/tls13formats.rs`, used by `get_psk_extensions`)
-  derives the ClientHello truncation length from hard-coded offsets
-  (`+ 199 - 16 - 82`), correct only for a 16-byte server name; the parser
-  computes `ch.len() - hash_len - 3`. Binder offsets disagree otherwise.
-- `process_psk_binder_zero_rtt` (`src/tls13handshake.rs`) shadows the
-  received binder with the server's own derived value, so `hmac_verify`
-  compares that value with itself and any client binder is accepted.
-
-Failing regression tests for both live on branch `fix/psk-trunc-len`; they
-are not on main because they fail by design until the fix lands.
+`process_psk_binder_zero_rtt` (`src/tls13handshake.rs`) still shadows the
+received binder with the server's own derived value, so `hmac_verify`
+compares that value with itself and any client binder is accepted. This is
+now unreachable through both public configuration validation and the server
+PSK refusal in `lookup_db`. It must be fixed against RFC 8448 before PSK is
+re-enabled (ask in an issue first, per AGENTS.md). The failing binder
+regression lives on branch `fix/psk-trunc-len`, not on main.
 
 ## Derived-trait instances
 

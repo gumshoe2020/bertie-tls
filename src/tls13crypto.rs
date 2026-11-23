@@ -229,11 +229,6 @@ pub(crate) fn hmac_verify(
     }
 }
 
-/// Get an empty key of the correct size.
-pub(crate) fn zero_key(alg: &HashAlgorithm) -> Bytes {
-    Bytes::zeroes(alg.hash_len())
-}
-
 /// Get the libcrux HKDF algorithm.
 fn hkdf_algorithm(alg: &HashAlgorithm) -> Result<HkdfAlgorithm, TLSError> {
     match alg {

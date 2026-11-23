@@ -8,7 +8,7 @@
 
 use crate::{
     tls13crypto::{Algorithms, Psk, PublicVerificationKey, SignatureKey},
-    tls13utils::{check_eq, eq, parse_failed, Bytes, TLSError, PSK_MODE_MISMATCH},
+    tls13utils::{eq, parse_failed, Bytes, TLSError, PSK_MODE_MISMATCH, UNSUPPORTED_ALGORITHM},
 };
 
 mod server_db;
@@ -62,15 +62,7 @@ pub(crate) fn lookup_db(
     //eq(sni, &Bytes::new()) ||
     eq(sni, &db.server_name) {
         match (ciphersuite.psk_mode(), tkt, &db.psk_opt) {
-            (true, Some(ctkt), Some((stkt, psk))) => {
-                check_eq(ctkt, stkt)?;
-                let server = ServerInfo {
-                    cert: db.cert.clone(),
-                    sk: db.sk.clone(),
-                    psk_opt: Some(psk.clone()),
-                };
-                Ok(server)
-            }
+            (true, Some(_), Some(_)) => Err(UNSUPPORTED_ALGORITHM),
             (false, _, _) => {
                 let server = ServerInfo {
                     cert: db.cert.clone(),
@@ -83,5 +75,45 @@ pub(crate) fn lookup_db(
         }
     } else {
         Err(parse_failed())
+    }
+}
+
+#[cfg(test)]
+mod psk_tests {
+    use super::*;
+    use crate::tls13crypto::SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519;
+
+    #[test]
+    fn lookup_db_refuses_psk_acceptance() {
+        let mut algorithms = SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519;
+        algorithms.psk_mode = true;
+        let db = ServerDB::new(
+            b"example.com".into(),
+            b"cert".into(),
+            Bytes::new(),
+            Some((b"ticket".into(), Bytes::new())),
+        );
+        for ticket in [b"ticket".as_slice(), b"different-ticket".as_slice()] {
+            let result = lookup_db(algorithms, &db, &db.server_name, &Some(ticket.into()));
+            assert!(matches!(result, Err(UNSUPPORTED_ALGORITHM)));
+        }
+    }
+
+    #[test]
+    fn lookup_db_ignores_client_ticket_when_psk_is_disabled() {
+        let algorithms = SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519;
+        for psk_opt in [None, Some((b"server-ticket".into(), Bytes::new()))] {
+            let db = ServerDB::new(b"example.com".into(), b"cert".into(), Bytes::new(), psk_opt);
+            let server = lookup_db(
+                algorithms,
+                &db,
+                &db.server_name,
+                &Some(b"client-ticket".into()),
+            )
+            .unwrap();
+            assert_eq!(server.cert, db.cert);
+            assert_eq!(server.sk, db.sk);
+            assert!(server.psk_opt.is_none());
+        }
     }
 }
