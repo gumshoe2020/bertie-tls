@@ -590,7 +590,7 @@ pub(crate) fn set_client_hello_binder(
     let hlen = ciphersuite.hash().hash_len();
     match (binder, trunc_len) {
         (Some(m), Some(trunc_len)) => {
-            if chlen - trunc_len == hlen {
+            if chlen - trunc_len == hlen && m.len() >= hlen {
                 Ok(HandshakeData(ch.update_slice(trunc_len, m, 0, hlen)))
             } else {
                 tlserr(parse_failed())
@@ -1281,9 +1281,9 @@ impl Transcript {
     )"
         )
     )]
-    pub(crate) fn add(mut self, msg: &HandshakeData) -> Self {
-        self.transcript = self.transcript.concat(msg);
-        self
+    pub(crate) fn add(mut self, msg: &HandshakeData) -> Result<Self, TLSError> {
+        self.transcript = self.transcript.concat(msg)?;
+        Ok(self)
     }
 
     /// Get the hash of this transcript
@@ -1300,6 +1300,9 @@ impl Transcript {
         client_hello: &HandshakeData,
         trunc_len: usize,
     ) -> Result<Digest, TLSError> {
+        if trunc_len > usize::MAX - self.transcript.len() {
+            return Err(PAYLOAD_TOO_LONG);
+        }
         // let Transcript(ha, HandshakeData(tx)) = tx;
         let HandshakeData(ch) = client_hello;
         hash(
@@ -1330,5 +1333,71 @@ mod psk_tests {
             &Some(b"ticket".into()),
         );
         assert!(matches!(result, Err(UNSUPPORTED_ALGORITHM)));
+    }
+}
+
+#[cfg(all(test, feature = "sha256"))]
+mod bounds_tests {
+    use super::*;
+    use crate::tls13crypto::SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519;
+
+    #[test]
+    fn binder_update_checks_source_length() {
+        let algs = SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519;
+        let original = Bytes::from_slice(&[1; 40]);
+        let binder = Bytes::from_slice(&[7; 32]);
+        let updated = set_client_hello_binder(
+            &algs,
+            &Some(binder.clone()),
+            HandshakeData(original.clone()),
+            Some(8),
+        )
+        .unwrap();
+        assert_eq!(updated.to_bytes(), original.update_slice(8, &binder, 0, 32));
+        assert!(matches!(
+            set_client_hello_binder(
+                &algs,
+                &Some(Bytes::zeroes(31)),
+                HandshakeData(original.clone()),
+                Some(8),
+            ),
+            Err(PARSE_FAILED)
+        ));
+        assert!(matches!(
+            set_client_hello_binder(
+                &algs,
+                &Some(binder),
+                HandshakeData(original.clone()),
+                Some(9),
+            ),
+            Err(PARSE_FAILED)
+        ));
+        assert_eq!(
+            set_client_hello_binder(&algs, &None, HandshakeData(original.clone()), None,)
+                .unwrap()
+                .to_bytes(),
+            original
+        );
+    }
+
+    #[test]
+    fn truncated_transcript_preserves_valid_input() {
+        let first = HandshakeData(Bytes::zeroes(8));
+        let hello = HandshakeData(Bytes::zeroes(40));
+        let tx = Transcript::new(HashAlgorithm::SHA256).add(&first).unwrap();
+        for trunc_len in [0, 8, 40] {
+            let expected = hash(
+                &HashAlgorithm::SHA256,
+                &first
+                    .to_bytes()
+                    .concat(hello.to_bytes().slice_range(0..trunc_len)),
+            )
+            .unwrap();
+            assert_eq!(
+                tx.transcript_hash_without_client_hello(&hello, trunc_len)
+                    .unwrap(),
+                expected
+            );
+        }
     }
 }

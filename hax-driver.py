@@ -116,7 +116,7 @@ if options.sub == "extract-fstar":
             "-**::non_hax::** -bertie_tls::stream::**",
             "fstar",
             "--interfaces",
-            "+** +!bertie_tls::tls13crypto::** +!bertie_tls::tls13utils::** +!bertie_tls::tls13cert::**"
+            "+** +!bertie_tls::tls13crypto::** +!bertie_tls::tls13cert::**"
         ],
         cwd=".",
         env=hax_env,
