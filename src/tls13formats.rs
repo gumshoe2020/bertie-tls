@@ -379,7 +379,8 @@ fn check_server_extensions(algs: &Algorithms, b: &[U8]) -> Result<Option<Bytes>,
 ///     (255)
 /// } AlertLevel;
 /// ```
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
+#[cfg_attr(not(hax), derive(Debug))]
 #[repr(u8)]
 pub enum AlertLevel {
     Warning = 1,
@@ -429,7 +430,8 @@ impl TryFrom<u8> for AlertLevel {
 ///     no_application_protocol(120),
 ///     (255)
 /// } AlertDescription;
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
+#[cfg_attr(not(hax), derive(Debug))]
 #[repr(u8)]
 pub enum AlertDescription {
     CloseNotify = 0,
@@ -1269,7 +1271,8 @@ pub(crate) fn parse_finished(finished: &HandshakeData) -> Result<Bytes, TLSError
 ///     (255)
 /// } ContentType;
 /// ```
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
+#[cfg_attr(not(hax), derive(Debug))]
 #[repr(u8)]
 pub enum ContentType {
     Invalid = 0,
