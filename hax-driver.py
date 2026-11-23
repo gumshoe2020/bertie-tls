@@ -73,7 +73,7 @@ cargo_hax_into = [
     "rand_core@0.9.5",
     "--no-default-features",
     "--features",
-    "defensive,std,sha256,chacha20poly1305,ecdsa-p256,x25519,p256,mlkem768",
+    "defensive,std,client,sha256,chacha20poly1305,ecdsa-p256,x25519,p256,mlkem768",
     ";",
     "into",
 ]

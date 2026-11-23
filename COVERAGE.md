@@ -39,14 +39,14 @@ formal-coverage `dev/v182/compare.md` at tag v1.8.2.
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 1963 | 37.23% |
-| tested | 309 | 5.86% |
-| unverified | 3000 | 56.90% |
+| proven | 2461 | 46.68% |
+| tested | 241 | 4.57% |
+| unverified | 2570 | 48.75% |
 
 Total: **5272** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (1963 lines); Verus proven: 0 lines.
+`proven-extracted` hax credit (2461 lines); Verus proven: 0 lines.
 
-Proof-to-code ratio: **0.26** (506 proof SLoC / 1963 proven + proven-extracted runtime SLoC); informational, never blocking.
+Proof-to-code ratio: **0.21** (506 proof SLoC / 2461 proven + proven-extracted runtime SLoC); informational, never blocking.
 
 Proof components: 265 hax annotation SLoC, 197 standalone `cfg(hax)` proof-code SLoC, and 57 inline `cfg(hax)` SLoC (overlaps count once). F* models: 18 SLoC of trusted assumptions, excluded from the ratio.
 
@@ -54,6 +54,8 @@ Proof components: 265 hax annotation SLoC, 197 standalone `cfg(hax)` proof-code 
 | --- | ---: | ---: | ---: |
 | bertie_tls::der | 147 | 296 | 2.01 |
 | bertie_tls::server | 24 | 0 | 0.00 |
+| bertie_tls::tls13api | 16 | 0 | 0.00 |
+| bertie_tls::tls13api::Client | 68 | 0 | 0.00 |
 | bertie_tls::tls13api::Server | 63 | 0 | 0.00 |
 | bertie_tls::tls13cert | 0 | 16 | n/a |
 | bertie_tls::tls13crypto::Algorithms | 0 | 13 | n/a |
@@ -63,7 +65,7 @@ Proof components: 265 hax annotation SLoC, 197 standalone `cfg(hax)` proof-code 
 | bertie_tls::tls13formats::Transcript | 50 | 1 | 0.02 |
 | bertie_tls::tls13formats::handshake_data | 94 | 3 | 0.03 |
 | bertie_tls::tls13formats::handshake_data::HandshakeData | 73 | 12 | 0.16 |
-| bertie_tls::tls13handshake | 288 | 1 | 0.00 |
+| bertie_tls::tls13handshake | 702 | 1 | 0.00 |
 | bertie_tls::tls13keyscheduler | 201 | 0 | 0.00 |
 | bertie_tls::tls13keyscheduler::key_schedule | 181 | 0 | 0.00 |
 | bertie_tls::tls13record | 0 | 6 | n/a |
