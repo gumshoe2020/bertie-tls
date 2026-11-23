@@ -13,6 +13,7 @@ use crate::{
 };
 
 pub(crate) mod handshake_data;
+mod handshake_type;
 #[cfg(not(bench))]
 use handshake_data::{HandshakeData, HandshakeType};
 #[cfg(bench)]

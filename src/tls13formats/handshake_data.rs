@@ -1,3 +1,5 @@
+pub use super::handshake_type::HandshakeType;
+
 use crate::tls13utils::{
     check_eq1, encode_length_u24, eq1, length_u24_encoded, parse_failed, tlserr, Bytes, TLSError,
     U8,
@@ -6,39 +8,6 @@ use crate::tls13utils::{
 use hax_lib::ToInt;
 #[cfg(feature = "hax-pv")]
 use hax_lib::{proverif, pv_constructor};
-
-/// ```TLS
-/// enum {
-///     client_hello(1),
-///     server_hello(2),
-///     new_session_ticket(4),
-///     end_of_early_data(5),
-///     encrypted_extensions(8),
-///     certificate(11),
-///     certificate_request(13),
-///     certificate_verify(15),
-///     finished(20),
-///     key_update(24),
-///     message_hash(254),
-///     (255)
-/// } HandshakeType;
-/// ```
-#[derive(Clone, Copy, Debug, PartialEq)]
-#[repr(u8)]
-#[cfg_attr(feature = "hax-pv", hax_lib::opaque)]
-pub enum HandshakeType {
-    ClientHello = 1,
-    ServerHello = 2,
-    NewSessionTicket = 4,
-    EndOfEarlyData = 5,
-    EncryptedExtensions = 8,
-    Certificate = 11,
-    CertificateRequest = 13,
-    CertificateVerify = 15,
-    Finished = 20,
-    KeyUpdate = 24,
-    MessageHash = 254,
-}
 
 pub fn get_hs_type(t: u8) -> Result<HandshakeType, TLSError> {
     match t {

@@ -17,7 +17,8 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'target/ci-logs/fstar'
 HAX_COMMIT = '5ccf89dd2e996c9f88f2267eaa2a64739c4ca41a'
-MODULES = ['Der.fst', 'Tls13api.fst', 'Tls13crypto.fsti', 'Tls13formats.fst',
+MODULES = ['Der.fst', 'Server.Server_db.fst', 'Server.fst', 'Tls13api.fst', 'Tls13crypto.fsti',
+           'Tls13formats.Handshake_data.fst', 'Tls13formats.Handshake_type.fst', 'Tls13formats.fst',
            'Tls13handshake.fst', 'Tls13keyscheduler.Key_names.fst',
            'Tls13keyscheduler.Key_schedule.fst', 'Tls13keyscheduler.fst']
 

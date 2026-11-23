@@ -29,26 +29,27 @@ honest one. The drop is recorded under Exceptions. Full comparison: formal-cover
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 730 | 13.75% |
+| proven | 791 | 14.90% |
 | tested | 517 | 9.74% |
-| unverified | 4061 | 76.51% |
+| unverified | 4000 | 75.36% |
 
 Total: **5308** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (730 lines); Verus proven: 0 lines.
+`proven-extracted` hax credit (791 lines); Verus proven: 0 lines.
 
-Proof-to-code ratio: **0.70** (509 proof SLoC / 730 proven + proven-extracted runtime SLoC); informational, never blocking.
+Proof-to-code ratio: **0.64** (509 proof SLoC / 791 proven + proven-extracted runtime SLoC); informational, never blocking.
 
 Proof components: 268 hax annotation SLoC, 197 standalone `cfg(hax)` proof-code SLoC, and 57 inline `cfg(hax)` SLoC (overlaps count once). F* models: 18 SLoC of trusted assumptions, excluded from the ratio.
 
 | Module | Proven runtime | Proof SLoC | Proof / proven runtime |
 | --- | ---: | ---: | ---: |
 | bertie_tls::der | 147 | 296 | 2.01 |
+| bertie_tls::server | 32 | 0 | 0.00 |
 | bertie_tls::tls13cert | 0 | 16 | n/a |
 | bertie_tls::tls13crypto::Algorithms | 0 | 13 | n/a |
 | bertie_tls::tls13crypto::HashAlgorithm | 0 | 1 | n/a |
 | bertie_tls::tls13formats | 0 | 74 | n/a |
 | bertie_tls::tls13formats::Transcript | 0 | 1 | n/a |
-| bertie_tls::tls13formats::handshake_data | 0 | 3 | n/a |
+| bertie_tls::tls13formats::handshake_data | 29 | 3 | 0.10 |
 | bertie_tls::tls13formats::handshake_data::HandshakeData | 0 | 12 | n/a |
 | bertie_tls::tls13handshake | 288 | 1 | 0.00 |
 | bertie_tls::tls13keyscheduler | 114 | 0 | 0.00 |
@@ -92,7 +93,16 @@ The tool treats this escape as a hazard, so the affected F* module gets no credi
 remaining after hiding Debug from hax live in the declaration-only
 `Tls13keyscheduler.Key_names` module, which remains a hazard. The credit gain
 comes from proofs that already existed (strict XTR and the rest of the module)
-being separated from trusted declarations, not from new proofs. F* verifies
+being separated from trusted declarations, not from new proofs. The same
+separation now applies to `Tls13formats.Handshake_data` and `Server`: their
+derived-trait assumptions live in declaration-only
+`Tls13formats.Handshake_type` and `Server.Server_db`. Both declaration
+modules remain hazards; the logic modules contain no assumed instances.
+Separation alone earned nothing for these two, because neither was a strict
+F* root: F* loaded them only as dependencies and did not check their bodies.
+They are now strict roots, so their existing extracted code is checked in full
+for the first time. That is where the gain from 730 to 791 proven lines comes
+from. No new proof annotations were added. F* verifies
 XTR strictly, but formal-coverage still leaves its extracted `v_XTR` unmapped,
 so that function receives no runtime proof credit.
 
@@ -141,7 +151,7 @@ scripts/coverage-ratchet MERGE_BASE_BASELINE target/ci-logs/report.json DIFF
 For the local rebuilt toolchain, prefix verification with
 `BERTIE_DOCKER_TOOLS=/Users/gumshoe/src/bertie-toolchain`. It copies the project to
 `target/ci-logs/fstar/workspace`, fetches locked dependencies into a disposable
-cache, extracts frozen sources and checks eight strict F* roots. No proof patch,
+cache, extracts frozen sources and checks twelve strict F* roots. No proof patch,
 admission, lax check or checked cache is used. The original upstream snapshots
 remain in git as historical artifacts; they are not inputs to this verification.
 
