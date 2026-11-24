@@ -112,8 +112,11 @@ pub(crate) fn encrypt_record_payload(
     let clen = inner_plaintext.len() + 16;
     if clen <= 65536 {
         let clenb = (clen as u16).to_be_bytes();
-        let ad = [23, 3, 3, clenb[0], clenb[1]].into();
+        let ad = bytes(&[23, 3, 3, clenb[0], clenb[1]]);
         let cip = aead_encrypt(&key_iv.key, &iv_ctr, &inner_plaintext, &ad)?;
+        // AEAD output is plaintext plus a 16-byte tag; checking it bounds the
+        // record length for F* without trusting the AEAD model.
+        check(cip.len() == clen)?;
         let rec = ad.concat(cip);
         Ok(rec)
     } else {
