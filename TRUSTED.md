@@ -95,3 +95,10 @@ derived only outside hax. Bytes retains Debug because the extracted crypto
 interface derives Debug for a type containing Bytes. All handwritten logic stays in `tls13utils.rs`, whose bodies
 are extracted for strict checking rather than trusted as interface-only. The
 excluded `from_hex` and `random_bytes` helpers remain unproven as described above.
+
+## Certificate parser
+
+`src/tls13cert.rs` is no longer interface-only: its bodies are extracted and checked in strict F*.
+Every offset and length step is checked against the buffer and returns an error when the input is
+too short or inconsistent. `CertificateKey` writes out `Clone` and `Copy` so hax extracts them as
+code rather than as an assumed instance. Nothing in this module is listed as trusted.
