@@ -6,8 +6,16 @@ CI checks the F* proofs from scratch on every run (`scripts/verify-fstar.py`):
 2. F* verifies each module in `MODULES` strictly: no lax mode, no admits, no patches.
 3. The per-module receipt goes to `target/ci-logs/fstar/` and feeds the coverage report.
 
-`libcrux-models/` holds hand-written F* interfaces for the libcrux crypto calls. They are
-trusted assumptions, not proofs, and the coverage report lists them separately.
+`Tls13crypto.Backend` is a generated, interface-only boundary for all libcrux
+calls. Its signatures use Bertie/std types and have no handwritten contracts.
+Strict F* checks the remaining crypto bodies and the algorithm declarations as
+separate roots; the declaration module retains the inherited derived instances.
+
+`libcrux-models/` retains only `Libcrux_ecdsa.P256.Conversions.fsti`, an empty
+namespace required by hax's implicit dependency open in the generated backend
+interface. It declares no type, value, instance or crypto fact. The nine former
+libcrux model interfaces are unused and removed. See TRUSTED.md for the backend
+inventory and upstream verification evidence.
 
 Proof annotations live in the Rust source (`hax_lib::requires`/`ensures`/`fstar!` and
 `#[cfg(hax)]` lemmas, mainly in `src/der.rs`).

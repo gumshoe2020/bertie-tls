@@ -39,16 +39,16 @@ formal-coverage `dev/v182/compare.md` at tag v1.8.2.
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 3332 | 62.89% |
-| tested | 353 | 6.66% |
-| unverified | 1613 | 30.45% |
+| proven | 3635 | 67.29% |
+| tested | 452 | 8.37% |
+| unverified | 1315 | 24.34% |
 
-Total: **5298** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (3332 lines); Verus proven: 0 lines.
+Total: **5402** first-party security runtime SLoC. Proven includes explicitly labelled
+`proven-extracted` hax credit (3635 lines); Verus proven: 0 lines.
 
-Proof-to-code ratio: **0.18** (587 proof SLoC / 3332 proven + proven-extracted runtime SLoC); informational, never blocking.
+Proof-to-code ratio: **0.16** (587 proof SLoC / 3635 proven + proven-extracted runtime SLoC); informational, never blocking.
 
-Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code SLoC, and 61 inline `cfg(hax)` SLoC (overlaps count once). F* models: 18 SLoC of trusted assumptions, excluded from the ratio.
+Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code SLoC, and 61 inline `cfg(hax)` SLoC (overlaps count once). F* models: 1 SLoC of trusted assumptions, excluded from the ratio.
 
 | Module | Proven runtime | Proof SLoC | Proof / proven runtime |
 | --- | ---: | ---: | ---: |
@@ -58,6 +58,9 @@ Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code 
 | bertie_tls::tls13api::Client | 68 | 0 | 0.00 |
 | bertie_tls::tls13api::Server | 63 | 0 | 0.00 |
 | bertie_tls::tls13cert | 306 | 45 | 0.15 |
+| bertie_tls::tls13crypto | 297 | 0 | 0.00 |
+| bertie_tls::tls13crypto::AeadKey | 3 | 0 | 0.00 |
+| bertie_tls::tls13crypto::AeadKeyIV | 3 | 0 | 0.00 |
 | bertie_tls::tls13crypto::Algorithms | 0 | 13 | n/a |
 | bertie_tls::tls13crypto::HashAlgorithm | 0 | 1 | n/a |
 | bertie_tls::tls13formats | 834 | 71 | 0.09 |
@@ -99,6 +102,10 @@ Proven moves from 2,761 to 3,026 lines; no new proof annotations were added.
 **tls13cert (2026-11-23).** tls13cert bodies extracted and proven; parser now checks offsets
 and lengths against the buffer. Proven moves from 3,026 to 3,332 lines (57.16% to 62.89%);
 the module no longer carries an assumed instance, and the proof-to-code ratio is 0.15.
+
+**tls13crypto (2026-11-24).** tls13crypto bodies extracted and proven behind a thin libcrux
+backend; short AEAD ciphertexts and malformed NIST KEM points are now rejected without panicking.
+Proven moves from 3,332 to 3,635 lines (62.89% to 67.29%); the proof-to-code ratio is 0.16.
 
 ## Meaning and limits
 
@@ -147,11 +154,16 @@ from. No new proof annotations were added. F* verifies
 XTR strictly, but formal-coverage still leaves its extracted `v_XTR` unmapped,
 so that function receives no runtime proof credit.
 
-`Tls13crypto.fsti` is an interface-only F* module. F* does not print the
-`Verified module:` line formal-coverage requires for it, so it is checked by
-`scripts/verify-fstar.py` (blocking) and recorded in `interface-only.json`, but not
-listed as a credited module in the receipt. It is trusted abstract-interface code
-either way.
+`Tls13crypto` is now a strict F* body root: algorithm tables, length checks,
+encoding, configuration validation and the extracted name parser are checked
+against the existing contracts. Fixed-byte encodings use the proved
+`Bytes::from_slice` length guarantee. The generated, contract-free
+`Tls13crypto.Backend` interface is the libcrux trust boundary; its implementation
+and excluded RNG/algorithm glue remain trusted. The declaration-only
+`Tls13crypto.Algorithm_types` root retains 25 inherited derived-trait assumptions,
+while the parent crypto body has none. Nine unused libcrux models were removed;
+the remaining file provides only an empty namespace required by hax. These proofs
+establish safety and the stated length contracts, not cryptographic correctness.
 
 Proof-to-code ratio: formal-coverage v1.8 measures hax/F* proof (annotations,
 `cfg(hax)` proof code), so the ratio above is measured, not estimated. About 200 of
@@ -192,7 +204,7 @@ scripts/coverage-ratchet MERGE_BASE_BASELINE target/ci-logs/report.json DIFF
 For the local rebuilt toolchain, prefix verification with
 `BERTIE_DOCKER_TOOLS=/Users/gumshoe/src/bertie-toolchain`. It copies the project to
 `target/ci-logs/fstar/workspace`, fetches locked dependencies into a disposable
-cache, extracts frozen sources and checks fifteen strict F* roots. No proof patch,
+cache, extracts frozen sources and checks eighteen strict F* roots. No proof patch,
 admission, lax check or checked cache is used. The original upstream snapshots
 remain in git as historical artifacts; they are not inputs to this verification.
 

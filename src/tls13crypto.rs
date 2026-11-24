@@ -4,7 +4,10 @@ use hax_lib::{proverif, pv_constructor};
 mod algorithm_types;
 mod backend;
 
-pub use algorithm_types::{HashAlgorithm, KemScheme};
+pub use algorithm_types::{
+    AeadAlgorithm, Algorithms, HashAlgorithm, KemScheme, PublicVerificationKey, RsaVerificationKey,
+    SignatureScheme,
+};
 
 use rand::CryptoRng;
 
@@ -57,48 +60,6 @@ impl AeadKey {
     pub(crate) fn bytes(&self) -> &Bytes {
         &self.bytes
     }
-}
-
-/// An RSA public key.
-#[derive(Debug, Clone)]
-#[cfg_attr(feature = "hax-pv", hax_lib::opaque)]
-pub struct RsaVerificationKey {
-    pub modulus: Bytes,
-    pub exponent: Bytes,
-}
-
-/// Bertie public verification keys.
-#[derive(Debug, Clone)]
-#[cfg_attr(
-    feature = "hax-pv",
-    proverif::replace(
-        "type $:{PublicVerificationKey}.
-
-fun $:{PublicVerificationKey}_to_bitstring(
-      $:{PublicVerificationKey}
-    )
-    : bitstring [typeConverter].
-fun $:{PublicVerificationKey}_from_bitstring(bitstring)
-    : $:{PublicVerificationKey} [typeConverter].
-const $:{PublicVerificationKey}_default_value: $:{PublicVerificationKey}.
-letfun $:{PublicVerificationKey}_default() =
-       $:{PublicVerificationKey}_default_value.
-letfun $:{PublicVerificationKey}_err() =
-       let x = construct_fail() in $:{PublicVerificationKey}_default_value.
-fun ${PublicVerificationKey::EcDsa}($:{Bytes}
-    )
-    : $:{PublicVerificationKey} [data].
-
-fun ${PublicVerificationKey::Rsa}(
-      $:{RsaVerificationKey}
-    )
-    : $:{PublicVerificationKey} [data].
-"
-    )
-)]
-pub enum PublicVerificationKey {
-    EcDsa(VerificationKey),  // Uncompressed point 0x04...
-    Rsa(RsaVerificationKey), // N, e
 }
 
 /// Hash `data` with the given `algorithm`.
@@ -195,14 +156,6 @@ pub(crate) fn hkdf_expand(
     Ok(backend::hkdf_expand_okm(alg, &prk.declassify(), &info.declassify(), len)?.into())
 }
 
-/// AEAD Algorithms for Bertie
-#[derive(Clone, Copy, PartialEq, Debug)]
-pub enum AeadAlgorithm {
-    Chacha20Poly1305,
-    Aes128Gcm,
-    Aes256Gcm,
-}
-
 impl AeadAlgorithm {
     /// Get the key length of the AEAD algorithm in bytes.
     #[cfg_attr(feature = "hax-pv", proverif::replace_body("0"))]
@@ -244,6 +197,10 @@ pub(crate) fn aead_encrypt(
         backend::chacha20poly1305_seal(&key, &iv, &aad.declassify(), &plain.declassify())?;
     let cipby: Bytes = ctxt.into();
     let tagby: Bytes = tag.as_ref().into();
+    // The backend gives no length facts; this rules out overflow when appending the tag.
+    if cipby.len() > usize::MAX - tagby.len() {
+        return tlserr(CRYPTO_ERROR);
+    }
     Ok(cipby.concat(tagby))
 }
 
@@ -273,14 +230,6 @@ pub(crate) fn aead_decrypt(
         backend::chacha20poly1305_open(&key, &iv, &aad.declassify(), &ctxt.declassify(), &tag)?
             .into(),
     )
-}
-
-/// Signature schemes for Bertie.
-#[derive(Clone, Copy, PartialEq, Debug)]
-pub enum SignatureScheme {
-    RsaPssRsaSha256,
-    EcdsaSecp256r1Sha256,
-    ED25519,
 }
 
 /// Sign the `input` with the provided RSA key.
@@ -508,10 +457,12 @@ pub(crate) fn kem_keygen(
             //     "Generated KEM public key: {}",
             //     Bytes::from(pk.encode()).as_hex()
             // );
-            Ok((
-                Bytes::from(sk),
-                encoding_prefix(alg).concat(Bytes::from(pk)),
-            ))
+            let prefix = encoding_prefix(alg);
+            let pk = Bytes::from(pk);
+            if pk.len() > usize::MAX - prefix.len() {
+                return tlserr(CRYPTO_ERROR);
+            }
+            Ok((Bytes::from(sk), prefix.concat(pk)))
         }
         Err(_) => tlserr(CRYPTO_ERROR),
     }
@@ -565,7 +516,12 @@ pub(crate) fn kem_encap(
     let pk = into_raw(alg, pk.clone())?;
     match backend::kem_encapsulate(alg, &pk.declassify(), rng) {
         Ok((shared_secret, ct)) => {
-            let ct = encoding_prefix(alg).concat(Bytes::from(ct));
+            let prefix = encoding_prefix(alg);
+            let ct = Bytes::from(ct);
+            if ct.len() > usize::MAX - prefix.len() {
+                return tlserr(CRYPTO_ERROR);
+            }
+            let ct = prefix.concat(ct);
             let shared_secret = to_shared_secret(alg, Bytes::from(shared_secret))?;
 
             // event!(Level::TRACE, "  output ciphertext: {}", ct.as_hex());
@@ -612,20 +568,6 @@ pub(crate) fn kem_decap(alg: KemScheme, ct: &Bytes, sk: &Bytes) -> Result<Bytes,
         }
         Err(_) => tlserr(CRYPTO_ERROR),
     }
-}
-
-/// The algorithms for Bertie.
-///
-/// Note that this is more than the TLS 1.3 ciphersuite. It contains all
-/// necessary cryptographic algorithms and options.
-#[derive(Clone, Copy, PartialEq, Debug)]
-pub struct Algorithms {
-    pub(crate) hash: HashAlgorithm,
-    pub(crate) aead: AeadAlgorithm,
-    pub(crate) signature: SignatureScheme,
-    pub(crate) kem: KemScheme,
-    pub(crate) psk_mode: bool,
-    pub(crate) zero_rtt: bool,
 }
 
 #[hax_lib::attributes]
@@ -728,9 +670,15 @@ impl Algorithms {
                                     Err(_) => true})]
     pub(crate) fn ciphersuite(&self) -> Result<Bytes, TLSError> {
         match (self.hash, self.aead) {
-            (HashAlgorithm::SHA256, AeadAlgorithm::Aes128Gcm) => Ok([0x13, 0x01].into()),
-            (HashAlgorithm::SHA384, AeadAlgorithm::Aes256Gcm) => Ok([0x13, 0x02].into()),
-            (HashAlgorithm::SHA256, AeadAlgorithm::Chacha20Poly1305) => Ok([0x13, 0x03].into()),
+            (HashAlgorithm::SHA256, AeadAlgorithm::Aes128Gcm) => {
+                Ok(Bytes::from_slice(&[0x13, 0x01]))
+            }
+            (HashAlgorithm::SHA384, AeadAlgorithm::Aes256Gcm) => {
+                Ok(Bytes::from_slice(&[0x13, 0x02]))
+            }
+            (HashAlgorithm::SHA256, AeadAlgorithm::Chacha20Poly1305) => {
+                Ok(Bytes::from_slice(&[0x13, 0x03]))
+            }
             _ => tlserr(UNSUPPORTED_ALGORITHM),
         }
     }
@@ -743,12 +691,12 @@ impl Algorithms {
         Err(_) => true})]
     pub(crate) fn supported_group(&self) -> Result<Bytes, TLSError> {
         match self.kem() {
-            KemScheme::X25519 => Ok([0x00, 0x1D].into()),
-            KemScheme::Secp256r1 => Ok([0x00, 0x17].into()),
+            KemScheme::X25519 => Ok(Bytes::from_slice(&[0x00, 0x1D])),
+            KemScheme::Secp256r1 => Ok(Bytes::from_slice(&[0x00, 0x17])),
             KemScheme::X448 => tlserr(UNSUPPORTED_ALGORITHM),
             KemScheme::Secp384r1 => tlserr(UNSUPPORTED_ALGORITHM),
             KemScheme::Secp521r1 => tlserr(UNSUPPORTED_ALGORITHM),
-            KemScheme::X25519MlKem768 => Ok([0x11, 0xec].into()), // cf. https://datatracker.ietf.org/doc/draft-kwiatkowski-tls-ecdhe-mlkem/
+            KemScheme::X25519MlKem768 => Ok(Bytes::from_slice(&[0x11, 0xec])), // cf. https://datatracker.ietf.org/doc/draft-kwiatkowski-tls-ecdhe-mlkem/
         }
     }
 
@@ -759,8 +707,8 @@ impl Algorithms {
         Err(_) => true})]
     pub(crate) fn signature_algorithm(&self) -> Result<Bytes, TLSError> {
         match self.signature() {
-            SignatureScheme::RsaPssRsaSha256 => Ok([0x08, 0x04].into()),
-            SignatureScheme::EcdsaSecp256r1Sha256 => Ok([0x04, 0x03].into()),
+            SignatureScheme::RsaPssRsaSha256 => Ok(Bytes::from_slice(&[0x08, 0x04])),
+            SignatureScheme::EcdsaSecp256r1Sha256 => Ok(Bytes::from_slice(&[0x04, 0x03])),
             SignatureScheme::ED25519 => tlserr(UNSUPPORTED_ALGORITHM),
         }
     }
@@ -779,7 +727,6 @@ impl Algorithms {
     }
 }
 
-#[hax_lib::opaque]
 impl TryFrom<&str> for Algorithms {
     type Error = Error;
 
