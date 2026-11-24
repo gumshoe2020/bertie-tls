@@ -103,22 +103,37 @@ fn short_length(b: &Bytes, offset: usize) -> Result<usize, Asn1Error> {
     }
 }
 
+/// Move `n` bytes forward from `offset`.
+///
+/// Fails if that would go past the end of `b`, so a returned offset is always
+/// within the buffer (`offset == b.len()` is the end).
+#[hax_lib::ensures(|result| match result {
+    Result::Ok(end) => end <= b.len() && end.lift() == offset.lift() + n.lift(),
+    _ => true })]
+fn advance(b: &Bytes, offset: usize, n: usize) -> Result<usize, Asn1Error> {
+    if offset <= b.len() && b.len() - offset >= n {
+        Ok(offset + n)
+    } else {
+        asn1_error(ASN1_ERROR)
+    }
+}
+
 /// Get the length of an ASN.1 type.
 /// This assumes that the length starts at the beginning of the provided byte
 /// sequence.
 ///
-/// Returns: (offset, length)
+/// Returns: (offset, length), where the offset is the start of the content.
 #[hax_lib::ensures(|result| match result {
-    Result::Ok(_) => b.len() > offset,
+    Result::Ok((content, _)) => b.len() > offset && content <= b.len(),
     _ => true })]
-fn length(b: &Bytes, mut offset: usize) -> Result<(usize, usize), Asn1Error> {
+fn length(b: &Bytes, offset: usize) -> Result<(usize, usize), Asn1Error> {
     if b.len() > offset {
         if b[offset].declassify() & 0x80 == 0 {
             let len = short_length(b, offset)?;
             Ok((offset + 1, len))
         } else {
             let len = length_length(b, offset)?;
-            offset += 1;
+            let offset = offset + 1;
             let end = long_length(b, offset, len)?;
             Ok((offset + len, end))
         }
@@ -127,30 +142,38 @@ fn length(b: &Bytes, mut offset: usize) -> Result<(usize, usize), Asn1Error> {
     }
 }
 
+/// Read the header (tag and length) of a constructed type from the provided bytes.
+///
+/// Returns the new offset into the bytes.
+#[hax_lib::ensures(|result| match result {
+    Result::Ok(next) => next <= b.len(),
+    _ => true })]
+fn read_header(b: &Bytes, offset: usize, tag: u8) -> Result<usize, Asn1Error> {
+    check_tag(b, offset, tag)?;
+    let offset = advance(b, offset, 1)?;
+
+    let length_length = length_length(b, offset)?;
+    advance(b, offset, length_length + 1) // 1 byte is always used for length
+}
+
 /// Read a byte sequence header from the provided bytes.
 ///
 /// Returns the new offset into the bytes.
-fn read_sequence_header(b: &Bytes, mut offset: usize) -> Result<usize, Asn1Error> {
-    check_tag(b, offset, 0x30)?;
-    offset += 1;
-
-    let length_length = length_length(b, offset)?;
-    offset = offset + length_length + 1; // 1 byte is always used for length
-
-    Ok(offset)
+#[hax_lib::ensures(|result| match result {
+    Result::Ok(next) => next <= b.len(),
+    _ => true })]
+fn read_sequence_header(b: &Bytes, offset: usize) -> Result<usize, Asn1Error> {
+    read_header(b, offset, 0x30)
 }
 
 /// Read an octet string from the provided bytes.
 ///
 /// Returns the new offset into the bytes.
-fn read_octet_header(b: &Bytes, mut offset: usize) -> Result<usize, Asn1Error> {
-    check_tag(b, offset, 0x04)?;
-    offset += 1;
-
-    let length_length = length_length(b, offset)?;
-    offset = offset + length_length + 1; // 1 byte is always used for length
-
-    Ok(offset)
+#[hax_lib::ensures(|result| match result {
+    Result::Ok(next) => next <= b.len(),
+    _ => true })]
+fn read_octet_header(b: &Bytes, offset: usize) -> Result<usize, Asn1Error> {
+    read_header(b, offset, 0x04)
 }
 
 /// Check that the tag has a certain value.
@@ -170,17 +193,28 @@ fn check_tag(b: &Bytes, offset: usize, value: u8) -> Result<(), Asn1Error> {
     }
 }
 
-/// Skip a sequence.
-/// XXX: Share code with [read_sequence_header].
+/// Skip a value with the given tag, including its content.
 ///
 /// Returns the new offset into the bytes.
-fn skip_sequence(b: &Bytes, mut offset: usize) -> Result<usize, Asn1Error> {
-    check_tag(b, offset, 0x30u8)?;
-    offset += 1;
+#[hax_lib::ensures(|result| match result {
+    Result::Ok(next) => next <= b.len(),
+    _ => true })]
+fn skip_tagged(b: &Bytes, offset: usize, tag: u8) -> Result<usize, Asn1Error> {
+    check_tag(b, offset, tag)?;
+    let offset = advance(b, offset, 1)?;
 
-    let (offset, length) = length(b, offset)?;
+    let (content, length) = length(b, offset)?;
+    advance(b, content, length)
+}
 
-    Ok(offset + length)
+/// Skip a sequence.
+///
+/// Returns the new offset into the bytes.
+#[hax_lib::ensures(|result| match result {
+    Result::Ok(next) => next <= b.len(),
+    _ => true })]
+fn skip_sequence(b: &Bytes, offset: usize) -> Result<usize, Asn1Error> {
+    skip_tagged(b, offset, 0x30u8)
 }
 
 /// Read the version number.
@@ -188,36 +222,48 @@ fn skip_sequence(b: &Bytes, mut offset: usize) -> Result<usize, Asn1Error> {
 /// offset moving.
 ///
 /// Note that this might be missing. So we don't fail in here.
-fn read_version_number(b: &Bytes, mut offset: usize) -> Result<usize, Asn1Error> {
+#[hax_lib::ensures(|result| match result {
+    Result::Ok(next) => next <= b.len(),
+    _ => true })]
+fn read_version_number(b: &Bytes, offset: usize) -> Result<usize, Asn1Error> {
     match check_tag(b, offset, 0xA0u8) {
         Ok(_) => {
-            offset += 1;
+            let offset = advance(b, offset, 1)?;
 
             let length = short_length(b, offset)?;
-            Ok(offset + 1 + length)
+            let offset = advance(b, offset, 1)?;
+            advance(b, offset, length)
         }
-        Err(_) => Ok(offset),
+        Err(_) => advance(b, offset, 0),
     }
 }
 
 /// Skip an integer.
 /// We don't really care, just check that it's some valid structure and keep the
 /// offset moving.
-fn skip_integer(b: &Bytes, mut offset: usize) -> Result<usize, Asn1Error> {
-    check_tag(b, offset, 0x02u8)?;
-    offset += 1;
+#[hax_lib::ensures(|result| match result {
+    Result::Ok(next) => next <= b.len(),
+    _ => true })]
+fn skip_integer(b: &Bytes, offset: usize) -> Result<usize, Asn1Error> {
+    skip_tagged(b, offset, 0x02u8)
+}
 
-    let (offset, length) = length(b, offset)?;
-    Ok(offset + length)
+/// Copy `len` bytes starting at `offset`, if they are all within `b`.
+#[hax_lib::ensures(|result| match result {
+    Result::Ok(bytes) => bytes.len() == len,
+    _ => true })]
+fn read_slice(b: &Bytes, offset: usize, len: usize) -> Result<Bytes, Asn1Error> {
+    advance(b, offset, len)?;
+    Ok(b.slice(offset, len))
 }
 
 /// Read an integer and return a copy of the actual bytes.
-fn read_integer(b: &Bytes, mut offset: usize) -> Result<Bytes, Asn1Error> {
+fn read_integer(b: &Bytes, offset: usize) -> Result<Bytes, Asn1Error> {
     check_tag(b, offset, 0x02u8)?;
-    offset += 1;
+    let offset = advance(b, offset, 1)?;
 
-    let (offset, length) = length(b, offset)?;
-    Ok(b.slice(offset, length))
+    let (content, length) = length(b, offset)?;
+    read_slice(b, content, length)
 }
 
 pub(crate) type Spki = (SignatureScheme, CertificateKey);
@@ -240,83 +286,83 @@ fn check_success(val: bool) -> Result<(), Asn1Error> {
     }
 }
 
-/// Read the spki from the `cert`.
-///
-/// Returns an error or the [`Spki`].
-fn read_spki(cert: &Bytes, mut offset: usize) -> Result<Spki, Asn1Error> {
-    check_tag(cert, offset, 0x30u8)?;
-    offset += 1;
+/// Check that the `expected` OID is at `offset`, where the OID has length `len`.
+#[hax_lib::ensures(|result| match result {
+    Result::Ok(true) => len == expected.len(),
+    _ => true })]
+fn has_oid(cert: &Bytes, offset: usize, len: usize, expected: &Bytes) -> Result<bool, Asn1Error> {
+    if len != expected.len() {
+        return Ok(false);
+    }
+    advance(cert, offset, len)?;
+    let mut equal = true;
+    for i in 0..expected.len() {
+        let oid_byte_equal = cert[offset + i].declassify() == expected[i].declassify();
+        equal = equal && oid_byte_equal;
+    }
+    Ok(equal)
+}
 
-    let (mut offset, _seq_len) = length(cert, offset)?;
-
-    // The algorithm name is another sequence
-    check_tag(cert, offset, 0x30u8)?;
-    offset += 1;
-    let (mut offset, seq_len) = length(cert, offset)?;
+/// Read the algorithm OID(s) at `offset` and return the signature scheme.
+fn read_algorithm(cert: &Bytes, offset: usize) -> Result<SignatureScheme, Asn1Error> {
     // OID Tag
     check_tag(cert, offset, 0x06u8)?;
     // OID length
-    let (mut oid_offset, oid_len) = length(cert, offset + 1)?;
-    let (mut ec_pk_oid, mut ecdsa_p256, mut rsa_pk_oid) = (false, false, false);
-    let ec_oid = x962_ec_public_key_oid();
-    let rsa_oid = rsa_pkcs1_encryption_oid();
-    // Check OID
-    if ec_oid.len() == oid_len {
-        ec_pk_oid = true;
-        for i in 0..ec_oid.len() {
-            let oid_byte_equal = cert[oid_offset + i].declassify() == ec_oid[i].declassify();
-            ec_pk_oid = ec_pk_oid && oid_byte_equal;
-        }
-        if ec_pk_oid {
-            oid_offset += oid_len;
-            check_tag(cert, oid_offset, 0x06u8)?;
-            oid_offset += 1;
-            let (oid_offset, _oid_len) = length(cert, oid_offset)?;
-            ecdsa_p256 = true;
-            // In this case we also need to read the curve OID.
-            let ec_oid = ecdsa_secp256r1_sha256_oid();
-            for i in 0..ec_oid.len() {
-                let oid_byte_equal = cert[oid_offset + i].declassify() == ec_oid[i].declassify();
-                ecdsa_p256 = ecdsa_p256 && oid_byte_equal;
-            }
-            check_success(ecdsa_p256)?;
-        }
+    let (oid_offset, oid_len) = length(cert, offset + 1)?;
+    if has_oid(cert, oid_offset, oid_len, &x962_ec_public_key_oid())? {
+        // In this case we also need to read the curve OID.
+        let curve_tag = advance(cert, oid_offset, oid_len)?;
+        check_tag(cert, curve_tag, 0x06u8)?;
+        let (curve_offset, _curve_len) = length(cert, curve_tag + 1)?;
+        let ec_oid = ecdsa_secp256r1_sha256_oid();
+        // The curve OID is compared over the length of the expected OID.
+        check_success(has_oid(cert, curve_offset, ec_oid.len(), &ec_oid)?)?;
+        Ok(SignatureScheme::EcdsaSecp256r1Sha256)
+    } else if has_oid(cert, oid_offset, oid_len, &rsa_pkcs1_encryption_oid())? {
+        Ok(SignatureScheme::RsaPssRsaSha256)
+    } else {
+        asn1_error(ASN1_ERROR)
     }
-    if rsa_oid.len() == oid_len {
-        rsa_pk_oid = true;
-        for i in 0..rsa_oid.len() {
-            let oid_byte_equal = cert[oid_offset + i].declassify() == rsa_oid[i].declassify();
-            rsa_pk_oid = rsa_pk_oid && oid_byte_equal;
-        }
-    }
-    check_success((ec_pk_oid && ecdsa_p256) || rsa_pk_oid)?;
+}
 
+/// Read the bit string holding the public key and return where the key is.
+fn read_key_bits(cert: &Bytes, offset: usize) -> Result<CertificateKey, Asn1Error> {
+    check_tag(cert, offset, 0x03u8)?;
+    let offset = advance(cert, offset, 1)?;
+    let (offset, bit_string_len) = length(cert, offset)?;
+    advance(cert, offset, bit_string_len)?;
+    if bit_string_len == 0 {
+        return asn1_error(ASN1_INVALID_CERTIFICATE);
+    }
+    // The public key is a bit string. Let's find the start of the actual
+    // DER structure in there.
+    if cert[offset].declassify() == 0x00 {
+        // There's a 0x00 at the end of the length
+        Ok(CertificateKey(offset + 1, bit_string_len - 1))
+    } else {
+        Ok(CertificateKey(offset, bit_string_len - 1))
+    }
+}
+
+/// Read the spki from the `cert`.
+///
+/// Returns an error or the [`Spki`].
+fn read_spki(cert: &Bytes, offset: usize) -> Result<Spki, Asn1Error> {
+    check_tag(cert, offset, 0x30u8)?;
+    let offset = advance(cert, offset, 1)?;
+    let (offset, _seq_len) = length(cert, offset)?;
+
+    // The algorithm name is another sequence
+    check_tag(cert, offset, 0x30u8)?;
+    let offset = advance(cert, offset, 1)?;
+    let (algorithm, seq_len) = length(cert, offset)?;
     // Skip all the way to the end of the sequence.
     // RSA has a NULL element in there as well. We don't care.
-    offset += seq_len;
+    let key_offset = advance(cert, algorithm, seq_len)?;
 
-    // The public key is now a bit string. Let's find the start of the actual
-    // DER structure in there.
-    check_tag(cert, offset, 0x03u8)?;
-    offset += 1;
-    let (mut offset, bit_string_len) = length(cert, offset)?;
-    if cert[offset].declassify() == 0x00 {
-        offset += 1; // There's a 0x00 at the end of the length
-    }
-
-    if ec_pk_oid && ecdsa_p256 {
-        Ok((
-            SignatureScheme::EcdsaSecp256r1Sha256,
-            CertificateKey(offset, bit_string_len - 1),
-        ))
-    } else if rsa_pk_oid {
-        Ok((
-            SignatureScheme::RsaPssRsaSha256,
-            CertificateKey(offset, bit_string_len - 1),
-        ))
-    } else {
-        asn1_error(ASN1_INVALID_CERTIFICATE)
-    }
+    let scheme = read_algorithm(cert, algorithm)?;
+    let key = read_key_bits(cert, key_offset)?;
+    Ok((scheme, key))
 }
 
 /// Basic, but complete ASN.1 parser to read the public key from an X.509
@@ -381,8 +427,9 @@ pub(crate) fn verification_key_from_cert(cert: &Bytes) -> Result<Spki, Asn1Error
 }
 
 /// Read the EC PK from the cert as uncompressed point.
+///
+/// `indices` is checked against `cert`, so it can be any value.
 #[hax_lib::pv_constructor]
-#[hax_lib::requires(indices.1 > 0 && cert.len().lift() >= indices.0.lift() + indices.1.lift())]
 pub(crate) fn ecdsa_public_key(
     cert: &Bytes,
     indices: CertificateKey,
@@ -390,9 +437,13 @@ pub(crate) fn ecdsa_public_key(
     let CertificateKey(offset, len) = indices;
 
     check_tag(cert, offset, 0x04u8)?; // We only support uncompressed
+    if len == 0 {
+        return asn1_error(ASN1_ERROR);
+    }
+    advance(cert, offset, len)?;
 
     // Return the uncompressed point
-    Ok(cert.slice(offset + 1, len - 1)) // Drop the 0x04 here.
+    read_slice(cert, offset + 1, len - 1) // Drop the 0x04 here.
 }
 
 #[hax_lib::pv_constructor]
@@ -400,26 +451,18 @@ pub(crate) fn rsa_public_key(
     cert: &Bytes,
     indices: CertificateKey,
 ) -> Result<RsaVerificationKey, Asn1Error> {
-    let CertificateKey(mut offset, _len) = indices;
+    let CertificateKey(offset, _len) = indices;
 
     // An RSA PK is a sequence of modulus N and public exponent e,
     // each encoded as integer.
-    check_tag(cert, offset, 0x30u8)?;
-    offset += 1;
-    let (mut offset, _seq_len) = length(cert, offset)?;
+    let offset = read_sequence_header(cert, offset)?;
 
     // Integer: N
-    check_tag(cert, offset, 0x02u8)?;
-    offset += 1;
-    let (mut offset, int_len) = length(cert, offset)?;
-    let n = cert.slice(offset, int_len);
-    offset += int_len;
+    let n = read_integer(cert, offset)?;
+    let offset = skip_integer(cert, offset)?;
 
     // Integer: e
-    check_tag(cert, offset, 0x02u8)?;
-    offset += 1;
-    let (offset, int_len) = length(cert, offset)?;
-    let e = cert.slice(offset, int_len);
+    let e = read_integer(cert, offset)?;
 
     Ok(RsaVerificationKey {
         modulus: n,
@@ -552,6 +595,25 @@ mod unit_test {
     fn rsa_cert() {
         let cert = GOO_GL_DER.into();
         test(&cert);
+    }
+
+    #[test]
+    #[cfg(feature = "std")]
+    fn valid_certificates_give_the_expected_keys() {
+        let cert: Bytes = CLOUDFLARE_COM_DER.into();
+        let spki = verification_key_from_cert(&cert).unwrap();
+        let Ok(PublicVerificationKey::EcDsa(point)) = cert_public_key(&cert, &spki) else {
+            panic!("expected an ECDSA key");
+        };
+        assert_eq!(point.declassify(), CLOUDFLARE_COM_DER[0x122..0x122 + 64]);
+
+        let cert: Bytes = GOO_GL_DER.into();
+        let spki = verification_key_from_cert(&cert).unwrap();
+        let Ok(PublicVerificationKey::Rsa(key)) = cert_public_key(&cert, &spki) else {
+            panic!("expected an RSA key");
+        };
+        assert_eq!(key.modulus.declassify(), GOO_GL_DER[0x107..0x107 + 257]);
+        assert_eq!(key.exponent.declassify(), [0x01, 0x00, 0x01]);
     }
 
     /// Parse `input` fully; malformed input must give an error, never a panic.
