@@ -1461,59 +1461,59 @@
       "line": 83
     },
     {
-      "end_line": 122,
+      "end_line": 125,
       "file": "src/tls13record.rs",
       "line": 99
     },
     {
-      "end_line": 133,
+      "end_line": 136,
       "file": "src/tls13record.rs",
-      "line": 124
+      "line": 127
     },
     {
-      "end_line": 161,
+      "end_line": 164,
       "file": "src/tls13record.rs",
-      "line": 135
+      "line": 138
     },
     {
-      "end_line": 183,
+      "end_line": 186,
       "file": "src/tls13record.rs",
-      "line": 165
+      "line": 168
     },
     {
-      "end_line": 203,
+      "end_line": 206,
       "file": "src/tls13record.rs",
-      "line": 185
+      "line": 188
     },
     {
-      "end_line": 240,
+      "end_line": 243,
       "file": "src/tls13record.rs",
-      "line": 205
+      "line": 208
     },
     {
-      "end_line": 289,
+      "end_line": 292,
       "file": "src/tls13record.rs",
-      "line": 242
+      "line": 245
     },
     {
-      "end_line": 306,
+      "end_line": 309,
       "file": "src/tls13record.rs",
-      "line": 291
+      "line": 294
     },
     {
-      "end_line": 320,
+      "end_line": 323,
       "file": "src/tls13record.rs",
-      "line": 308
+      "line": 311
     },
     {
-      "end_line": 330,
+      "end_line": 333,
       "file": "src/tls13record.rs",
-      "line": 322
+      "line": 325
     },
     {
-      "end_line": 343,
+      "end_line": 346,
       "file": "src/tls13record.rs",
-      "line": 331
+      "line": 334
     },
     {
       "end_line": 22,
@@ -1956,22 +1956,22 @@
       "line": 1047
     }
   ],
-  "proof_ratio": 0.20210068815646504,
+  "proof_ratio": 0.1844018506278916,
   "proof_sloc": 558,
-  "proven": 2761,
+  "proven": 3026,
   "schema": 1,
   "scope": "first-party security runtime",
   "statuses": {
     "hazard": 0,
     "proven": 0,
     "proven-bounded": 0,
-    "proven-extracted": 2761,
+    "proven-extracted": 3026,
     "proven-upstream": 0,
     "tested": 343,
-    "trusted": 1118,
+    "trusted": 854,
     "unverified": 1071
   },
   "tested": 343,
-  "total": 5293,
-  "unverified": 2189
+  "total": 5294,
+  "unverified": 1925
 }

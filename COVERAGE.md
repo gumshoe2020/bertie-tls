@@ -39,14 +39,14 @@ formal-coverage `dev/v182/compare.md` at tag v1.8.2.
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 2761 | 52.16% |
+| proven | 3026 | 57.16% |
 | tested | 343 | 6.48% |
-| unverified | 2189 | 41.36% |
+| unverified | 1925 | 36.36% |
 
-Total: **5293** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (2761 lines); Verus proven: 0 lines.
+Total: **5294** first-party security runtime SLoC. Proven includes explicitly labelled
+`proven-extracted` hax credit (3026 lines); Verus proven: 0 lines.
 
-Proof-to-code ratio: **0.20** (558 proof SLoC / 2761 proven + proven-extracted runtime SLoC); informational, never blocking.
+Proof-to-code ratio: **0.18** (558 proof SLoC / 3026 proven + proven-extracted runtime SLoC); informational, never blocking.
 
 Proof components: 293 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code SLoC, and 61 inline `cfg(hax)` SLoC (overlaps count once). F* models: 18 SLoC of trusted assumptions, excluded from the ratio.
 
@@ -68,7 +68,8 @@ Proof components: 293 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code 
 | bertie_tls::tls13handshake | 708 | 1 | 0.00 |
 | bertie_tls::tls13keyscheduler | 201 | 0 | 0.00 |
 | bertie_tls::tls13keyscheduler::key_schedule | 181 | 0 | 0.00 |
-| bertie_tls::tls13record | 0 | 6 | n/a |
+| bertie_tls::tls13record | 252 | 6 | 0.02 |
+| bertie_tls::tls13record::DuplexCipherStateH | 13 | 0 | 0.00 |
 | bertie_tls::tls13utils | 288 | 106 | 0.37 |
 | bertie_tls::tls13utils::<constC:usize>From<&[u8 ; C]>forBytes | 0 | 1 | n/a |
 | bertie_tls::tls13utils::<constC:usize>From<[u8 ; C]>forBytes | 0 | 1 | n/a |
@@ -85,6 +86,14 @@ stronger length postconditions. Numeric impl-method mappings still receive no
 coverage credit; no mapping workaround was used. `from_hex` and `random_bytes`
 remain excluded and unproven, and the byte type declarations retain six inherited
 derived-trait assumptions in their declaration-only module.
+
+`Tls13record` is now a strict F* root. Its extracted code was already complete, but
+F* loaded it only as a dependency of the handshake and never checked its bodies.
+One proof obligation failed: the `concat` length bound in `encrypt_record_payload`.
+The record header is now built with `bytes`, whose length postcondition F* can see
+through the module interface, and a runtime check that the AEAD output is exactly
+plaintext plus tag bounds the ciphertext without adding a trusted AEAD length fact.
+Proven moves from 2,761 to 3,026 lines; no new proof annotations were added.
 
 
 ## Meaning and limits
