@@ -530,11 +530,14 @@ fn encoding_prefix(alg: KemScheme) -> Bytes {
 
 /// Note that the `encode` in libcrux operates on the raw
 /// concatenation of bytes. We have to work with uncompressed NIST points here.
-fn into_raw(alg: KemScheme, point: Bytes) -> Bytes {
+fn into_raw(alg: KemScheme, point: Bytes) -> Result<Bytes, TLSError> {
     if alg == KemScheme::Secp256r1 || alg == KemScheme::Secp384r1 || alg == KemScheme::Secp521r1 {
-        point.slice_range(1..point.len())
+        if point.len() == 0 || point[0] != U8(0x04) {
+            return tlserr(CRYPTO_ERROR);
+        }
+        Ok(point.slice_range(1..point.len()))
     } else {
-        point
+        Ok(point)
     }
 }
 
@@ -559,11 +562,11 @@ pub(crate) fn kem_encap(
     // event!(Level::DEBUG, "KEM Encaps with {alg:?}");
     // event!(Level::TRACE, "  pk:  {}", pk.as_hex());
 
-    let pk = into_raw(alg, pk.clone());
+    let pk = into_raw(alg, pk.clone())?;
     match backend::kem_encapsulate(alg, &pk.declassify(), rng) {
         Ok((shared_secret, ct)) => {
             let ct = encoding_prefix(alg).concat(Bytes::from(ct));
-            let shared_secret = to_shared_secret(alg, Bytes::from(shared_secret));
+            let shared_secret = to_shared_secret(alg, Bytes::from(shared_secret))?;
 
             // event!(Level::TRACE, "  output ciphertext: {}", ct.as_hex());
             Ok((shared_secret, ct))
@@ -573,13 +576,16 @@ pub(crate) fn kem_encap(
 }
 
 /// We only want the X coordinate for points on NIST curves.
-fn to_shared_secret(alg: KemScheme, shared_secret: Bytes) -> Bytes {
+fn to_shared_secret(alg: KemScheme, shared_secret: Bytes) -> Result<Bytes, TLSError> {
     if alg == KemScheme::Secp256r1 {
-        shared_secret.slice_range(0..32)
+        if shared_secret.len() < 32 {
+            return tlserr(CRYPTO_ERROR);
+        }
+        Ok(shared_secret.slice_range(0..32))
     } else if alg == KemScheme::Secp384r1 || alg == KemScheme::Secp521r1 {
-        unimplemented!("not supported yet");
+        tlserr(CRYPTO_ERROR)
     } else {
-        shared_secret
+        Ok(shared_secret)
     }
 }
 
@@ -597,11 +603,11 @@ pub(crate) fn kem_decap(alg: KemScheme, ct: &Bytes, sk: &Bytes) -> Result<Bytes,
     // event!(Level::DEBUG, "KEM Decaps with {alg:?}");
     // event!(Level::TRACE, "  with ciphertext: {}", ct.as_hex());
 
-    let ct = into_raw(alg, ct.clone()).declassify();
+    let ct = into_raw(alg, ct.clone())?.declassify();
     match backend::kem_decapsulate(alg, &ct, &sk.declassify()) {
         Ok(shared_secret) => {
             // event!(Level::TRACE, "  shared secret: {}", shared_secret.as_hex());
-            let shared_secret = to_shared_secret(alg, shared_secret.into());
+            let shared_secret = to_shared_secret(alg, shared_secret.into())?;
             Ok(shared_secret)
         }
         Err(_) => tlserr(CRYPTO_ERROR),
@@ -912,6 +918,53 @@ mod maintained_kem_tests {
 #[cfg(test)]
 mod malformed_kem_input_tests {
     use super::*;
+    use std::vec;
+
+    #[test]
+    fn nist_shares_require_uncompressed_prefix() {
+        let mut rng = rand::rng();
+        let sk = Bytes::from([1u8; 32]);
+        for alg in [
+            KemScheme::Secp256r1,
+            KemScheme::Secp384r1,
+            KemScheme::Secp521r1,
+        ] {
+            for point in [
+                Bytes::new(),
+                Bytes::from([0x00]),
+                Bytes::from([0x02; 65]),
+                Bytes::from([0x03; 65]),
+            ] {
+                assert_eq!(into_raw(alg, point.clone()), Err(CRYPTO_ERROR));
+                assert_eq!(kem_encap(alg, &point, &mut rng), Err(CRYPTO_ERROR));
+                assert_eq!(kem_decap(alg, &point, &sk), Err(CRYPTO_ERROR));
+            }
+            let point = Bytes::from([0x04, 1, 2]);
+            assert_eq!(into_raw(alg, point), Ok(Bytes::from([1, 2])));
+        }
+    }
+
+    #[test]
+    fn shared_secret_checks_bounds_and_unsupported_curves() {
+        for len in 0..32 {
+            assert_eq!(
+                to_shared_secret(KemScheme::Secp256r1, Bytes::from(vec![0; len])),
+                Err(CRYPTO_ERROR)
+            );
+        }
+        let secret = Bytes::from([7; 64]);
+        assert_eq!(
+            to_shared_secret(KemScheme::Secp256r1, secret.clone()),
+            Ok(Bytes::from([7; 32]))
+        );
+        for alg in [KemScheme::Secp384r1, KemScheme::Secp521r1] {
+            assert_eq!(to_shared_secret(alg, secret.clone()), Err(CRYPTO_ERROR));
+        }
+        for alg in [KemScheme::X25519, KemScheme::X25519MlKem768] {
+            assert_eq!(into_raw(alg, secret.clone()), Ok(secret.clone()));
+            assert_eq!(to_shared_secret(alg, secret.clone()), Ok(secret.clone()));
+        }
+    }
 
     #[test]
     fn encap_rejects_empty_nist_public_key() {
