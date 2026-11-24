@@ -1,20 +1,65 @@
 # Maintained Bertie trust boundary
 
-Updated 2026-11-22.
+Updated 2026-11-23.
 
-The F* protocol checks use the existing abstract cryptographic interface; they do
-not prove libcrux implementations, entropy, or correspondence to that interface.
+## Cryptographic backend
 
-`src/tls13crypto.rs::non_hax` is deliberately excluded from hax extraction.
-`KemRng` forwards rand 0.9 CryptoRng to rand_core 0.10 TryCryptoRng through
-try_next_u32, try_next_u64 and try_fill_bytes (infallible, same caller RNG).
-The key_gen and encapsulate wrappers keep the new trait instances entirely
-inside this boundary, avoiding an unresolved implicit open in the extracted
-crypto interface. These five functions are trusted compatibility glue, not
-proven items. They preserve libcrux errors, output and randomness source.
-Retained-group handshake and key-share/shared-secret tests exercise the wiring.
-Algorithms::validate is also trusted configuration-rejection glue.
-No proof item, assumption, or generated proof patch is changed by this repair.
+`src/tls13crypto/backend.rs` is the libcrux trust boundary. hax generates its
+interface from Rust; F* checks signatures only. No backend function carries a
+precondition or postcondition. In particular, F* assumes no digest, ciphertext,
+public-key or shared-secret length beyond the signature's fixed-size arrays.
+The Rust wrappers, error translation, allocation, encoding, dependency dispatch
+and correspondence to upstream crypto remain trusted. Upstream verification
+claims below do not establish those wrapper properties or entropy quality.
+
+The inventory covers all feature gates, including algorithms outside the pinned
+F* extraction. Versions are resolved from Cargo.lock. Evidence was inspected in
+`~/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/` on 2026-11-23:
+each named crate's README.md and src/lib.rs, plus the implementation paths below.
+No upstream proof was rerun.
+
+| Backend function | Direct libcrux crate/version | Upstream status and source evidence |
+| --- | --- | --- |
+| `sha2_digest` | libcrux-sha2 0.0.3 | HACL*-verified implementation; README Verification section, src/lib.rs exports impl_hacl and generated hacl code. |
+| `hmac_compute` | libcrux-hmac 0.0.3 | HACL*-verified implementation; README Verification section and src/impl_hacl.rs. |
+| `hkdf_extract_prk` | libcrux-hkdf 0.0.3 | HACL*-verified implementation; README Verification section and src/impl_hacl.rs. |
+| `hkdf_expand_okm` | libcrux-hkdf 0.0.3 | Same evidence as hkdf_extract_prk. |
+| `chacha20poly1305_seal` | libcrux-chacha20poly1305 0.0.9 | HACL*-verified ChaCha20-Poly1305 implementation; README Verification section and src/impl_hacl.rs. The README excludes XChaCha wrappers, which this backend does not call. |
+| `chacha20poly1305_open` | libcrux-chacha20poly1305 0.0.9 | Same evidence as chacha20poly1305_seal. |
+| `ecdsa_p256_sha256_sign` | libcrux-ecdsa 0.0.3 | HACL*-verified implementation; README Verification section, src/lib.rs describes verified P-curve ECDSA. Randomness and our signature conversion remain trusted. |
+| `ecdsa_p256_sha256_verify` | libcrux-ecdsa 0.0.3 | Same upstream evidence as ecdsa_p256_sha256_sign. |
+| `ed25519_sign` | libcrux-ed25519 0.0.9 | HACL*-verified implementation; README Verification section and src/lib.rs generated hacl/impl_hacl modules. |
+| `ed25519_verify` | libcrux-ed25519 0.0.9 | Same evidence as ed25519_sign. |
+| `rsa_pss_sha256_sign` | libcrux-rsa 0.0.2 | HACL*-verified implementation; README Verification section and src/lib.rs hacl/impl_hacl exports. Our modulus slicing and fixed signature buffer remain trusted. |
+| `rsa_pss_sha256_verify` | libcrux-rsa 0.0.2 | Same upstream evidence as rsa_pss_sha256_sign. |
+| `kem_generate` | libcrux-kem 0.0.10 | Verification of the KEM interface/composition is not established: README explicitly marks it pre-verification. See component evidence below. |
+| `kem_encapsulate` | libcrux-kem 0.0.10 | Same status as kem_generate, including decode/encode and hybrid composition. |
+| `kem_decapsulate` | libcrux-kem 0.0.10 | Same status as kem_generate. |
+
+The KEM component claims do not upgrade the generic libcrux-kem wrapper:
+libcrux-ecdh 0.0.9's README Verification section claims HACL*-verified code;
+libcrux-ml-kem 0.0.11's README Verification section claims hax/F* verification
+for ML-KEM (and separately calls the optional Kyber implementation unverified).
+The ML-KEM README links proofs/verification_status.md, which is not shipped in
+the inspected registry crate, so detailed per-function verification status is
+not established here. Hybrid composition is not claimed verified.
+
+`src/tls13crypto/backend.rs::non_hax` is deliberately excluded from hax.
+Its four algorithm translators return libcrux-specific enums. `KemRng` forwards
+rand 0.9 CryptoRng to rand_core 0.10 TryCryptoRng through try_next_u32,
+try_next_u64 and try_fill_bytes (infallible, same caller RNG). Its key_gen and
+encapsulate wrappers keep those trait instances inside the boundary. The three
+RNG methods, two wrappers and four translators remain trusted compatibility
+glue. Retained-group handshake and key-share/shared-secret tests exercise wiring.
+
+The generated backend interface still opens
+`Libcrux_ecdsa.P256.Conversions` as an implicit trait dependency. The sole
+remaining file in `proofs/fstar/libcrux-models` supplies only that empty namespace:
+no value, type, instance or cryptographic claim. The nine unused models are
+removed.
+
+Algorithms::validate is included in strict crypto body checking; it is no
+longer an interface-only trusted configuration helper.
 
 ## Known defects in unreachable PSK code
 
@@ -37,6 +82,19 @@ re-enabled (ask in an issue first, per AGENTS.md). The failing binder
 regression lives on branch `fix/psk-trunc-len`, not on main.
 
 ## Derived-trait instances
+
+`src/tls13crypto/algorithm_types.rs` contains declarations only: HashAlgorithm,
+KemScheme, AeadAlgorithm, SignatureScheme, Algorithms, RsaVerificationKey and
+PublicVerificationKey. Original paths are re-exported from tls13crypto. hax
+retains 25 inherited existence-only instances: six for HashAlgorithm, five for
+KemScheme, four each for AeadAlgorithm, SignatureScheme and Algorithms, and
+one Debug instance each for the two verification-key types. Clone bodies are
+extracted. This module is a strict root, but those assumptions remain hazards;
+no behavioral property follows from an instance's mere existence. All handwritten
+logic remains in tls13crypto.rs. The original opaque TryFrom instance was removed:
+hax now extracts and checks the actual name parser, including its error formatting.
+The existing non-hax Display implementation remains outside F* coverage.
+
 
 `src/tls13keyscheduler/key_names.rs` holds declarations only: `TLSnames`
 and `Label`, with their derive attributes. hax assumes the existence of
