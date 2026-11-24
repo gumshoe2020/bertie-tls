@@ -1,71 +1,6 @@
 {
   "inventory": [
     {
-      "end_line": 256,
-      "file": "bogo_shim/src/main.rs",
-      "line": 108
-    },
-    {
-      "end_line": 262,
-      "file": "bogo_shim/src/main.rs",
-      "line": 259
-    },
-    {
-      "end_line": 272,
-      "file": "bogo_shim/src/main.rs",
-      "line": 266
-    },
-    {
-      "end_line": 276,
-      "file": "bogo_shim/src/main.rs",
-      "line": 274
-    },
-    {
-      "end_line": 41,
-      "file": "record/src/debug.rs",
-      "line": 6
-    },
-    {
-      "end_line": 48,
-      "file": "record/src/debug.rs",
-      "line": 46
-    },
-    {
-      "end_line": 24,
-      "file": "record/src/lib.rs",
-      "line": 22
-    },
-    {
-      "end_line": 30,
-      "file": "record/src/lib.rs",
-      "line": 28
-    },
-    {
-      "end_line": 29,
-      "file": "record/src/stream.rs",
-      "line": 24
-    },
-    {
-      "end_line": 113,
-      "file": "record/src/stream.rs",
-      "line": 36
-    },
-    {
-      "end_line": 125,
-      "file": "record/src/stream.rs",
-      "line": 115
-    },
-    {
-      "end_line": 83,
-      "file": "simple_https_client/src/tls13client.rs",
-      "line": 34
-    },
-    {
-      "end_line": 82,
-      "file": "simple_https_server/src/tls13server.rs",
-      "line": 42
-    },
-    {
       "end_line": 88,
       "file": "src/der.rs",
       "line": 84
@@ -299,31 +234,6 @@
       "end_line": 346,
       "file": "src/stream/server.rs",
       "line": 338
-    },
-    {
-      "end_line": 11,
-      "file": "src/test_utils.rs",
-      "line": 9
-    },
-    {
-      "end_line": 15,
-      "file": "src/test_utils.rs",
-      "line": 13
-    },
-    {
-      "end_line": 21,
-      "file": "src/test_utils.rs",
-      "line": 19
-    },
-    {
-      "end_line": 25,
-      "file": "src/test_utils.rs",
-      "line": 23
-    },
-    {
-      "end_line": 29,
-      "file": "src/test_utils.rs",
-      "line": 27
     },
     {
       "end_line": 50,
@@ -2071,22 +1981,22 @@
       "line": 1047
     }
   ],
-  "proof_ratio": 0.16148555708390647,
+  "proof_ratio": 0.15545550847457626,
   "proof_sloc": 587,
-  "proven": 3635,
+  "proven": 3776,
   "schema": 1,
   "scope": "first-party security runtime",
   "statuses": {
     "hazard": 0,
     "proven": 0,
     "proven-bounded": 0,
-    "proven-extracted": 3635,
+    "proven-extracted": 3776,
     "proven-upstream": 0,
-    "tested": 452,
+    "tested": 421,
     "trusted": 118,
-    "unverified": 1197
+    "unverified": 763
   },
-  "tested": 452,
-  "total": 5402,
-  "unverified": 1315
+  "tested": 421,
+  "total": 5078,
+  "unverified": 881
 }

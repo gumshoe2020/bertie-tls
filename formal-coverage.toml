@@ -11,3 +11,8 @@ models = ["proofs/fstar/libcrux-models/*.fsti"]
 # hax-pv gates ProverIf-only attributes; F* extraction never enables it.
 inactive_features = ["hax-pv"]
 reason = "hax-driver.py enables hax-pv only for ProverIf extraction (cargo_hax_into_pv); extract-fstar uses cargo_hax_into without it"
+
+[ship]
+packages = ["bertie-tls"]
+features = ["default"]
+reason = "Only the bertie-tls library with default features ships; benches, bogo_shim, record, the example client/server and integration tests do not"
