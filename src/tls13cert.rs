@@ -54,7 +54,12 @@ pub(crate) fn asn1_error<T>(err: Asn1Error) -> Result<T, Asn1Error> {
 fn long_length(b: &Bytes, offset: usize, len: usize) -> Result<usize, Asn1Error> {
     if len > 4 {
         asn1_error(ASN1_SEQUENCE_TOO_LONG)
-    } else if b.len() >= offset + len {
+    } else if len == 0 {
+        // 0x80 (indefinite length) is not valid DER. Rejecting it also keeps the
+        // shift below under 32 bits, which matters where usize is 32 bits.
+        asn1_error(ASN1_ERROR)
+    } else if b.len() >= offset && b.len() - offset >= len {
+        // Written without `offset + len` so it cannot overflow on hostile offsets.
         let mut u32word = [U8(0); 4];
         u32word[0..len].copy_from_slice(&b[offset..offset + len]);
         Ok(u32_from_be_bytes(u32word).declassify() as usize >> ((4 - len) * 8))
@@ -529,6 +534,18 @@ mod unit_test {
         let cert = CLOUDFLARE_COM_DER.into();
         test(&cert);
         test(&OTHER_ECDSA_P256_SHA256_CERT.into());
+    }
+
+    #[test]
+    fn long_length_bounds() {
+        let b: Bytes = [0x01u8, 0x02, 0x03].into();
+        // Indefinite length (long form with zero length bytes) is rejected.
+        assert!(long_length(&b, 0, 0).is_err());
+        assert_eq!(long_length(&b, 0, 2), Ok(0x0102));
+        assert_eq!(long_length(&b, 1, 2), Ok(0x0203));
+        assert!(long_length(&b, 2, 2).is_err());
+        // A hostile offset must fail closed, not overflow.
+        assert!(long_length(&b, usize::MAX, 2).is_err());
     }
 
     #[test]
