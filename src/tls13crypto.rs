@@ -353,6 +353,10 @@ pub(crate) fn aead_decrypt(
 ) -> Result<Bytes, TLSError> {
     // event!(Level::DEBUG, "AEAD decrypt with {:?}", k.alg);
 
+    if cip.len() < 16 {
+        return tlserr(CRYPTO_ERROR);
+    }
+
     let tag = cip.slice(cip.len() - 16, 16);
     let ctxt = cip.slice(0, cip.len() - 16);
     let tag: [u8; 16] = tag.declassify_array()?;
