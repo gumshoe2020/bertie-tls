@@ -909,6 +909,23 @@ mod maintained_kem_tests {
     }
 }
 
+#[cfg(test)]
+mod malformed_kem_input_tests {
+    use super::*;
+
+    #[test]
+    fn encap_rejects_empty_nist_public_key() {
+        let mut rng = rand::rng();
+        assert!(kem_encap(KemScheme::Secp256r1, &Bytes::new(), &mut rng).is_err());
+    }
+
+    #[test]
+    fn decap_rejects_empty_nist_ciphertext() {
+        let sk = Bytes::from([1u8; 32]);
+        assert!(kem_decap(KemScheme::Secp256r1, &Bytes::new(), &sk).is_err());
+    }
+}
+
 #[cfg(all(test, feature = "chacha20poly1305"))]
 mod malformed_aead_tests {
     use super::*;
