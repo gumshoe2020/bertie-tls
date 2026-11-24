@@ -1,22 +1,10 @@
-use std::vec;
-
 #[cfg(feature = "hax-pv")]
 use hax_lib::{proverif, pv_constructor};
 
-#[cfg(feature = "chacha20poly1305")]
-use libcrux_chacha20poly1305::{decrypt_detached, encrypt_detached};
-#[cfg(feature = "ecdsa-p256")]
-use libcrux_ecdsa::DigestAlgorithm as EcDsaDigestAlgorithm;
-use libcrux_hkdf::{expand, extract, Algorithm as HkdfAlgorithm};
-use libcrux_hmac::{hmac, Algorithm as HmacAlgorithm};
+mod algorithm_types;
+mod backend;
 
-use libcrux_kem::{Ct, PrivateKey, PublicKey};
-#[cfg(feature = "rsa")]
-use libcrux_rsa::{
-    sign_varlen, verify_varlen, DigestAlgorithm as RsaDigestAlgorithm, VarLenPrivateKey,
-    VarLenPublicKey,
-};
-use libcrux_sha2::Algorithm as Sha2Algorithm;
+pub use algorithm_types::{HashAlgorithm, KemScheme};
 
 use rand::CryptoRng;
 
@@ -24,7 +12,7 @@ use crate::std::{fmt::Display, format, vec::Vec};
 
 use crate::tls13utils::{
     check_mem, eq, length_u16_encoded, tlserr, Bytes, Error, TLSError, CRYPTO_ERROR,
-    INCORRECT_ARRAY_LENGTH, INVALID_SIGNATURE, U8, UNSUPPORTED_ALGORITHM,
+    INCORRECT_ARRAY_LENGTH, U8, UNSUPPORTED_ALGORITHM,
 };
 
 pub(crate) type Random = Bytes;
@@ -113,65 +101,24 @@ pub enum PublicVerificationKey {
     Rsa(RsaVerificationKey), // N, e
 }
 
-/// Bertie hash algorithms.
-#[derive(Clone, Copy, Eq, PartialEq, Debug, Hash)]
-pub enum HashAlgorithm {
-    SHA256,
-    SHA384,
-    SHA512,
-}
-
 /// Hash `data` with the given `algorithm`.
 ///
 /// Returns the digest or an [`TLSError`].
 #[cfg_attr(feature = "hax-pv", pv_constructor)]
 pub(crate) fn hash(ha: &HashAlgorithm, data: &Bytes) -> Result<Bytes, TLSError> {
-    let hasher = ha.libcrux_algorithm()?;
-
-    let mut digest = vec![0u8; hasher.hash_len()];
-    hasher.hash(&data.declassify(), &mut digest);
-
-    Ok(digest.into())
+    Ok(backend::sha2_digest(ha, &data.declassify())?.into())
 }
 
 #[hax_lib::attributes]
 impl HashAlgorithm {
-    /// Get the libcrux hash algorithm
-    fn libcrux_algorithm(&self) -> Result<Sha2Algorithm, TLSError> {
-        match self {
-            #[cfg(feature = "sha256")]
-            HashAlgorithm::SHA256 => Ok(Sha2Algorithm::Sha256),
-            #[cfg(feature = "sha384")]
-            HashAlgorithm::SHA384 => Ok(Sha2Algorithm::Sha384),
-            #[cfg(feature = "sha512")]
-            HashAlgorithm::SHA512 => Ok(Sha2Algorithm::Sha512),
-            #[cfg(not(all(feature = "sha256", feature = "sha384", feature = "sha512")))]
-            _ => tlserr(UNSUPPORTED_ALGORITHM),
-        }
-    }
-
     /// Get the size of the hash digest.
     #[hax_lib::ensures(|result| result <= 64)]
     #[cfg_attr(feature = "hax-pv", proverif::replace_body("0"))]
     pub(crate) fn hash_len(&self) -> usize {
         match self {
-            HashAlgorithm::SHA256 => Sha2Algorithm::Sha256.hash_len(),
-            HashAlgorithm::SHA384 => Sha2Algorithm::Sha384.hash_len(),
-            HashAlgorithm::SHA512 => Sha2Algorithm::Sha512.hash_len(),
-        }
-    }
-
-    /// Get the libcrux hmac algorithm.
-    fn hmac_algorithm(&self) -> Result<HmacAlgorithm, TLSError> {
-        match self {
-            #[cfg(feature = "sha256")]
-            HashAlgorithm::SHA256 => Ok(HmacAlgorithm::Sha256),
-            #[cfg(feature = "sha384")]
-            HashAlgorithm::SHA384 => Ok(HmacAlgorithm::Sha384),
-            #[cfg(feature = "sha512")]
-            HashAlgorithm::SHA512 => Ok(HmacAlgorithm::Sha512),
-            #[cfg(not(all(feature = "sha256", feature = "sha384", feature = "sha512")))]
-            _ => tlserr(UNSUPPORTED_ALGORITHM),
+            HashAlgorithm::SHA256 => 32,
+            HashAlgorithm::SHA384 => 48,
+            HashAlgorithm::SHA512 => 64,
         }
     }
 
@@ -187,13 +134,7 @@ impl HashAlgorithm {
 /// Returns the tag [`Hmac`] or a [`TLSError`].
 #[hax_lib::pv_constructor]
 pub(crate) fn hmac_tag(alg: &HashAlgorithm, mk: &MacKey, input: &Bytes) -> Result<Hmac, TLSError> {
-    Ok(hmac(
-        alg.hmac_algorithm()?,
-        &mk.declassify(),
-        &input.declassify(),
-        None,
-    )
-    .into())
+    Ok(backend::hmac_compute(alg, &mk.declassify(), &input.declassify())?.into())
 }
 
 /// Verify a given HMAC `tag`.
@@ -229,20 +170,6 @@ pub(crate) fn hmac_verify(
     }
 }
 
-/// Get the libcrux HKDF algorithm.
-fn hkdf_algorithm(alg: &HashAlgorithm) -> Result<HkdfAlgorithm, TLSError> {
-    match alg {
-        #[cfg(feature = "sha256")]
-        HashAlgorithm::SHA256 => Ok(HkdfAlgorithm::Sha256),
-        #[cfg(feature = "sha384")]
-        HashAlgorithm::SHA384 => Ok(HkdfAlgorithm::Sha384),
-        #[cfg(feature = "sha512")]
-        HashAlgorithm::SHA512 => Ok(HkdfAlgorithm::Sha512),
-        #[cfg(not(all(feature = "sha256", feature = "sha384", feature = "sha512")))]
-        _ => tlserr(UNSUPPORTED_ALGORITHM),
-    }
-}
-
 /// HKDF Extract.
 ///
 /// Returns the result as [`Bytes`] or a [`TLSError`].
@@ -252,9 +179,7 @@ pub(crate) fn hkdf_extract(
     ikm: &Bytes,
     salt: &Bytes,
 ) -> Result<Bytes, TLSError> {
-    extract(hkdf_algorithm(alg)?, salt.declassify(), ikm.declassify())
-        .map(|bytes| bytes.into())
-        .map_err(|_| CRYPTO_ERROR)
+    Ok(backend::hkdf_extract_prk(alg, &salt.declassify(), &ikm.declassify())?.into())
 }
 
 /// HKDF Expand.
@@ -267,15 +192,7 @@ pub(crate) fn hkdf_expand(
     info: &Bytes,
     len: usize,
 ) -> Result<Bytes, TLSError> {
-    match expand(
-        hkdf_algorithm(alg)?,
-        prk.declassify(),
-        info.declassify(),
-        len,
-    ) {
-        Ok(x) => Ok(x.into()),
-        Err(_) => tlserr(CRYPTO_ERROR),
-    }
+    Ok(backend::hkdf_expand_okm(alg, &prk.declassify(), &info.declassify(), len)?.into())
 }
 
 /// AEAD Algorithms for Bertie
@@ -322,25 +239,12 @@ pub(crate) fn aead_encrypt(
         .declassify_array()
         .map_err(|_| INCORRECT_ARRAY_LENGTH)?;
 
-    let mut ctxt = vec![0u8; plain.len()];
-    let mut tag = [0u8; libcrux_chacha20poly1305::TAG_LEN];
-    let result = encrypt_detached(
-        &key,
-        &plain.declassify(),
-        &mut ctxt,
-        &mut tag,
-        &aad.declassify(),
-        &iv.declassify_array()?,
-    );
-
-    match result {
-        Ok(_) => {
-            let cipby: Bytes = ctxt.into();
-            let tagby: Bytes = tag.as_ref().into();
-            Ok(cipby.concat(tagby))
-        }
-        Err(_) => tlserr(CRYPTO_ERROR),
-    }
+    let iv = iv.declassify_array()?;
+    let (ctxt, tag) =
+        backend::chacha20poly1305_seal(&key, &iv, &aad.declassify(), &plain.declassify())?;
+    let cipby: Bytes = ctxt.into();
+    let tagby: Bytes = tag.as_ref().into();
+    Ok(cipby.concat(tagby))
 }
 
 /// AEAD decrypt.
@@ -364,21 +268,11 @@ pub(crate) fn aead_decrypt(
         .bytes
         .declassify_array()
         .map_err(|_| INCORRECT_ARRAY_LENGTH)?;
-    let mut ptxt = vec![0u8; ctxt.len()];
-
-    let result = decrypt_detached(
-        &key,
-        &mut ptxt,
-        &ctxt.declassify(),
-        &tag,
-        &aad.declassify(),
-        &iv.declassify_array()?,
-    );
-
-    match result {
-        Ok(plain) => Ok(plain.into()),
-        Err(_) => tlserr(CRYPTO_ERROR),
-    }
+    let iv = iv.declassify_array()?;
+    Ok(
+        backend::chacha20poly1305_open(&key, &iv, &aad.declassify(), &ctxt.declassify(), &tag)?
+            .into(),
+    )
 }
 
 /// Signature schemes for Bertie.
@@ -412,27 +306,13 @@ pub(crate) fn sign_rsa(
     }
 
     supported_rsa_key_size(pk_modulus)?;
-    let pk = VarLenPublicKey::try_from(&pk_modulus.declassify()[1..])
-        .map_err(|_| INCORRECT_ARRAY_LENGTH)?;
-
-    let pk_modulus_vec = pk_modulus.declassify();
-    let sk_vec = sk.declassify();
-    let sk = VarLenPrivateKey::from_components(&pk_modulus_vec[1..], &sk_vec)
-        .map_err(|_| INCORRECT_ARRAY_LENGTH)?;
-
-    let msg = &input.declassify();
-    // XXX: hard coded length because of bad libcrux API
-    let mut signature = [0u8; 512];
-    sign_varlen(
-        RsaDigestAlgorithm::Sha2_256,
-        &sk,
-        msg,
+    Ok(backend::rsa_pss_sha256_sign(
+        &pk_modulus.declassify(),
+        &sk.declassify(),
+        &input.declassify(),
         &salt,
-        &mut signature,
-    )
-    .map_err(|_| CRYPTO_ERROR)?;
-
-    Ok(signature.into())
+    )?
+    .into())
 }
 
 /// Sign the bytes in `input` with the signature key `sk` and `algorithm`.
@@ -466,30 +346,18 @@ pub(crate) fn sign(
 ) -> Result<Bytes, TLSError> {
     match algorithm {
         #[cfg(feature = "ecdsa-p256")]
-        SignatureScheme::EcdsaSecp256r1Sha256 => libcrux_ecdsa::p256::rand::sign(
-            EcDsaDigestAlgorithm::Sha256,
-            &input.declassify(),
-            &sk.declassify()
-                .as_slice()
-                .try_into()
-                .map_err(|_| INCORRECT_ARRAY_LENGTH)?,
-            rng,
-        )
-        .map_err(|_| CRYPTO_ERROR)
-        .map(|s| {
-            let (r, s) = s.as_bytes();
-            Bytes::from(r).concat(Bytes::from(s))
-        }),
+        SignatureScheme::EcdsaSecp256r1Sha256 => {
+            Ok(backend::ecdsa_p256_sha256_sign(&input.declassify(), &sk.declassify(), rng)?.into())
+        }
 
         #[cfg(feature = "ed25519")]
-        SignatureScheme::ED25519 => libcrux_ed25519::sign(
-            &input.declassify(),
-            &sk.declassify()
+        SignatureScheme::ED25519 => {
+            let sk = sk
+                .declassify()
                 .try_into()
-                .map_err(|_| INCORRECT_ARRAY_LENGTH)?,
-        )
-        .map_err(|_| CRYPTO_ERROR)
-        .map(|s| s.into()),
+                .map_err(|_| INCORRECT_ARRAY_LENGTH)?;
+            Ok(backend::ed25519_sign(&input.declassify(), &sk)?.into())
+        }
 
         _ => tlserr(UNSUPPORTED_ALGORITHM),
     }
@@ -559,25 +427,21 @@ pub(crate) fn verify(
     match (alg, pk) {
         #[cfg(feature = "ecdsa-p256")]
         (SignatureScheme::EcdsaSecp256r1Sha256, PublicVerificationKey::EcDsa(pk)) => {
-            libcrux_ecdsa::p256::verify(
-                EcDsaDigestAlgorithm::Sha256,
+            backend::ecdsa_p256_sha256_verify(
                 &input.declassify(),
-                &libcrux_ecdsa::p256::Signature::from_bytes(sig.declassify_array()?),
-                &libcrux_ecdsa::p256::PublicKey::try_from(&pk.declassify_array()?)
-                    .map_err(|_| CRYPTO_ERROR)?,
+                sig.declassify_array()?,
+                &pk.declassify_array()?,
             )
-            .map_err(|_| INVALID_SIGNATURE)
         }
 
         #[cfg(feature = "ed25519")]
-        (SignatureScheme::ED25519, PublicVerificationKey::EcDsa(pk)) => libcrux_ed25519::verify(
-            &input.declassify(),
-            &pk.declassify()
+        (SignatureScheme::ED25519, PublicVerificationKey::EcDsa(pk)) => {
+            let pk = pk
+                .declassify()
                 .try_into()
-                .map_err(|_| INCORRECT_ARRAY_LENGTH)?,
-            &sig.declassify_array()?,
-        )
-        .map_err(|_| INVALID_SIGNATURE),
+                .map_err(|_| INCORRECT_ARRAY_LENGTH)?;
+            backend::ed25519_verify(&input.declassify(), &pk, &sig.declassify_array()?)
+        }
 
         #[cfg(feature = "rsa")]
         (
@@ -591,18 +455,11 @@ pub(crate) fn verify(
                 tlserr(UNSUPPORTED_ALGORITHM)
             } else {
                 supported_rsa_key_size(n)?;
-                let n_vec = n.declassify();
-                let pk =
-                    VarLenPublicKey::try_from(&n_vec[1..]).map_err(|_| INCORRECT_ARRAY_LENGTH)?;
-
-                verify_varlen(
-                    RsaDigestAlgorithm::Sha2_256,
-                    &pk,
+                backend::rsa_pss_sha256_verify(
+                    &n.declassify(),
                     &input.declassify(),
-                    32, // salt must be same length as digest ouput length
                     &sig.declassify(),
                 )
-                .map_err(|_| CRYPTO_ERROR)
             }
         }
         _ => tlserr(UNSUPPORTED_ALGORITHM),
@@ -627,70 +484,6 @@ fn valid_rsa_exponent(e: Vec<u8>) -> bool {
     e.len() == 3 && e[0] == 0x1 && e[1] == 0x0 && e[2] == 0x1
 }
 
-/// Bertie KEM schemes.
-///
-/// This includes ECDH curves.
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-pub enum KemScheme {
-    X25519,
-    Secp256r1,
-    X448,
-    Secp384r1,
-    Secp521r1,
-    X25519MlKem768,
-}
-
-impl KemScheme {
-    /// Get the libcrux algorithm for this [`KemScheme`].
-    fn libcrux_kem_algorithm(self) -> Result<libcrux_kem::Algorithm, TLSError> {
-        match self {
-            #[cfg(feature = "x25519")]
-            KemScheme::X25519 => Ok(libcrux_kem::Algorithm::X25519),
-            #[cfg(feature = "p256")]
-            KemScheme::Secp256r1 => Ok(libcrux_kem::Algorithm::Secp256r1),
-            #[cfg(feature = "mlkem768")]
-            KemScheme::X25519MlKem768 => Ok(libcrux_kem::Algorithm::X25519MlKem768Draft00),
-            _ => tlserr(UNSUPPORTED_ALGORITHM),
-        }
-    }
-}
-
-// Implementation glue, outside the existing abstract cryptographic proof interface.
-mod non_hax {
-    use super::CryptoRng;
-    // Bridge the KEM's rand_core 0.10 API to Bertie's existing caller RNG.
-    pub(super) struct KemRng<'a, R: CryptoRng>(pub(super) &'a mut R);
-
-    impl<R: CryptoRng> rand_core::TryRng for KemRng<'_, R> {
-        type Error = core::convert::Infallible;
-        fn try_next_u32(&mut self) -> Result<u32, Self::Error> {
-            Ok(self.0.next_u32())
-        }
-        fn try_next_u64(&mut self) -> Result<u64, Self::Error> {
-            Ok(self.0.next_u64())
-        }
-        fn try_fill_bytes(&mut self, dest: &mut [u8]) -> Result<(), Self::Error> {
-            self.0.fill_bytes(dest);
-            Ok(())
-        }
-    }
-    impl<R: CryptoRng> rand_core::TryCryptoRng for KemRng<'_, R> {}
-
-    pub(super) fn key_gen(
-        alg: libcrux_kem::Algorithm,
-        rng: &mut impl CryptoRng,
-    ) -> Result<(libcrux_kem::PrivateKey, libcrux_kem::PublicKey), libcrux_kem::Error> {
-        libcrux_kem::key_gen(alg, &mut KemRng(rng))
-    }
-
-    pub(super) fn encapsulate(
-        pk: &libcrux_kem::PublicKey,
-        rng: &mut impl CryptoRng,
-    ) -> Result<(libcrux_kem::Ss, libcrux_kem::Ct), libcrux_kem::Error> {
-        pk.encapsulate(&mut KemRng(rng))
-    }
-}
-
 /// Generate a new KEM key pair.
 #[cfg_attr(
     feature = "hax-pv",
@@ -708,8 +501,7 @@ pub(crate) fn kem_keygen(
     alg: KemScheme,
     rng: &mut impl CryptoRng,
 ) -> Result<(KemSk, KemPk), TLSError> {
-    let res = non_hax::key_gen(alg.libcrux_kem_algorithm()?, rng);
-    match res {
+    match backend::kem_generate(alg, rng) {
         Ok((sk, pk)) => {
             // event!(
             //     Level::TRACE,
@@ -717,8 +509,8 @@ pub(crate) fn kem_keygen(
             //     Bytes::from(pk.encode()).as_hex()
             // );
             Ok((
-                Bytes::from(sk.encode()),
-                encoding_prefix(alg).concat(Bytes::from(pk.encode())),
+                Bytes::from(sk),
+                encoding_prefix(alg).concat(Bytes::from(pk)),
             ))
         }
         Err(_) => tlserr(CRYPTO_ERROR),
@@ -768,13 +560,10 @@ pub(crate) fn kem_encap(
     // event!(Level::TRACE, "  pk:  {}", pk.as_hex());
 
     let pk = into_raw(alg, pk.clone());
-    let pk = PublicKey::decode(alg.libcrux_kem_algorithm()?, &pk.declassify())
-        .map_err(|_| CRYPTO_ERROR)?;
-    let res = non_hax::encapsulate(&pk, rng);
-    match res {
+    match backend::kem_encapsulate(alg, &pk.declassify(), rng) {
         Ok((shared_secret, ct)) => {
-            let ct = encoding_prefix(alg).concat(Bytes::from(ct.encode()));
-            let shared_secret = to_shared_secret(alg, Bytes::from(shared_secret.encode()));
+            let ct = encoding_prefix(alg).concat(Bytes::from(ct));
+            let shared_secret = to_shared_secret(alg, Bytes::from(shared_secret));
 
             // event!(Level::TRACE, "  output ciphertext: {}", ct.as_hex());
             Ok((shared_secret, ct))
@@ -808,16 +597,11 @@ pub(crate) fn kem_decap(alg: KemScheme, ct: &Bytes, sk: &Bytes) -> Result<Bytes,
     // event!(Level::DEBUG, "KEM Decaps with {alg:?}");
     // event!(Level::TRACE, "  with ciphertext: {}", ct.as_hex());
 
-    let librux_algorithm = alg.libcrux_kem_algorithm()?;
-    let sk = PrivateKey::decode(librux_algorithm, &sk.declassify()).map_err(|_| CRYPTO_ERROR)?;
     let ct = into_raw(alg, ct.clone()).declassify();
-    let ct = Ct::decode(librux_algorithm, &ct).map_err(|_| CRYPTO_ERROR)?;
-    let res = ct.decapsulate(&sk);
-    match res {
+    match backend::kem_decapsulate(alg, &ct, &sk.declassify()) {
         Ok(shared_secret) => {
-            let shared_secret: Bytes = shared_secret.encode().into();
             // event!(Level::TRACE, "  shared secret: {}", shared_secret.as_hex());
-            let shared_secret = to_shared_secret(alg, shared_secret);
+            let shared_secret = to_shared_secret(alg, shared_secret.into());
             Ok(shared_secret)
         }
         Err(_) => tlserr(CRYPTO_ERROR),
@@ -1021,6 +805,7 @@ impl TryFrom<&str> for Algorithms {
     }
 }
 
+#[cfg(not(hax))]
 impl Display for Algorithms {
     fn fmt(&self, f: &mut crate::std::fmt::Formatter<'_>) -> crate::std::fmt::Result {
         write!(
@@ -1127,6 +912,7 @@ mod maintained_kem_tests {
 #[cfg(all(test, feature = "chacha20poly1305"))]
 mod malformed_aead_tests {
     use super::*;
+    use std::vec;
 
     #[test]
     fn decrypt_rejects_ciphertext_shorter_than_tag() {
