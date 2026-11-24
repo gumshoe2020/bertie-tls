@@ -1120,6 +1120,22 @@ mod maintained_kem_tests {
     }
 }
 
+#[cfg(all(test, feature = "chacha20poly1305"))]
+mod malformed_aead_tests {
+    use super::*;
+
+    #[test]
+    fn decrypt_rejects_ciphertext_shorter_than_tag() {
+        let key = AeadKey::new(Bytes::from([0u8; 32]), AeadAlgorithm::Chacha20Poly1305);
+        let iv = Bytes::from([0u8; 12]);
+        let aad = Bytes::new();
+        for len in 0..16 {
+            let ciphertext = Bytes::from(vec![0u8; len]);
+            assert!(aead_decrypt(&key, &iv, &ciphertext, &aad).is_err());
+        }
+    }
+}
+
 #[cfg(not(feature = "chacha20poly1305"))]
 pub(crate) fn aead_encrypt(
     _: &AeadKey,
