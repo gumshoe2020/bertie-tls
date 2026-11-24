@@ -381,114 +381,154 @@
       "line": 312
     },
     {
-      "end_line": 46,
+      "end_line": 40,
       "file": "src/tls13cert.rs",
-      "line": 42
+      "line": 38
     },
     {
-      "end_line": 64,
+      "end_line": 56,
       "file": "src/tls13cert.rs",
-      "line": 51
+      "line": 52
     },
     {
-      "end_line": 81,
+      "end_line": 79,
       "file": "src/tls13cert.rs",
-      "line": 67
+      "line": 61
     },
     {
-      "end_line": 99,
+      "end_line": 96,
       "file": "src/tls13cert.rs",
-      "line": 86
+      "line": 82
     },
     {
-      "end_line": 123,
+      "end_line": 114,
       "file": "src/tls13cert.rs",
       "line": 101
     },
     {
-      "end_line": 136,
+      "end_line": 129,
       "file": "src/tls13cert.rs",
-      "line": 125
+      "line": 116
     },
     {
-      "end_line": 149,
+      "end_line": 153,
       "file": "src/tls13cert.rs",
-      "line": 138
+      "line": 131
     },
     {
-      "end_line": 166,
+      "end_line": 167,
       "file": "src/tls13cert.rs",
-      "line": 151
+      "line": 155
     },
     {
-      "end_line": 179,
+      "end_line": 177,
       "file": "src/tls13cert.rs",
-      "line": 168
+      "line": 169
     },
     {
-      "end_line": 196,
+      "end_line": 187,
       "file": "src/tls13cert.rs",
-      "line": 181
+      "line": 179
     },
     {
-      "end_line": 207,
+      "end_line": 204,
       "file": "src/tls13cert.rs",
-      "line": 198
+      "line": 189
     },
     {
-      "end_line": 216,
+      "end_line": 218,
       "file": "src/tls13cert.rs",
-      "line": 209
-    },
-    {
-      "end_line": 222,
-      "file": "src/tls13cert.rs",
-      "line": 220
-    },
-    {
-      "end_line": 225,
-      "file": "src/tls13cert.rs",
-      "line": 223
+      "line": 206
     },
     {
       "end_line": 228,
       "file": "src/tls13cert.rs",
-      "line": 226
+      "line": 220
     },
     {
-      "end_line": 236,
+      "end_line": 249,
       "file": "src/tls13cert.rs",
       "line": 230
     },
     {
-      "end_line": 315,
+      "end_line": 259,
       "file": "src/tls13cert.rs",
-      "line": 238
+      "line": 251
+    },
+    {
+      "end_line": 268,
+      "file": "src/tls13cert.rs",
+      "line": 261
+    },
+    {
+      "end_line": 277,
+      "file": "src/tls13cert.rs",
+      "line": 270
+    },
+    {
+      "end_line": 283,
+      "file": "src/tls13cert.rs",
+      "line": 281
+    },
+    {
+      "end_line": 286,
+      "file": "src/tls13cert.rs",
+      "line": 284
+    },
+    {
+      "end_line": 289,
+      "file": "src/tls13cert.rs",
+      "line": 287
+    },
+    {
+      "end_line": 297,
+      "file": "src/tls13cert.rs",
+      "line": 291
+    },
+    {
+      "end_line": 314,
+      "file": "src/tls13cert.rs",
+      "line": 299
+    },
+    {
+      "end_line": 336,
+      "file": "src/tls13cert.rs",
+      "line": 316
+    },
+    {
+      "end_line": 355,
+      "file": "src/tls13cert.rs",
+      "line": 338
     },
     {
       "end_line": 376,
       "file": "src/tls13cert.rs",
-      "line": 317
+      "line": 357
     },
     {
-      "end_line": 391,
+      "end_line": 437,
       "file": "src/tls13cert.rs",
       "line": 378
     },
     {
-      "end_line": 423,
+      "end_line": 457,
       "file": "src/tls13cert.rs",
-      "line": 393
+      "line": 439
     },
     {
-      "end_line": 462,
+      "end_line": 481,
       "file": "src/tls13cert.rs",
-      "line": 436
+      "line": 459
     },
     {
-      "end_line": 503,
+      "end_line": 520,
       "file": "src/tls13cert.rs",
-      "line": 464
+      "line": 494
+    },
+    {
+      "end_line": 561,
+      "file": "src/tls13cert.rs",
+      "line": 522
     },
     {
       "end_line": 52,
@@ -1956,22 +1996,22 @@
       "line": 1047
     }
   ],
-  "proof_ratio": 0.1844018506278916,
-  "proof_sloc": 558,
-  "proven": 3026,
+  "proof_ratio": 0.17617046818727491,
+  "proof_sloc": 587,
+  "proven": 3332,
   "schema": 1,
   "scope": "first-party security runtime",
   "statuses": {
     "hazard": 0,
     "proven": 0,
     "proven-bounded": 0,
-    "proven-extracted": 3026,
+    "proven-extracted": 3332,
     "proven-upstream": 0,
-    "tested": 343,
-    "trusted": 854,
-    "unverified": 1071
+    "tested": 353,
+    "trusted": 549,
+    "unverified": 1064
   },
-  "tested": 343,
-  "total": 5294,
-  "unverified": 1925
+  "tested": 353,
+  "total": 5298,
+  "unverified": 1613
 }

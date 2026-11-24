@@ -39,16 +39,16 @@ formal-coverage `dev/v182/compare.md` at tag v1.8.2.
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 3026 | 57.16% |
-| tested | 343 | 6.48% |
-| unverified | 1925 | 36.36% |
+| proven | 3332 | 62.89% |
+| tested | 353 | 6.66% |
+| unverified | 1613 | 30.45% |
 
-Total: **5294** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (3026 lines); Verus proven: 0 lines.
+Total: **5298** first-party security runtime SLoC. Proven includes explicitly labelled
+`proven-extracted` hax credit (3332 lines); Verus proven: 0 lines.
 
-Proof-to-code ratio: **0.18** (558 proof SLoC / 3026 proven + proven-extracted runtime SLoC); informational, never blocking.
+Proof-to-code ratio: **0.18** (587 proof SLoC / 3332 proven + proven-extracted runtime SLoC); informational, never blocking.
 
-Proof components: 293 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code SLoC, and 61 inline `cfg(hax)` SLoC (overlaps count once). F* models: 18 SLoC of trusted assumptions, excluded from the ratio.
+Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code SLoC, and 61 inline `cfg(hax)` SLoC (overlaps count once). F* models: 18 SLoC of trusted assumptions, excluded from the ratio.
 
 | Module | Proven runtime | Proof SLoC | Proof / proven runtime |
 | --- | ---: | ---: | ---: |
@@ -57,7 +57,7 @@ Proof components: 293 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code 
 | bertie_tls::tls13api | 16 | 0 | 0.00 |
 | bertie_tls::tls13api::Client | 68 | 0 | 0.00 |
 | bertie_tls::tls13api::Server | 63 | 0 | 0.00 |
-| bertie_tls::tls13cert | 0 | 16 | n/a |
+| bertie_tls::tls13cert | 306 | 45 | 0.15 |
 | bertie_tls::tls13crypto::Algorithms | 0 | 13 | n/a |
 | bertie_tls::tls13crypto::HashAlgorithm | 0 | 1 | n/a |
 | bertie_tls::tls13formats | 834 | 71 | 0.09 |
@@ -95,6 +95,10 @@ through the module interface, and a runtime check that the AEAD output is exactl
 plaintext plus tag bounds the ciphertext without adding a trusted AEAD length fact.
 Proven moves from 2,761 to 3,026 lines; no new proof annotations were added.
 
+
+**tls13cert (2026-11-23).** tls13cert bodies extracted and proven; parser now checks offsets
+and lengths against the buffer. Proven moves from 3,026 to 3,332 lines (57.16% to 62.89%);
+the module no longer carries an assumed instance, and the proof-to-code ratio is 0.15.
 
 ## Meaning and limits
 
