@@ -35,18 +35,30 @@ interface-only F* declarations and are trusted, which is the same rule free func
 ProverIf attributes are still listed, as non-F* trust, in the full report. Full comparison:
 formal-coverage `dev/v182/compare.md` at tag v1.8.2.
 
+**Re-measured with formal-coverage v1.8.3 and v1.8.4 (2026-11-24).** The tool changed, not
+the code, in two steps. v1.8.3 strips the `v_` prefix hax adds to Rust names that start with
+an uppercase letter, so F*-checked `XTR`, `XPD`, `U8`, `U16` and `U32` are now credited:
+proven moved from 3,635 to 3,776 lines on identical source and F* receipt. v1.8.4 adds a
+`[ship]` setting, set here to the `bertie-tls` library with default features. Code that does
+not ship (`benches`, `bogo_shim`, `record`, the example client and server, integration tests
+and test helpers: 16 files, 324 security lines, none proven) leaves both sides of the share
+but stays listed under Not shipped in the full report. Tests anywhere in the workspace still
+count as evidence for shipped code. Every shipped unit kept its tier and size. Combined:
+proven 3,635 of 5,402 (67.29%) to 3,776 of 5,078 (74.36%). Full comparisons: formal-coverage
+`dev/v183/compare.md` at tag v1.8.3 and `dev/v184/compare.md` at tag v1.8.4.
+
 <!-- measured coverage: begin -->
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 3635 | 67.29% |
-| tested | 452 | 8.37% |
-| unverified | 1315 | 24.34% |
+| proven | 3776 | 74.36% |
+| tested | 421 | 8.29% |
+| unverified | 881 | 17.35% |
 
-Total: **5402** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (3635 lines); Verus proven: 0 lines.
+Total: **5078** first-party security runtime SLoC. Proven includes explicitly labelled
+`proven-extracted` hax credit (3776 lines); Verus proven: 0 lines.
 
-Proof-to-code ratio: **0.16** (587 proof SLoC / 3635 proven + proven-extracted runtime SLoC); informational, never blocking.
+Proof-to-code ratio: **0.16** (587 proof SLoC / 3776 proven + proven-extracted runtime SLoC); informational, never blocking.
 
 Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code SLoC, and 61 inline `cfg(hax)` SLoC (overlaps count once). F* models: 1 SLoC of trusted assumptions, excluded from the ratio.
 
@@ -70,10 +82,10 @@ Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code 
 | bertie_tls::tls13formats::handshake_data::HandshakeData | 76 | 13 | 0.17 |
 | bertie_tls::tls13handshake | 708 | 1 | 0.00 |
 | bertie_tls::tls13keyscheduler | 201 | 0 | 0.00 |
-| bertie_tls::tls13keyscheduler::key_schedule | 181 | 0 | 0.00 |
+| bertie_tls::tls13keyscheduler::key_schedule | 307 | 0 | 0.00 |
 | bertie_tls::tls13record | 252 | 6 | 0.02 |
 | bertie_tls::tls13record::DuplexCipherStateH | 13 | 0 | 0.00 |
-| bertie_tls::tls13utils | 288 | 106 | 0.37 |
+| bertie_tls::tls13utils | 303 | 106 | 0.35 |
 | bertie_tls::tls13utils::<constC:usize>From<&[u8 ; C]>forBytes | 0 | 1 | n/a |
 | bertie_tls::tls13utils::<constC:usize>From<[u8 ; C]>forBytes | 0 | 1 | n/a |
 | bertie_tls::tls13utils::Bytes | 0 | 26 | n/a |
@@ -178,8 +190,8 @@ Any rejected receipt or unmapped function retains zero credit; see the full repo
 
 ## Reproduction and pins
 
-- formal-coverage commit `ff72a88` (private) / `4f85c8e313bbeaa969f6cd0365e8a98908d9acc8`
-  (public tag v1.8.2, identical tree; CI uses the public commit; version string `1.8.2`).
+- formal-coverage commit `e072bd0` (private) / `f844c8746ca1457ac020156d37e804217ef3e8a5`
+  (public tag v1.8.4, identical tree; CI uses the public commit; version string `1.8.4`).
 - hax `0.4.2`, source `5ccf89dd2e996c9f88f2267eaa2a64739c4ca41a`.
 - Rust extraction toolchain `nightly-2025-11-08`; F* `2025.10.06`, Z3 `4.13.3`.
 - Local container images: `fc-verify-hax:v17` (aarch64) and
