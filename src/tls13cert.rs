@@ -554,6 +554,52 @@ mod unit_test {
         test(&cert);
     }
 
+    /// Parse `input` fully; malformed input must give an error, never a panic.
+    fn parse_fully(input: &[u8]) {
+        let cert: Bytes = input.into();
+        if let Ok(spki) = verification_key_from_cert(&cert) {
+            let _ = cert_public_key(&cert, &spki);
+        }
+    }
+
+    #[test]
+    #[cfg(feature = "std")]
+    fn malformed_certificates_do_not_panic() {
+        const BYTE_VALUES: [u8; 6] = [0x00, 0x7f, 0x80, 0x81, 0x84, 0xff];
+        let originals: [&[u8]; 3] = [
+            &CLOUDFLARE_COM_DER,
+            &GOO_GL_DER,
+            &OTHER_ECDSA_P256_SHA256_CERT,
+        ];
+        // Silence the default hook so failures are reported once, by the assert.
+        let hook = std::panic::take_hook();
+        std::panic::set_hook(std::boxed::Box::new(|_| {}));
+        let mut failures = std::vec::Vec::new();
+        for (c, cert) in originals.iter().enumerate() {
+            for end in 0..=cert.len() {
+                if std::panic::catch_unwind(|| parse_fully(&cert[..end])).is_err() {
+                    failures.push(std::format!("cert {c} truncated to {end}"));
+                }
+            }
+            for pos in 0..cert.len() {
+                for value in BYTE_VALUES {
+                    let mut corrupted = cert.to_vec();
+                    corrupted[pos] = value;
+                    if std::panic::catch_unwind(|| parse_fully(&corrupted)).is_err() {
+                        failures.push(std::format!("cert {c} byte {pos} set to {value:#x}"));
+                    }
+                }
+            }
+        }
+        std::panic::set_hook(hook);
+        assert!(
+            failures.is_empty(),
+            "parser panicked on {} inputs, first: {:?}",
+            failures.len(),
+            &failures[..failures.len().min(5)]
+        );
+    }
+
     #[test]
     #[cfg(feature = "std")]
     fn read_cert() {
