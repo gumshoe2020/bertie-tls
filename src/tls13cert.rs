@@ -36,7 +36,7 @@ pub(crate) struct CertificateKey(usize, usize);
 
 impl Clone for CertificateKey {
     fn clone(&self) -> Self {
-        CertificateKey(self.0, self.1)
+        *self
     }
 }
 
