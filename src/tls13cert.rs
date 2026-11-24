@@ -29,8 +29,18 @@ use crate::{
 };
 
 /// Certificate key start and length within the certificate DER.
-#[derive(Clone, Copy)]
+///
+/// `Clone` and `Copy` are written out because hax extracts a derived `Copy` as an
+/// assumed instance, which would leave an `assume` in the extracted module.
 pub(crate) struct CertificateKey(usize, usize);
+
+impl Clone for CertificateKey {
+    fn clone(&self) -> Self {
+        CertificateKey(self.0, self.1)
+    }
+}
+
+impl Copy for CertificateKey {}
 
 pub(crate) type Asn1Error = u8;
 pub(crate) const ASN1_SEQUENCE_TOO_LONG: Asn1Error = 21u8;
