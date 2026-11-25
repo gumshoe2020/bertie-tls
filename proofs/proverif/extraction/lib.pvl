@@ -4096,6 +4096,9 @@ reduc forall
             spki
     ) = vk.
 
+letfun bertie_tls__server__psk_offered(tkt : Option, psk_opt : Option) =
+       false (* PSK disabled: no PSK offered *).
+
 letfun bertie_tls__server__lookup_db(
          ciphersuite : bertie_tls__tls13crypto__algorithm_types__t_Algorithms,
          db : bertie_tls__server__server_db__t_ServerDB,
@@ -4133,7 +4136,8 @@ letfun bertie_tls__server__lookup_db(
              server)
           else (
             if
-              core_models__option__impl__is_some(tkt) && core_models__option__impl__is_some(
+              bertie_tls__server__psk_offered(
+                  tkt,
                   accessor_bertie_tls__server__server_db__t_ServerDB_bertie_tls__server__server_db__f_psk_opt(
                     db
                   )

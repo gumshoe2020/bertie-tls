@@ -49,6 +49,16 @@ pub struct ServerPubInfo {
     pub session_ticket: Option<Bytes>,
 }
 
+// ProVerif models "no PSK offered"; PSK is disabled, so both outcomes are errors.
+// See TRUSTED.md, "ProVerif model assumptions".
+#[cfg_attr(
+    feature = "hax-pv",
+    hax_lib::proverif::replace_body("false (* PSK disabled: no PSK offered *)")
+)]
+fn psk_offered(tkt: &Option<Bytes>, psk_opt: &Option<(Bytes, Psk)>) -> bool {
+    tkt.is_some() && psk_opt.is_some()
+}
+
 /// Look up a server for the given `ciphersuite`.
 ///
 /// The function returns a server with the first algorithm it finds.
@@ -68,7 +78,7 @@ pub(crate) fn lookup_db(
                 psk_opt: None,
             };
             Ok(server)
-        } else if tkt.is_some() && db.psk_opt.is_some() {
+        } else if psk_offered(tkt, &db.psk_opt) {
             Err(UNSUPPORTED_ALGORITHM)
         } else {
             Err(PSK_MODE_MISMATCH)
