@@ -59,7 +59,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: gumshoe2020/formal-coverage
-          ref: 2c7e26a8c90afb44323ecebce69822e8b4bc9ca5 # v1.9.0
+          ref: b7379121068c3d5db257e10a5013c2a85d0c9fe4 # v1.9.1
           path: formal-coverage-src
       - name: Unit tests for shared coverage kit
         run: python3 -m unittest discover -s formal-coverage-src/ci/tests -v
