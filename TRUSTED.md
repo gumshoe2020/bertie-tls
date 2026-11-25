@@ -160,3 +160,16 @@ excluded `from_hex` and `random_bytes` helpers remain unproven as described abov
 Every offset and length step is checked against the buffer and returns an error when the input is
 too short or inconsistent. `CertificateKey` writes out `Clone` and `Copy` so hax extracts them as
 code rather than as an assumed instance. Nothing in this module is listed as trusted.
+
+## ProVerif model assumptions
+
+P1 run 3 (2026-11-25) introduced **no new handwritten declarations or model
+assumptions**. The regenerated library is unchanged and remains unchecked:
+ProVerif rejects the missing `alloc__vec__impl_1__len` before evaluating queries.
+This Rust `Vec::len` call feeds the `digest.len() > 64` guard in
+`tls13handshake::server_signature_input`, before CertificateVerify signing and
+verification. Its abstraction has not been shown independent of handshake
+reachability, so it was not added under the run-3 limited authorization.
+The abstract hash constructor has no modelled digest-length guarantee. Resolving
+that interaction requires a further reviewed modelling decision; no symbolic
+security result follows from this failed input check. See NOTES.md for evidence.

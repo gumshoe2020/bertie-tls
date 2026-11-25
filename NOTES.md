@@ -138,3 +138,69 @@ queries ran; no false result or attack trace. F*/formal-coverage kit checks
 not rerun; source/proof annotations and coverage measurements unchanged.
 Independent reviewer acceptance remains outstanding.
 PROVERIF-BLOCKED
+
+## 2026-11-25T15:51:54-05:00 — ProVerif P1 run 3: length abstraction affects handshake reachability
+
+Worktree `/Users/gumshoe/src/bertie-proverif`, branch `proofs/proverif-ci`, start
+`da9e5b2`. Read both P1 prompts, prior P1 reports and the RFC plan. Run 3 permits
+at most 15 new declarations / two hours, only for data functions whose exact
+value does not affect any security query; crypto/authentication modelling,
+reductions/equations, analysis.pv and Rust/attribute changes remain prohibited.
+
+Fresh extraction now PASSES with
+`BERTIE_DOCKER_TOOLS=/Users/gumshoe/src/bertie-toolchain`, mounted read-only at
+`/tools`, using the same pinned image, tool environment and disposable Cargo
+cache pattern as `scripts/verify-fstar.py`. `cargo build --locked --features
+hax-pv` and `hax-driver.py extract-proverif` both exit 0. hax explicitly reports
+lib.pvl unchanged; no generated-file diff or regeneration commit is needed.
+
+Full analysis (not parse-only) still fails:
+
+```text
+File "proofs/proverif/extraction/lib.pvl", line 2764, characters 8-30:
+Error: alloc__vec__impl_1__len not defined.
+```
+
+Handwritten additions: **0 of 15**. No declaration or rename was applied.
+The proposed symbol would have signature `fun alloc__vec__impl_1__len(bitstring):
+nat.` and originates from `Bytes::len`, `self.0.len()` in
+`src/tls13utils.rs:492–493`. Its only generated caller outside its wrapper is
+`server_signature_input` at lib.pvl:3799. That function checks the digest length
+against 64 and returns failure when it is too large. Rust calls this helper
+before both CertificateVerify verification (`tls13handshake.rs:344`) and signing
+(`tls13handshake.rs:742`); the generated signing call is at lib.pvl:4279.
+Consequently the length predicate controls whether a handshake can finish.
+Treating it as an uninterpreted value is not established harmless to the
+reachability queries (or to non-vacuity of the authentication/secrecy queries).
+The symbolic hash is an abstract constructor without a length relation, so the
+real-world fact that supported transcript hashes fit in 64 bytes is not present
+in this model. A comparison declaration alone would not supply that fact.
+
+Decision: stop under run 3's query-independence restriction rather than assert
+an unsupported harmlessness claim. This is a conservative modelling assessment,
+not an observed false query or a Rust defect. A continuation needs an explicitly
+approved treatment of this guard and symbolic digest lengths. No crypto fact,
+length equation, fixed return value, or removed guard was introduced. The two-hour
+and declaration limits were not exhausted; the semantic boundary was reached
+first. Remaining observed error list: the undefined Vec::len above. Further
+errors are unknown because ProVerif stops at its first error. Prior noted stale
+`bertie__` references in the protected analysis.pv remain untouched.
+
+ProVerif 2.05 official source:
+https://bblanche.gitlabpages.inria.fr/proverif/proverif2.05.tar.gz
+SHA-256: 4871f53c32ab4a04669a060c4886ba5d9080496963fb980a9a62d2c429ceabc4.
+ProVerif exit 2 / driver exit 1; wall 0.040426417 s,
+peak RSS 11784 KiB (Linux RUSAGE_CHILDREN, includes driver).
+No query result or attack trace. M2 remains blocked; M3/M4 were not implemented
+and no expected-results baseline was invented.
+
+Final-source checks PASS: cargo test --locked --workspace, all ten
+scripts/test-features configurations, cargo fmt --all -- --check,
+cargo clippy --locked -- -D warnings, cargo deny check, actionlint,
+and git diff --check. F*/formal-coverage kit checks were not rerun; no Rust,
+F* proof, coverage configuration or baseline changed. Independent reviewer
+acceptance remains outstanding. No push, gh, external message, branch creation
+or hook bypass. Memory tools unavailable, so no palace diary filed.
+Evidence: target/proverif/run3-extract.log, run3-analysis.log,
+run3-metrics.json, run3-final-checks.txt and run3-*-final.log.
+PROVERIF-BLOCKED
