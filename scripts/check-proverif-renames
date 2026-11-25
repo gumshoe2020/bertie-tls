@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+"""Check that touched ProVerif files differ from their baseline only by the renames in
+proofs/proverif/renames.txt (whole-identifier substitutions).
+
+usage: check-proverif-renames [--apply] [--base REV] FILE...
+Default base is 5fb71b3. Exit 0 and print nothing but "OK" when the diff is empty.
+"""
+import argparse, difflib, re, subprocess, sys
+
+MAP = "proofs/proverif/renames.txt"
+
+
+def load_map():
+    pairs = {}
+    for line in open(MAP):
+        line = line.split("#", 1)[0].split()
+        if line:
+            old, new = line
+            pairs[old] = new
+    return pairs
+
+
+def rename(text, pairs):
+    return re.sub(r"\b\w+\b", lambda m: pairs.get(m.group(0), m.group(0)), text)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--apply", action="store_true")
+    ap.add_argument("--base", default="5fb71b3")
+    ap.add_argument("files", nargs="+")
+    args = ap.parse_args()
+    pairs, bad = load_map(), 0
+    for path in args.files:
+        original = subprocess.check_output(["git", "show", f"{args.base}:{path}"], text=True)
+        expected = rename(original, pairs)
+        if args.apply:
+            open(path, "w").write(expected)
+        diff = list(difflib.unified_diff(expected.splitlines(), open(path).read().splitlines(),
+                                         "expected", path, lineterm=""))
+        print(f"{path}: {'OK (empty diff)' if not diff else 'MISMATCH'}")
+        print("\n".join(diff))
+        bad += bool(diff)
+    return 1 if bad else 0
+
+
+sys.exit(main())

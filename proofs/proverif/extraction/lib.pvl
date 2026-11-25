@@ -3093,32 +3093,32 @@ letfun bertie_tls__tls13record__duplex_cipher_state1(
        bertie_tls__tls13record__DuplexCipherState1(ae, kiv1, c1, kiv2, c2, k).
 
 
-fun bertie__tls13record__encrypt_handshake(
-      bertie__tls13formats__handshake_data__t_HandshakeData,
+fun bertie_tls__tls13record__encrypt_handshake(
+      bertie_tls__tls13formats__handshake_data__t_HandshakeData,
       nat,
-      bertie__tls13record__t_DuplexCipherStateH
+      bertie_tls__tls13record__t_DuplexCipherStateH
     )
     : bitstring.
 
 
 reduc forall payload: bertie_tls__tls13formats__handshake_data__t_HandshakeData,
               pad: nat,
-              sender_key_iv: bertie__tls13crypto__t_AeadKeyIV,
+              sender_key_iv: bertie_tls__tls13crypto__t_AeadKeyIV,
               sender_counter: nat,
-              receiver_key_iv: bertie__tls13crypto__t_AeadKeyIV,
+              receiver_key_iv: bertie_tls__tls13crypto__t_AeadKeyIV,
               receiver_counter: nat;
 bertie_tls__tls13record__decrypt_handshake(
            bertie_tls__tls13record__encrypt_handshake(
            payload,
            pad,
-           bertie__tls13record__DuplexCipherStateH(
+           bertie_tls__tls13record__DuplexCipherStateH(
                  receiver_key_iv,
                  receiver_counter,
                  sender_key_iv,
                  sender_counter
                )
            ),
-bertie__tls13record__DuplexCipherStateH(
+bertie_tls__tls13record__DuplexCipherStateH(
       sender_key_iv,
       sender_counter,
       receiver_key_iv,
@@ -3654,8 +3654,8 @@ reduc forall
 
 
 (* marked as constructor *)
-fun bertie__tls13formats__finished(bertie__tls13utils__t_Bytes)
-    : bertie__tls13formats__handshake_data__t_HandshakeData [data].
+fun bertie_tls__tls13formats__finished(bertie_tls__tls13utils__byte_types__t_Bytes)
+    : bertie_tls__tls13formats__handshake_data__t_HandshakeData [data].
 
 
 reduc forall
@@ -3682,11 +3682,11 @@ letfun bertie_tls__tls13formats__impl_Transcript__add(
          self : bertie_tls__tls13formats__t_Transcript,
          msg : bertie_tls__tls13formats__handshake_data__t_HandshakeData
        ) =
-       let bertie__tls13formats__Transcript(  (* XXX: hand-insert *)
+       let bertie_tls__tls13formats__Transcript(  (* XXX: hand-insert *)
             hash_algorithm: bertie_tls__tls13crypto__algorithm_types__t_HashAlgorithm,
             old_handshake_data: bertie_tls__tls13formats__handshake_data__t_HandshakeData
         ) = self in
-    bertie__tls13formats__Transcript(  (* XXX: hand-insert *)
+    bertie_tls__tls13formats__Transcript(  (* XXX: hand-insert *)
         hash_algorithm,
         bertie_tls__tls13formats__handshake_data__HandshakeData(
             bertie_tls__tls13formats__handshake_data__to_bytes_inner(
