@@ -51,7 +51,7 @@ jobs:
 
       - name: Measure, check committed outputs and apply ratchet
         id: coverage
-        uses: gumshoe2020/formal-coverage/.github/actions/coverage@2c7e26a8c90afb44323ecebce69822e8b4bc9ca5 # v1.9.0
+        uses: gumshoe2020/formal-coverage/.github/actions/coverage@b7379121068c3d5db257e10a5013c2a85d0c9fe4 # v1.9.1
         with:
           report-args: '["--fstar-log","target/ci-logs/fstar/fstar.log"]'
 
@@ -77,6 +77,6 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Publish to the badges branch
-        uses: gumshoe2020/formal-coverage/.github/actions/publish-badges@2c7e26a8c90afb44323ecebce69822e8b4bc9ca5 # v1.9.0
+        uses: gumshoe2020/formal-coverage/.github/actions/publish-badges@b7379121068c3d5db257e10a5013c2a85d0c9fe4 # v1.9.1
         with:
           coverage-result: ${{ needs.coverage.result }}

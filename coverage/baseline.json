@@ -1981,22 +1981,22 @@
       "line": 1047
     }
   ],
-  "proof_ratio": 0.14576607896697294,
+  "proof_ratio": 0.14278764290926782,
   "proof_sloc": 587,
-  "proven": 4027,
+  "proven": 4111,
   "schema": 1,
   "scope": "first-party security runtime",
   "statuses": {
     "hazard": 0,
     "proven": 0,
     "proven-bounded": 0,
-    "proven-extracted": 4027,
+    "proven-extracted": 4111,
     "proven-upstream": 0,
-    "tested": 281,
-    "trusted": 118,
-    "unverified": 652
+    "tested": 253,
+    "trusted": 161,
+    "unverified": 553
   },
-  "tested": 281,
+  "tested": 253,
   "total": 5078,
-  "unverified": 770
+  "unverified": 714
 }

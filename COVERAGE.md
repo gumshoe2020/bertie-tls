@@ -57,29 +57,45 @@ methods stay trusted. 39 units in `tls13crypto` (`Algorithms`, `HashAlgorithm`,
 to proven; no unit lost a tier. Proven 3,776 to 4,027 of 5,078 (74.36% to 79.30%). Full comparison: formal-coverage
 `dev/v185/compare.md` at tag v1.8.5.
 
+**Re-measured with formal-coverage v1.9.1 (2026-11-25).** The tool changed, not the code.
+F* already checked these bodies strictly, but hax names them in five forms the tool could not
+match to Rust: a trailing `_` after a final digit (`next_keys_c_2_`), trait instance records
+(`impl KeySchedule<TLSnames> for TLSkeyscheduler`, `Clone for CertificateKey`,
+`From<Bytes> for AppData`), the same records with bodies in the `.fsti` (Alert `try_from`,
+`Index<usize> for Bytes`), and an empty type segment (`impl__new` for `ServerDB::new`). Each
+maps only when exactly one Rust candidate fits. Interface-record bodies stay trusted, not
+proven, although a canary showed F* rejects a broken body there. `aead_encrypt`,
+`aead_decrypt` and `tlserr` have feature-flag twins and stay unmapped, because the F* receipt
+does not record the extraction's feature set. 15 units changed and none lost a tier: proven
+4,027 to 4,111 of 5,078 (79.30% to 80.96%), trusted 118 to 161, unverified 652 to 553; the
+table below counts trusted with unverified (770 to 714). Full comparison: formal-coverage
+`dev/v191/compare.md` at tag v1.9.1.
+
 <!-- measured coverage: begin -->
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 4027 | 79.30% |
-| tested | 281 | 5.53% |
-| unverified | 770 | 15.16% |
+| proven | 4111 | 80.96% |
+| tested | 253 | 4.98% |
+| unverified | 714 | 14.06% |
 
 Total: **5078** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (4027 lines); Verus proven: 0 lines.
+`proven-extracted` hax credit (4111 lines); Verus proven: 0 lines.
 
-Proof-to-code ratio: **0.15** (587 proof SLoC / 4027 proven + proven-extracted runtime SLoC); informational, never blocking.
+Proof-to-code ratio: **0.14** (587 proof SLoC / 4111 proven + proven-extracted runtime SLoC); informational, never blocking.
 
 Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code SLoC, and 61 inline `cfg(hax)` SLoC (overlaps count once). F* models: 1 SLoC of trusted assumptions, excluded from the ratio.
 
 | Module | Proven runtime | Proof SLoC | Proof / proven runtime |
 | --- | ---: | ---: | ---: |
-| bertie_tls::der | 147 | 296 | 2.01 |
+| bertie_tls::der | 150 | 296 | 1.97 |
 | bertie_tls::server | 24 | 0 | 0.00 |
+| bertie_tls::server::ServerDB | 13 | 0 | 0.00 |
 | bertie_tls::tls13api | 16 | 0 | 0.00 |
 | bertie_tls::tls13api::Client | 68 | 0 | 0.00 |
 | bertie_tls::tls13api::Server | 63 | 0 | 0.00 |
 | bertie_tls::tls13cert | 306 | 45 | 0.15 |
+| bertie_tls::tls13cert::CloneforCertificateKey | 3 | 0 | 0.00 |
 | bertie_tls::tls13crypto | 297 | 0 | 0.00 |
 | bertie_tls::tls13crypto::AeadAlgorithm | 16 | 0 | 0.00 |
 | bertie_tls::tls13crypto::AeadKey | 3 | 0 | 0.00 |
@@ -93,8 +109,9 @@ Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code 
 | bertie_tls::tls13formats::handshake_data | 94 | 4 | 0.04 |
 | bertie_tls::tls13formats::handshake_data::HandshakeData | 76 | 13 | 0.17 |
 | bertie_tls::tls13handshake | 708 | 1 | 0.00 |
-| bertie_tls::tls13keyscheduler | 201 | 0 | 0.00 |
+| bertie_tls::tls13keyscheduler | 219 | 0 | 0.00 |
 | bertie_tls::tls13keyscheduler::key_schedule | 307 | 0 | 0.00 |
+| bertie_tls::tls13keyscheduler::key_schedule::KeySchedule<TLSnames>forTLSkeyscheduler | 44 | 0 | 0.00 |
 | bertie_tls::tls13record | 252 | 6 | 0.02 |
 | bertie_tls::tls13record::DuplexCipherStateH | 13 | 0 | 0.00 |
 | bertie_tls::tls13utils | 303 | 106 | 0.35 |
@@ -103,6 +120,7 @@ Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code 
 | bertie_tls::tls13utils::AppData | 9 | 0 | 0.00 |
 | bertie_tls::tls13utils::Bytes | 90 | 26 | 0.29 |
 | bertie_tls::tls13utils::From<&[u8]>forBytes | 0 | 1 | n/a |
+| bertie_tls::tls13utils::From<Bytes>forAppData | 3 | 0 | 0.00 |
 | bertie_tls::tls13utils::core::ops::Index<Range<usize>>forBytes | 0 | 1 | n/a |
 
 <!-- measured coverage: end -->
@@ -203,9 +221,8 @@ Any rejected receipt or unmapped function retains zero credit; see the full repo
 
 ## Reproduction and pins
 
-- formal-coverage v1.9.0, public commit `2c7e26a8c90afb44323ecebce69822e8b4bc9ca5`.
+- formal-coverage v1.9.1, public commit `b7379121068c3d5db257e10a5013c2a85d0c9fe4`.
   Both shared CI actions pin this commit, which also pins the measurement tool.
-  Measurement is unchanged from v1.8.5; the baseline and measured section are unchanged.
 - hax `0.4.2`, source `5ccf89dd2e996c9f88f2267eaa2a64739c4ca41a`.
 - Rust extraction toolchain `nightly-2025-11-08`; F* `2025.10.06`, Z3 `4.13.3`.
 - Local container images: `fc-verify-hax:v17` (aarch64) and
