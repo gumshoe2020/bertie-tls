@@ -266,3 +266,24 @@ Blocker (unchanged): stale hardcoded `bertie__...` names in existing proverif::r
 strings (tls13record.rs encrypt_handshake, tls13formats.rs, analysis.pv). Needs a
 decision to permit reviewed rename-only edits to those strings and analysis.pv.
 Queries 1-7 not evaluated; vacuity guard unmet; no expected-results file or CI job.
+
+## ProVerif P1 run 8 (Codex limit at start; Claude Code): handwritten_post.pvl cannot supply `is_some`
+
+Start 2c2c788. Tried the approved design: `proofs/proverif/handwritten_post.pvl` containing
+`letfun core_models__option__impl__is_some(o: Option) = if o = None() then false else true.`,
+loaded after `extraction/lib` via a one-line addition to `typecheck-proverif`'s `-lib` list.
+Result (target/proverif/run8-analysis.log, ProVerif 2.05 in fc-verify-hax:v17, exit 2, wall ~0.04 s):
+`lib.pvl:4136: Error: core_models__option__impl__is_some not defined.` Unchanged from run 7.
+
+Cause: ProVerif reads `-lib` files strictly in order, and `is_some` is *called inside* lib.pvl
+(`lookup_db`, line 4136). It must therefore be defined before lib.pvl line 4136 but after lib.pvl
+line 10 (`type Option.`). A file loaded after lib.pvl is too late, a file loaded before it has no
+`Option`. The approved placement cannot work; this is an ordering constraint, not a typo.
+Reverted both the driver edit and the new file (tree clean). Handwritten additions 0/15.
+
+Options needing a decision (none attempted): (a) split lib.pvl is not possible (generated);
+(b) declare `type Option.` in handwritten_lib.pvl and have the generated duplicate removed, which
+needs a hax/extraction change; (c) rewrite `lookup_db`'s PSK condition without `Option::is_some`
+(e.g. `matches!`/nested match avoiding the hax nested-wildcard bug); (d) a `proverif::replace_body`
+on `lookup_db`'s PSK branch (both branches return `Err`, only the error code differs).
+Queries 1-7 not evaluated; vacuity guard unmet; no expected-results file or CI job; M2-M4 not done.
