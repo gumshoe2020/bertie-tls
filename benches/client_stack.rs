@@ -50,7 +50,7 @@ macro_rules! measure {
     };
 }
 
-const CIPHERSUITES: [Algorithms; 6] = [
+const CIPHERSUITES: [Algorithms; 3] = [
     SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_P256,
     SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519,
     SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519MlKem768,

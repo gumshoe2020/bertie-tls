@@ -75,14 +75,14 @@ table below counts trusted with unverified (770 to 714). Full comparison: formal
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 4124 | 81.01% |
+| proven | 4125 | 81.01% |
 | tested | 253 | 4.97% |
 | unverified | 714 | 14.02% |
 
-Total: **5091** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (4124 lines); Verus proven: 0 lines.
+Total: **5092** first-party security runtime SLoC. Proven includes explicitly labelled
+`proven-extracted` hax credit (4125 lines); Verus proven: 0 lines.
 
-Proof-to-code ratio: **0.14** (587 proof SLoC / 4124 proven + proven-extracted runtime SLoC); informational, never blocking.
+Proof-to-code ratio: **0.14** (587 proof SLoC / 4125 proven + proven-extracted runtime SLoC); informational, never blocking.
 
 Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code SLoC, and 61 inline `cfg(hax)` SLoC (overlaps count once). F* models: 1 SLoC of trusted assumptions, excluded from the ratio.
 
@@ -111,7 +111,7 @@ Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code 
 | bertie_tls::tls13handshake | 714 | 1 | 0.00 |
 | bertie_tls::tls13keyscheduler | 219 | 0 | 0.00 |
 | bertie_tls::tls13keyscheduler::key_schedule | 307 | 0 | 0.00 |
-| bertie_tls::tls13keyscheduler::key_schedule::KeySchedule<TLSnames>forTLSkeyscheduler | 44 | 0 | 0.00 |
+| bertie_tls::tls13keyscheduler::key_schedule::KeySchedule<TLSnames>forTLSkeyscheduler | 45 | 0 | 0.00 |
 | bertie_tls::tls13record | 252 | 6 | 0.02 |
 | bertie_tls::tls13record::DuplexCipherStateH | 13 | 0 | 0.00 |
 | bertie_tls::tls13utils | 303 | 106 | 0.35 |
