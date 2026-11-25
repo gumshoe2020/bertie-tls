@@ -1,6 +1,7 @@
 pub(crate) mod key_names;
 pub(crate) mod key_schedule;
-#[cfg(any(test, hax))]
+// Used outside hax only by the sha256-gated RFC 8448 test; ungated, single-feature builds warn dead_code.
+#[cfg(any(all(test, feature = "sha256"), hax))]
 mod rfc8446_spec;
 // RFC 8448 §3 uses SHA-256; HKDF over it needs the sha256 feature.
 #[cfg(all(test, feature = "sha256"))]
