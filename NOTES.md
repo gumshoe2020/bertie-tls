@@ -287,3 +287,36 @@ needs a hax/extraction change; (c) rewrite `lookup_db`'s PSK condition without `
 (e.g. `matches!`/nested match avoiding the hax nested-wildcard bug); (d) a `proverif::replace_body`
 on `lookup_db`'s PSK branch (both branches return `Err`, only the error code differs).
 Queries 1-7 not evaluated; vacuity guard unmet; no expected-results file or CI job; M2-M4 not done.
+
+## ProVerif P1 run 9 (Codex limit at start; Claude Code): `psk_offered` helper, model reaches the queries
+
+Start 6fd584c. Approved option 3: `src/server.rs` gains private `fn psk_offered(tkt, psk_opt) -> bool`
+(`tkt.is_some() && psk_opt.is_some()`), called from `lookup_db`; under `hax-pv` its body is replaced by `false`.
+Behaviour unchanged; `psk_tests` and the run-7 branch test pass unchanged. In the model the PSK branch
+returns `PSK_MODE_MISMATCH` instead of `UNSUPPORTED_ALGORITHM` (both errors, PSK disabled); recorded in
+TRUSTED.md "ProVerif model assumptions".
+
+hax quirk (for upstream): `replace_body("false")` is emitted as `r#false` (Rust raw identifier) and ProVerif
+fails with a syntax error at lib.pvl:4100. Any other string works, so the replacement is
+`"false (* PSK disabled: no PSK offered *)"`, which prints `false (* ... *)`. Same meaning; this is the only
+deviation from the text of the decision. `core_models__option__impl__is_some` no longer appears in lib.pvl.
+
+Extraction: pinned hax 0.4.2 in fc-verify-hax:v17 with BERTIE_DOCKER_TOOLS (target/proverif/run9-extract.log).
+lib.pvl +5/-1 (new `letfun bertie_tls__server__psk_offered`, one call changed). Rename guard: empty diff on
+analysis.pv, tls13record.rs, tls13formats.rs. Handwritten additions 0/15. No new renames.
+
+ProVerif 2.05 (target/proverif/run9-analysis.log), wall 13.4 s. Results, analysis.pv order:
+1 client completes (reachability): `not event(...) is false` = reachable (guard passes)
+2 server completes (reachability): `is false` = reachable (guard passes)
+3 server auth without compromise assumption: false (marked "Should fail" in analysis.pv; attack via compromised cert key)
+4 server auth unless cert key compromised: true
+5 session-key secrecy without compromise assumption: false (marked "Should fail")
+6 session-key secrecy unless cert key compromised: true
+7 harvest-now-decrypt-later: true
+Queries 3 and 5 are the upstream "should fail" queries (they show the compromise assumption is needed); the
+attack traces are in the log (RESULT lines 14046 and 14918). They are not security regressions, so I did not stop.
+Interpretation of the guard: "queries 1 and 2 must be true" means the completion events are reachable.
+
+Gap estimate (requested by the decision): symbols `core_models__*`/`alloc__*` used in lib.pvl and defined
+neither there nor in handwritten_lib.pvl: none remain (ProVerif reaches the queries; its "not defined" error
+is the exact check).

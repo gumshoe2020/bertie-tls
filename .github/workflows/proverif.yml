@@ -1,0 +1,48 @@
+name: proverif
+
+# Regenerates the ProVerif model with the pinned hax, fails if the committed
+# model is stale, then runs ProVerif and compares every query with
+# proofs/proverif/expected-results.txt (queries 1 and 2 are the non-vacuity guard).
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  HAX_COMMIT: 5ccf89dd2e996c9f88f2267eaa2a64739c4ca41a
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  proverif:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: ./.github/actions/setup-hax
+        with:
+          fstar: v2025.10.06
+          hax_commit: ${{ env.HAX_COMMIT }}
+      - uses: ./.github/actions/setup-proverif
+      - name: Regenerate the model and require it to match the committed one
+        run: |
+          eval "$(opam env 2>/dev/null || true)"
+          cargo fetch --locked
+          python3 hax-driver.py extract-proverif
+          git diff --exit-code -- proofs/proverif/extraction
+      - name: Run ProVerif and compare with expected results
+        run: python3 scripts/check-proverif --timeout 3600
+      - name: Keep logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: proverif-logs
+          path: target/proverif/analysis.log

@@ -76,9 +76,14 @@
       "line": 19
     },
     {
-      "end_line": 79,
+      "end_line": 60,
       "file": "src/server.rs",
-      "line": 52
+      "line": 54
+    },
+    {
+      "end_line": 89,
+      "file": "src/server.rs",
+      "line": 62
     },
     {
       "end_line": 21,
@@ -1171,104 +1176,104 @@
       "line": 242
     },
     {
-      "end_line": 316,
+      "end_line": 324,
       "file": "src/tls13handshake.rs",
-      "line": 308
+      "line": 310
     },
     {
-      "end_line": 370,
+      "end_line": 378,
       "file": "src/tls13handshake.rs",
-      "line": 318
+      "line": 326
     },
     {
-      "end_line": 403,
+      "end_line": 411,
       "file": "src/tls13handshake.rs",
-      "line": 372
+      "line": 380
     },
     {
-      "end_line": 456,
+      "end_line": 464,
       "file": "src/tls13handshake.rs",
-      "line": 405
+      "line": 413
     },
     {
-      "end_line": 494,
+      "end_line": 502,
       "file": "src/tls13handshake.rs",
-      "line": 458
+      "line": 466
     },
     {
-      "end_line": 518,
+      "end_line": 526,
       "file": "src/tls13handshake.rs",
-      "line": 501
+      "line": 509
     },
     {
-      "end_line": 528,
+      "end_line": 536,
       "file": "src/tls13handshake.rs",
-      "line": 520
+      "line": 528
     },
     {
-      "end_line": 567,
+      "end_line": 575,
       "file": "src/tls13handshake.rs",
-      "line": 530
+      "line": 538
     },
     {
-      "end_line": 597,
+      "end_line": 605,
       "file": "src/tls13handshake.rs",
-      "line": 571
+      "line": 579
     },
     {
-      "end_line": 636,
+      "end_line": 644,
       "file": "src/tls13handshake.rs",
-      "line": 599
+      "line": 607
     },
     {
-      "end_line": 708,
+      "end_line": 716,
       "file": "src/tls13handshake.rs",
-      "line": 638
+      "line": 646
     },
     {
-      "end_line": 723,
+      "end_line": 731,
       "file": "src/tls13handshake.rs",
-      "line": 710
+      "line": 718
     },
     {
-      "end_line": 772,
+      "end_line": 780,
       "file": "src/tls13handshake.rs",
-      "line": 725
+      "line": 733
     },
     {
-      "end_line": 791,
+      "end_line": 799,
       "file": "src/tls13handshake.rs",
-      "line": 774
+      "line": 782
     },
     {
-      "end_line": 820,
+      "end_line": 828,
       "file": "src/tls13handshake.rs",
-      "line": 793
+      "line": 801
     },
     {
-      "end_line": 835,
+      "end_line": 843,
       "file": "src/tls13handshake.rs",
-      "line": 822
+      "line": 830
     },
     {
-      "end_line": 866,
+      "end_line": 874,
       "file": "src/tls13handshake.rs",
-      "line": 841
-    },
-    {
-      "end_line": 890,
-      "file": "src/tls13handshake.rs",
-      "line": 868
+      "line": 849
     },
     {
       "end_line": 898,
       "file": "src/tls13handshake.rs",
-      "line": 892
+      "line": 876
     },
     {
-      "end_line": 910,
+      "end_line": 906,
       "file": "src/tls13handshake.rs",
-      "line": 907
+      "line": 900
+    },
+    {
+      "end_line": 918,
+      "file": "src/tls13handshake.rs",
+      "line": 915
     },
     {
       "end_line": 15,
@@ -1981,22 +1986,22 @@
       "line": 1047
     }
   ],
-  "proof_ratio": 0.14278764290926782,
+  "proof_ratio": 0.14233753637245392,
   "proof_sloc": 587,
-  "proven": 4111,
+  "proven": 4124,
   "schema": 1,
   "scope": "first-party security runtime",
   "statuses": {
     "hazard": 0,
     "proven": 0,
     "proven-bounded": 0,
-    "proven-extracted": 4111,
+    "proven-extracted": 4124,
     "proven-upstream": 0,
     "tested": 253,
     "trusted": 161,
     "unverified": 553
   },
   "tested": 253,
-  "total": 5078,
+  "total": 5091,
   "unverified": 714
 }
