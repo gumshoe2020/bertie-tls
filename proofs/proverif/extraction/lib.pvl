@@ -4110,46 +4110,37 @@ letfun bertie_tls__server__lookup_db(
              )
            )
        then
-         (let (
-            =true,
-            Some(
-              bertie_tls__tls13utils__byte_types__t_Bytes_to_bitstring(
-                wildcard2: bitstring
+         (if
+            core_models__ops__bit__f_not(
+                bertie_tls__tls13crypto__impl_5__psk_mode(ciphersuite)
               )
-            ),
-            Some(wildcard3: bitstring)
-          ) = (
-            bertie_tls__tls13crypto__impl_5__psk_mode(ciphersuite),
-            tkt,
-            accessor_bertie_tls__server__server_db__t_ServerDB_bertie_tls__server__server_db__f_psk_opt(
-              db
-            )
-          ) in bertie_tls__server__t_ServerInfo_err()
-          else let (=false, wildcard4: bitstring, wildcard5: bitstring) = (
-            bertie_tls__tls13crypto__impl_5__psk_mode(ciphersuite),
-            tkt,
-            accessor_bertie_tls__server__server_db__t_ServerDB_bertie_tls__server__server_db__f_psk_opt(
-              db
-            )
-          ) in (
-            let server = (
-              bertie_tls__server__ServerInfo(
+          then
+            (let server = (
+               bertie_tls__server__ServerInfo(
 
-                  accessor_bertie_tls__server__server_db__t_ServerDB_bertie_tls__server__server_db__f_cert(
+                   accessor_bertie_tls__server__server_db__t_ServerDB_bertie_tls__server__server_db__f_cert(
+                     db
+                   )
+
+                 ,
+                   accessor_bertie_tls__server__server_db__t_ServerDB_bertie_tls__server__server_db__f_sk(
+                     db
+                   )
+
+                 ,None()
+               )
+             ) in
+             server)
+          else (
+            if
+              core_models__option__impl__is_some(tkt) && core_models__option__impl__is_some(
+                  accessor_bertie_tls__server__server_db__t_ServerDB_bertie_tls__server__server_db__f_psk_opt(
                     db
                   )
-
-                ,
-                  accessor_bertie_tls__server__server_db__t_ServerDB_bertie_tls__server__server_db__f_sk(
-                    db
-                  )
-
-                ,None()
-              )
-            ) in
-            server
-          )
-          else bertie_tls__server__t_ServerInfo_err())
+                )
+            then (bertie_tls__server__t_ServerInfo_err())
+            else (bertie_tls__server__t_ServerInfo_err())
+          ))
        else (bertie_tls__server__t_ServerInfo_err()).
 
 
@@ -4218,7 +4209,7 @@ letfun bertie_tls__tls13handshake__compute_psk_binder_zero_rtt(
          let (
            =true,
            Some(bertie_tls__tls13utils__byte_types__t_Bytes_to_bitstring(k)),
-           wildcard6: bitstring
+           wildcard2: bitstring
          ) = (psk_mode, psk, trunc_len) in (
            let psk_handle = (
              bertie_tls__tls13keyscheduler__key_schedule__Handle(
@@ -4360,7 +4351,7 @@ letfun bertie_tls__tls13handshake__build_client_hello(
        ) in
        let rng = (tmp0) in
        let client_random = (tmp1) in
-       let wildcard7: bitstring = (()) in
+       let wildcard3: bitstring = (()) in
        let (tmp0: impl_CryptoRng, v_out: bitstring) = (
          bertie_tls__tls13crypto__kem_keygen(
            bertie_tls__tls13crypto__impl_5__kem(ciphersuite), rng
@@ -4604,7 +4595,7 @@ letfun bertie_tls__tls13handshake__put_server_signature(
              bertie_tls__tls13crypto__impl_5__psk_mode(algorithms)
            )
        then
-         (let wildcard9: bitstring = bertie_tls__tls13formats__parse_encrypted_extensions(
+         (let wildcard5: bitstring = bertie_tls__tls13formats__parse_encrypted_extensions(
             algorithms, encrypted_extensions
           ) in let transcript = bertie_tls__tls13formats__impl_Transcript__add(
             transcript, encrypted_extensions
@@ -4622,7 +4613,7 @@ letfun bertie_tls__tls13handshake__put_server_signature(
             algorithms, server_certificate_verify
           ) in let sigval = bertie_tls__tls13handshake__server_signature_input(
             transcript_hash_server_certificate
-          ) in let wildcard8: bitstring = bertie_tls__tls13crypto__verify(
+          ) in let wildcard4: bitstring = bertie_tls__tls13crypto__verify(
             bertie_tls__tls13crypto__impl_5__signature(algorithms),
             public_key,
             sigval,
@@ -4695,7 +4686,7 @@ letfun bertie_tls__tls13handshake__put_psk_skip_server_signature(
         = (handshake_state) in
        if bertie_tls__tls13crypto__impl_5__psk_mode(algorithms)
        then
-         (let wildcard10: bitstring = bertie_tls__tls13formats__parse_encrypted_extensions(
+         (let wildcard6: bitstring = bertie_tls__tls13formats__parse_encrypted_extensions(
             algorithms, encrypted_extensions
           ) in let transcript = bertie_tls__tls13formats__impl_Transcript__add(
             transcript, encrypted_extensions
@@ -4739,7 +4730,7 @@ letfun bertie_tls__tls13handshake__put_server_finished(
          transcript
        ) in let verify_data = bertie_tls__tls13formats__parse_finished(
          server_finished
-       ) in let wildcard11: bitstring = bertie_tls__tls13crypto__hmac_verify(
+       ) in let wildcard7: bitstring = bertie_tls__tls13crypto__hmac_verify(
          hash, server_finished_key, transcript_hash, verify_data
        ) in let transcript = bertie_tls__tls13formats__impl_Transcript__add(
          transcript, server_finished
@@ -5124,7 +5115,7 @@ letfun bertie_tls__tls13handshake__process_psk_binder_zero_rtt(
                    hoist35
                  )
                ) in
-               let wildcard12: bitstring = bertie_tls__tls13crypto__hmac_verify(
+               let wildcard8: bitstring = bertie_tls__tls13crypto__hmac_verify(
                  accessor_bertie_tls__tls13crypto__algorithm_types__t_Algorithms_bertie_tls__tls13crypto__algorithm_types__f_hash(
                    ciphersuite
                  ),
@@ -5274,7 +5265,7 @@ letfun bertie_tls__tls13handshake__get_server_hello(
        ) in
        let rng = (tmp0) in
        let server_random = (tmp1) in
-       let wildcard13: bitstring = (()) in
+       let wildcard9: bitstring = (()) in
        let (tmp0: impl_CryptoRng, v_out: bitstring) = (
          bertie_tls__tls13crypto__kem_encap(
            accessor_bertie_tls__tls13crypto__algorithm_types__t_Algorithms_bertie_tls__tls13crypto__algorithm_types__f_kem(
@@ -5711,7 +5702,7 @@ letfun bertie_tls__tls13handshake__put_client_finished(
         = (st) in
        let th = bertie_tls__tls13formats__impl_Transcript__transcript_hash(tx) in let vd = bertie_tls__tls13formats__parse_finished(
          cfin
-       ) in let wildcard14: bitstring = bertie_tls__tls13crypto__hmac_verify(
+       ) in let wildcard10: bitstring = bertie_tls__tls13crypto__hmac_verify(
          bertie_tls__tls13crypto__impl_5__hash(algs), cfk, th, vd
        ) in let tx = bertie_tls__tls13formats__impl_Transcript__add(tx, cfin) in let th = bertie_tls__tls13formats__impl_Transcript__transcript_hash(
          tx

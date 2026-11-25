@@ -9,5 +9,5 @@ letfun rand_core__f_fill_bytes(rng: impl_CryptoRng, dest: bitstring) = new b: bi
 
 fun rust_primitives__hax__repeat(nat, nat): bitstring.
 
-letfun core__ops__bit__f_not(b: bool) = if b then false else true.
+letfun core_models__ops__bit__f_not(b: bool) = if b then false else true.
 letfun core__cmp__f_ge(lhs: nat, rhs:nat ) = lhs >= rhs.
