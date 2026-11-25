@@ -305,6 +305,14 @@ fn put_server_hello(
     ))
 }
 
+// ProVerif assumes abstract hashes have their algorithm's output length (at
+// most 64 bytes); see TRUSTED.md, "ProVerif model assumptions".
+#[cfg_attr(
+    feature = "hax-pv",
+    hax_lib::proverif::replace_body(
+        "${Bytes::concat}(${Bytes::from_slice}(${PREFIX_SERVER_SIGNATURE}), digest)"
+    )
+)]
 fn server_signature_input(digest: Digest) -> Result<Bytes, TLSError> {
     // All supported TLS transcript hashes fit in 64 bytes. Check the abstract
     // crypto result before adding the CertificateVerify context string.

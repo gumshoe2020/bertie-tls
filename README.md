@@ -8,6 +8,7 @@ commit `ef65f76`, under Apache-2.0. Upstream copyright notices and [LICENSE](LIC
 
 [![CI](https://github.com/gumshoe2020/bertie-tls/actions/workflows/ci.yml/badge.svg)](https://github.com/gumshoe2020/bertie-tls/actions/workflows/ci.yml)
 [![Proofs](https://github.com/gumshoe2020/bertie-tls/actions/workflows/hax.yml/badge.svg)](https://github.com/gumshoe2020/bertie-tls/actions/workflows/hax.yml)
+[![ProVerif](https://github.com/gumshoe2020/bertie-tls/actions/workflows/proverif.yml/badge.svg)](https://github.com/gumshoe2020/bertie-tls/actions/workflows/proverif.yml)
 [![Coverage](https://github.com/gumshoe2020/bertie-tls/actions/workflows/coverage.yml/badge.svg)](https://github.com/gumshoe2020/bertie-tls/actions/workflows/coverage.yml)
 [![proven](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fgumshoe2020%2Fbertie-tls%2Fbadges%2Fproven.json)](COVERAGE.md)
 [![tested](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fgumshoe2020%2Fbertie-tls%2Fbadges%2Ftested.json)](COVERAGE.md)

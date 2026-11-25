@@ -75,21 +75,21 @@ table below counts trusted with unverified (770 to 714). Full comparison: formal
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 4112 | 80.96% |
-| tested | 253 | 4.98% |
-| unverified | 714 | 14.06% |
+| proven | 4125 | 81.01% |
+| tested | 253 | 4.97% |
+| unverified | 714 | 14.02% |
 
-Total: **5079** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (4112 lines); Verus proven: 0 lines.
+Total: **5092** first-party security runtime SLoC. Proven includes explicitly labelled
+`proven-extracted` hax credit (4125 lines); Verus proven: 0 lines.
 
-Proof-to-code ratio: **0.14** (587 proof SLoC / 4112 proven + proven-extracted runtime SLoC); informational, never blocking.
+Proof-to-code ratio: **0.14** (587 proof SLoC / 4125 proven + proven-extracted runtime SLoC); informational, never blocking.
 
 Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code SLoC, and 61 inline `cfg(hax)` SLoC (overlaps count once). F* models: 1 SLoC of trusted assumptions, excluded from the ratio.
 
 | Module | Proven runtime | Proof SLoC | Proof / proven runtime |
 | --- | ---: | ---: | ---: |
 | bertie_tls::der | 150 | 296 | 1.97 |
-| bertie_tls::server | 24 | 0 | 0.00 |
+| bertie_tls::server | 31 | 0 | 0.00 |
 | bertie_tls::server::ServerDB | 13 | 0 | 0.00 |
 | bertie_tls::tls13api | 16 | 0 | 0.00 |
 | bertie_tls::tls13api::Client | 68 | 0 | 0.00 |
@@ -108,7 +108,7 @@ Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code 
 | bertie_tls::tls13formats::Transcript | 53 | 1 | 0.02 |
 | bertie_tls::tls13formats::handshake_data | 94 | 4 | 0.04 |
 | bertie_tls::tls13formats::handshake_data::HandshakeData | 76 | 13 | 0.17 |
-| bertie_tls::tls13handshake | 708 | 1 | 0.00 |
+| bertie_tls::tls13handshake | 714 | 1 | 0.00 |
 | bertie_tls::tls13keyscheduler | 219 | 0 | 0.00 |
 | bertie_tls::tls13keyscheduler::key_schedule | 307 | 0 | 0.00 |
 | bertie_tls::tls13keyscheduler::key_schedule::KeySchedule<TLSnames>forTLSkeyscheduler | 45 | 0 | 0.00 |
@@ -223,6 +223,10 @@ Any rejected receipt or unmapped function retains zero credit; see the full repo
 
 - formal-coverage v1.9.1, public commit `b7379121068c3d5db257e10a5013c2a85d0c9fe4`.
   Both shared CI actions pin this commit, which also pins the measurement tool.
+- ProVerif `2.05`, official source
+  `https://bblanche.gitlabpages.inria.fr/proverif/proverif2.05.tar.gz`,
+  SHA-256 `4871f53c32ab4a04669a060c4886ba5d9080496963fb980a9a62d2c429ceabc4`.
+  Built by `scripts/install-proverif` and `.github/actions/setup-proverif`.
 - hax `0.4.2`, source `5ccf89dd2e996c9f88f2267eaa2a64739c4ca41a`.
 - Rust extraction toolchain `nightly-2025-11-08`; F* `2025.10.06`, Z3 `4.13.3`.
 - Local container images: `fc-verify-hax:v17` (aarch64) and

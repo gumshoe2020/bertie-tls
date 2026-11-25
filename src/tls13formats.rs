@@ -843,13 +843,13 @@ pub fn bench_parse_server_hello(
     feature = "hax-pv",
     proverif::replace(
         "(* marked as constructor *)
-fun bertie__tls13formats__server_hello(
-      bertie__tls13crypto__t_Algorithms,
-      bertie__tls13utils__t_Bytes,
-      bertie__tls13utils__t_Bytes,
-      bertie__tls13utils__t_Bytes
+fun bertie_tls__tls13formats__server_hello(
+      bertie_tls__tls13crypto__algorithm_types__t_Algorithms,
+      bertie_tls__tls13utils__byte_types__t_Bytes,
+      bertie_tls__tls13utils__byte_types__t_Bytes,
+      bertie_tls__tls13utils__byte_types__t_Bytes
     )
-    : bertie__tls13formats__handshake_data__t_HandshakeData [data].
+    : bertie_tls__tls13formats__handshake_data__t_HandshakeData [data].
 
 
 
@@ -921,9 +921,9 @@ pub(crate) fn encrypted_extensions(_algs: &Algorithms) -> Result<HandshakeData, 
     proverif::replace(
         "
 (* marked as constructor *)
-fun ${encrypted_extensions}(bertie__tls13crypto__t_Algorithms
+fun ${encrypted_extensions}(bertie_tls__tls13crypto__algorithm_types__t_Algorithms
     )
-    : bertie__tls13formats__handshake_data__t_HandshakeData [data].
+    : bertie_tls__tls13formats__handshake_data__t_HandshakeData [data].
 
 
 reduc forall algs: $:{Algorithms};
@@ -992,10 +992,10 @@ pub fn bench_parse_server_certificate(certificate: &HandshakeData) -> Result<Byt
     proverif::replace(
         "
 (* marked as constructor *)
-fun bertie__tls13formats__server_certificate(
-      bertie__tls13crypto__t_Algorithms, bertie__tls13utils__t_Bytes
+fun bertie_tls__tls13formats__server_certificate(
+      bertie_tls__tls13crypto__algorithm_types__t_Algorithms, bertie_tls__tls13utils__byte_types__t_Bytes
     )
-    : bertie__tls13formats__handshake_data__t_HandshakeData [data].
+    : bertie_tls__tls13formats__handshake_data__t_HandshakeData [data].
 
 
 reduc forall
@@ -1066,10 +1066,10 @@ pub(crate) fn certificate_verify(algs: &Algorithms, cv: &Bytes) -> Result<Handsh
     proverif::replace(
         "
 (* marked as constructor *)
-fun bertie__tls13formats__certificate_verify(
-      bertie__tls13crypto__t_Algorithms, bertie__tls13utils__t_Bytes
+fun bertie_tls__tls13formats__certificate_verify(
+      bertie_tls__tls13crypto__algorithm_types__t_Algorithms, bertie_tls__tls13utils__byte_types__t_Bytes
     )
-    : bertie__tls13formats__handshake_data__t_HandshakeData [data].
+    : bertie_tls__tls13formats__handshake_data__t_HandshakeData [data].
 
 
 reduc forall
@@ -1136,8 +1136,8 @@ pub(crate) fn finished(vd: &Bytes) -> Result<HandshakeData, TLSError> {
     proverif::replace(
         "
 (* marked as constructor *)
-fun bertie__tls13formats__finished(bertie__tls13utils__t_Bytes)
-    : bertie__tls13formats__handshake_data__t_HandshakeData [data].
+fun bertie_tls__tls13formats__finished(bertie_tls__tls13utils__byte_types__t_Bytes)
+    : bertie_tls__tls13formats__handshake_data__t_HandshakeData [data].
 
 
 reduc forall
@@ -1264,11 +1264,11 @@ impl Transcript {
     #[cfg_attr(
         feature = "hax-pv",
         proverif::replace_body(
-            "let bertie__tls13formats__Transcript(  (* XXX: hand-insert *)
+            "let bertie_tls__tls13formats__Transcript(  (* XXX: hand-insert *)
             hash_algorithm: $:{HashAlgorithm},
             old_handshake_data: $:{HandshakeData}
         ) = self in
-    bertie__tls13formats__Transcript(  (* XXX: hand-insert *)
+    bertie_tls__tls13formats__Transcript(  (* XXX: hand-insert *)
         hash_algorithm,
         ${HandshakeData}(
             ${handshake_data::to_bytes_inner}(
