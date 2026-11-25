@@ -203,8 +203,9 @@ Any rejected receipt or unmapped function retains zero credit; see the full repo
 
 ## Reproduction and pins
 
-- formal-coverage commit `a995961` (private) / `7f4927cae26728ebfea0e135856e0fed40493b14`
-  (public tag v1.8.5, identical tree; CI uses the public commit; version string `1.8.5`).
+- formal-coverage v1.9.0, public commit `2c7e26a8c90afb44323ecebce69822e8b4bc9ca5`.
+  Both shared CI actions pin this commit, which also pins the measurement tool.
+  Measurement is unchanged from v1.8.5; the baseline and measured section are unchanged.
 - hax `0.4.2`, source `5ccf89dd2e996c9f88f2267eaa2a64739c4ca41a`.
 - Rust extraction toolchain `nightly-2025-11-08`; F* `2025.10.06`, Z3 `4.13.3`.
 - Local container images: `fc-verify-hax:v17` (aarch64) and
@@ -219,11 +220,12 @@ cargo build --release --locked --manifest-path /path/to/formal-coverage/Cargo.to
 # Native tools: HAX_CORE_LIBS=/pinned/hax/proof-libs/fstar
 #               HAX_LIB_PROOFS=/pinned/hax/hax-lib/proofs/fstar/extraction
 python3 scripts/verify-fstar.py
-formal-coverage report . --fstar-log target/ci-logs/fstar/fstar.log \
-  --json target/ci-logs/report.json --markdown target/ci-logs/report.md
-python3 scripts/write-coverage.py target/ci-logs/report.json --check
-python3 -m unittest discover -s scripts/tests -v
-scripts/coverage-ratchet MERGE_BASE_BASELINE target/ci-logs/report.json DIFF
+# /path/to/formal-coverage must be the public commit pinned above.
+python3 /path/to/formal-coverage/ci/run.py \
+  --tool /path/to/formal-coverage/target/release/formal-coverage \
+  --workspace "$PWD" --report-args '["--fstar-log","target/ci-logs/fstar/fstar.log"]' \
+  --base "$(git merge-base origin/main HEAD)" --output "$PWD/target/coverage-ci"
+python3 -m unittest discover -s /path/to/formal-coverage/ci/tests -v
 ```
 
 For the local rebuilt toolchain, prefix verification with
@@ -280,14 +282,15 @@ tool measurement change, with the reason in the row.
 
 ## Badges and proof-cost guidance
 
-Proven badge colors: below 20% red, 20–49.99% orange, 50–79.99% yellow,
-80–94.99% yellowgreen, 95% and above green. Tested is blue; unverified lines are
-red unless zero. Ratchet is green only after a passing check. Missing measurements
-are red/unavailable. Proof cost is informational: development range 5–15,
-established range 10–20, established modules above 20 require review. The project
-is alpha, so `formal-coverage.toml` sets 5–15 with Andrew's reason. Out-of-range
-cost produces a warning and orange badge, never a failed ratchet. Every other
-proof, audit, test, check and lint remains blocking.
+The shared kit's default badge set, labels and thresholds match the Badges table
+above exactly; no project JSON config is needed. The measurement settings remain
+in `formal-coverage.toml`. See the pinned kit's `ci/README.md` for its action inputs
+and local runner. The kit now owns the generic ratchet, writers and their tests.
+Proof cost is informational: development range 5–15, established range 10–20;
+established modules above 20 require review. The project is alpha, so
+`formal-coverage.toml` sets 5–15 with Andrew's reason. Out-of-range cost produces
+a warning and yellow badge, never a failed ratchet. Every other proof, audit,
+test, check and lint remains blocking.
 
 Main-only badge publication uses GITHUB_TOKEN and writes endpoint JSON to the
 `badges` branch. No service token is needed. These files are generated only by
