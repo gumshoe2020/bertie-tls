@@ -82,3 +82,59 @@ changed. Reviewer acceptance remains outstanding. No push, gh, hook bypass,
 new Cargo dependencies or forbidden files changed. Memory tools unavailable.
 Evidence: target/proverif/analysis{,-initial}.log, metrics{,-initial}.json,
 extract.log, install.log, final-checks.txt and *-final.log.
+
+## 2026-11-25T15:47:59-05:00 — ProVerif P1 run 2: declaration rename and new blocker
+
+Applied only the declaration rename authorized by Dudley/Andrew on 2026-11-25:
+- Old: `std__collections__hash__map__t_HashMap_of_bitstring_bertie__tls13utils__t_Bytes_std__hash__random__t_RandomState`
+- New: `std__collections__hash__map__t_HashMap_of_bitstring_bertie_tls__tls13utils__byte_types__t_Bytes_std__hash__random__t_RandomState`
+- Causes: 321475845a26c79ef01578d551676bb33819a7ae renamed the crate to
+  bertie-tls; ad6f6db37bd603db7843a1263cb335b49290a0c6 moved Bytes to
+  tls13utils::byte_types. The abstract `type X.` declaration has no definition
+  to change. All other handwritten library bytes are unchanged.
+
+The pinned ProVerif 2.05 full analysis now passes the original HashMap error
+but fails before queries with:
+
+```text
+File "proofs/proverif/extraction/lib.pvl", line 2764, characters 8-30:
+Error: alloc__vec__impl_1__len not defined.
+```
+
+The undefined function is called by generated
+`bertie_tls__tls13utils__impl_17__len`. No existing handwritten declaration
+corresponds to Vec::len: the handwritten file contains only the two type
+declarations, RNG fill, repeat, boolean not and numeric ge. This cannot be
+fixed by renaming an existing declaration. Stopped under run 2's explicit
+rename-only boundary; no new declaration, letfun change, extracted-file edit,
+Rust/attribute edit or query change attempted. Additional stale `bertie__`
+references remain visible in analysis.pv; analysis has not reached them, and
+no claim is made that fixing Vec::len alone would complete the model.
+
+First run: ProVerif exit 2 / driver exit 1, wall 0.073621083 s, peak RSS
+11784 KiB (Linux RUSAGE_CHILDREN, includes driver). Evidence:
+`target/proverif/run2-analysis.log`, `run2-metrics.json`. No query result or
+attack trace exists. All seven queries remain NO RESULT (input rejected).
+M2 blocked; M3/M4 not attempted. No fabricated expected-results baseline or
+CI readiness claim. Memory tools unavailable; no diary filed.
+
+Final-source verification: cargo test --locked --workspace, all ten
+scripts/test-features configurations, fmt, clippy -D warnings, cargo deny,
+actionlint and git diff --check all pass. Fresh pinned-nightly hax-pv build
+passes (four existing warnings). Fresh extraction could not be completed:
+the run-1 wrapper requires a read-only /tools mount not present in the bare
+fc-verify-hax:v17 image or configured by BERTIE_DOCKER_TOOLS in this session.
+Initial wrapper failed copying /tools/cargo-home/registry; a build retry
+succeeded but extraction failed with `no such command: hax`. No generated
+files changed. This is an additional reproduction limitation, separate from
+the reproduced ProVerif input rejection on the run-1 regenerated model.
+Logs: target/proverif/run2-extract.log, run2-extract-final.log and
+run2-final-checks.txt plus run2-*-final.log.
+
+Final full-analysis rerun reproduces exactly the undefined Vec::len error:
+ProVerif exit 2 / driver exit 1, wall 0.066769584 s, peak RSS 11768 KiB.
+Evidence: target/proverif/analysis.log and metrics.json. None of the seven
+queries ran; no false result or attack trace. F*/formal-coverage kit checks
+not rerun; source/proof annotations and coverage measurements unchanged.
+Independent reviewer acceptance remains outstanding.
+PROVERIF-BLOCKED
