@@ -115,7 +115,8 @@ impl KeySchedule<TLSnames> for TLSkeyscheduler {
             }
             RM => RES_MASTER__,
             ESalt | HSalt => DERIVED_____,
-            EEM | EAM => E_EXP_MASTER,
+            EEM => E_EXP_MASTER,
+            EAM => EXP_MASTER__,
             CET => C_E_TRAFFIC_,
             Binder => ____________,
             SHT => S_HS_TRAFFIC,
