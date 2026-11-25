@@ -223,6 +223,10 @@ Any rejected receipt or unmapped function retains zero credit; see the full repo
 
 - formal-coverage v1.9.1, public commit `b7379121068c3d5db257e10a5013c2a85d0c9fe4`.
   Both shared CI actions pin this commit, which also pins the measurement tool.
+- ProVerif `2.05`, official source
+  `https://bblanche.gitlabpages.inria.fr/proverif/proverif2.05.tar.gz`,
+  SHA-256 `4871f53c32ab4a04669a060c4886ba5d9080496963fb980a9a62d2c429ceabc4`.
+  Built by `scripts/install-proverif` and `.github/actions/setup-proverif`.
 - hax `0.4.2`, source `5ccf89dd2e996c9f88f2267eaa2a64739c4ca41a`.
 - Rust extraction toolchain `nightly-2025-11-08`; F* `2025.10.06`, Z3 `4.13.3`.
 - Local container images: `fc-verify-hax:v17` (aarch64) and

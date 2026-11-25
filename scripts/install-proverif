@@ -1,0 +1,24 @@
+#!/bin/sh
+# Build the official release; OCaml and a C compiler must already be installed.
+set -eu
+root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+work="$root/target/proverif"
+version=2.05
+sha256=4871f53c32ab4a04669a060c4886ba5d9080496963fb980a9a62d2c429ceabc4
+mkdir -p "$work"
+archive="$work/proverif$version.tar.gz"
+curl --fail --location --show-error \
+  "https://bblanche.gitlabpages.inria.fr/proverif/proverif$version.tar.gz" -o "$archive"
+python3 - "$archive" "$sha256" <<'PY'
+import hashlib
+import pathlib
+import sys
+path, expected = sys.argv[1:]
+actual = hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()
+if actual != expected:
+    sys.exit(f"ProVerif checksum mismatch: {actual} != {expected}")
+PY
+tar -xzf "$archive" -C "$work"
+(cd "$work/proverif$version" && ./build -nointeract)
+test -x "$work/proverif$version/proverif"
+"$work/proverif$version/proverif" -help
