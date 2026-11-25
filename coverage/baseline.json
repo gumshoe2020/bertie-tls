@@ -1271,59 +1271,59 @@
       "line": 907
     },
     {
-      "end_line": 15,
+      "end_line": 18,
       "file": "src/tls13keyscheduler.rs",
-      "line": 11
+      "line": 14
     },
     {
-      "end_line": 26,
+      "end_line": 29,
       "file": "src/tls13keyscheduler.rs",
-      "line": 17
+      "line": 20
     },
     {
-      "end_line": 79,
+      "end_line": 82,
       "file": "src/tls13keyscheduler.rs",
-      "line": 28
+      "line": 31
     },
     {
-      "end_line": 99,
+      "end_line": 102,
       "file": "src/tls13keyscheduler.rs",
-      "line": 81
+      "line": 84
     },
     {
-      "end_line": 119,
+      "end_line": 122,
       "file": "src/tls13keyscheduler.rs",
-      "line": 101
+      "line": 104
     },
     {
-      "end_line": 156,
+      "end_line": 159,
       "file": "src/tls13keyscheduler.rs",
-      "line": 121
+      "line": 124
     },
     {
-      "end_line": 191,
+      "end_line": 194,
       "file": "src/tls13keyscheduler.rs",
-      "line": 158
+      "line": 161
     },
     {
-      "end_line": 211,
+      "end_line": 214,
       "file": "src/tls13keyscheduler.rs",
-      "line": 193
+      "line": 196
     },
     {
-      "end_line": 229,
+      "end_line": 232,
       "file": "src/tls13keyscheduler.rs",
-      "line": 213
+      "line": 216
     },
     {
-      "end_line": 242,
+      "end_line": 245,
       "file": "src/tls13keyscheduler.rs",
-      "line": 231
+      "line": 234
     },
     {
-      "end_line": 251,
+      "end_line": 254,
       "file": "src/tls13keyscheduler.rs",
-      "line": 244
+      "line": 247
     },
     {
       "end_line": 33,
@@ -1376,89 +1376,89 @@
       "line": 91
     },
     {
-      "end_line": 127,
+      "end_line": 128,
       "file": "src/tls13keyscheduler/key_schedule.rs",
       "line": 106
     },
     {
-      "end_line": 131,
+      "end_line": 132,
       "file": "src/tls13keyscheduler/key_schedule.rs",
-      "line": 129
+      "line": 130
     },
     {
-      "end_line": 135,
+      "end_line": 136,
       "file": "src/tls13keyscheduler/key_schedule.rs",
-      "line": 133
+      "line": 134
     },
     {
-      "end_line": 140,
+      "end_line": 141,
       "file": "src/tls13keyscheduler/key_schedule.rs",
-      "line": 138
+      "line": 139
     },
     {
-      "end_line": 176,
+      "end_line": 177,
       "file": "src/tls13keyscheduler/key_schedule.rs",
-      "line": 145
+      "line": 146
     },
     {
-      "end_line": 196,
+      "end_line": 197,
       "file": "src/tls13keyscheduler/key_schedule.rs",
-      "line": 178
+      "line": 179
     },
     {
-      "end_line": 207,
+      "end_line": 208,
       "file": "src/tls13keyscheduler/key_schedule.rs",
-      "line": 205
+      "line": 206
     },
     {
-      "end_line": 221,
+      "end_line": 222,
       "file": "src/tls13keyscheduler/key_schedule.rs",
-      "line": 209
+      "line": 210
     },
     {
-      "end_line": 231,
+      "end_line": 232,
       "file": "src/tls13keyscheduler/key_schedule.rs",
-      "line": 223
+      "line": 224
     },
     {
-      "end_line": 243,
+      "end_line": 244,
       "file": "src/tls13keyscheduler/key_schedule.rs",
-      "line": 233
+      "line": 234
     },
     {
-      "end_line": 264,
+      "end_line": 265,
       "file": "src/tls13keyscheduler/key_schedule.rs",
-      "line": 253
+      "line": 254
     },
     {
-      "end_line": 273,
+      "end_line": 274,
       "file": "src/tls13keyscheduler/key_schedule.rs",
-      "line": 266
+      "line": 267
     },
     {
-      "end_line": 283,
+      "end_line": 284,
       "file": "src/tls13keyscheduler/key_schedule.rs",
-      "line": 275
+      "line": 276
     },
     {
-      "end_line": 293,
+      "end_line": 294,
       "file": "src/tls13keyscheduler/key_schedule.rs",
-      "line": 285
+      "line": 286
     },
     {
-      "end_line": 366,
+      "end_line": 367,
       "file": "src/tls13keyscheduler/key_schedule.rs",
-      "line": 295
+      "line": 296
     },
     {
-      "end_line": 374,
+      "end_line": 375,
       "file": "src/tls13keyscheduler/key_schedule.rs",
-      "line": 368
+      "line": 369
     },
     {
-      "end_line": 432,
+      "end_line": 433,
       "file": "src/tls13keyscheduler/key_schedule.rs",
-      "line": 376
+      "line": 377
     },
     {
       "end_line": 22,
@@ -1981,22 +1981,22 @@
       "line": 1047
     }
   ],
-  "proof_ratio": 0.14278764290926782,
+  "proof_ratio": 0.14275291828793774,
   "proof_sloc": 587,
-  "proven": 4111,
+  "proven": 4112,
   "schema": 1,
   "scope": "first-party security runtime",
   "statuses": {
     "hazard": 0,
     "proven": 0,
     "proven-bounded": 0,
-    "proven-extracted": 4111,
+    "proven-extracted": 4112,
     "proven-upstream": 0,
     "tested": 253,
     "trusted": 161,
     "unverified": 553
   },
   "tested": 253,
-  "total": 5078,
+  "total": 5079,
   "unverified": 714
 }
