@@ -729,6 +729,83 @@ reduc forall
       )
     ) = bertie_tls__server__server_db__f_psk_opt.
 
+type bertie_tls__tls13record__t_ClientCipherState0.
+
+fun bertie_tls__tls13record__t_ClientCipherState0_to_bitstring(
+      bertie_tls__tls13record__t_ClientCipherState0
+    )
+    : bitstring [typeConverter].
+fun bertie_tls__tls13record__t_ClientCipherState0_from_bitstring(bitstring)
+    : bertie_tls__tls13record__t_ClientCipherState0 [typeConverter].
+const bertie_tls__tls13record__t_ClientCipherState0_default_value: bertie_tls__tls13record__t_ClientCipherState0.
+letfun bertie_tls__tls13record__t_ClientCipherState0_default() =
+       bertie_tls__tls13record__t_ClientCipherState0_default_value.
+letfun bertie_tls__tls13record__t_ClientCipherState0_err() =
+       let x = construct_fail() in bertie_tls__tls13record__t_ClientCipherState0_default_value.
+fun bertie_tls__tls13record__ClientCipherState0(
+      bertie_tls__tls13crypto__algorithm_types__t_AeadAlgorithm,
+      bertie_tls__tls13crypto__t_AeadKeyIV,
+      nat,
+      bertie_tls__tls13keyscheduler__key_schedule__t_TagKey
+    )
+    : bertie_tls__tls13record__t_ClientCipherState0 [data].
+reduc forall 
+  bertie_tls__tls13record__0: bertie_tls__tls13crypto__algorithm_types__t_AeadAlgorithm,
+  bertie_tls__tls13record__1: bertie_tls__tls13crypto__t_AeadKeyIV,
+  bertie_tls__tls13record__2: nat,
+  bertie_tls__tls13record__3: bertie_tls__tls13keyscheduler__key_schedule__t_TagKey
+;
+    accessor_bertie_tls__tls13record__t_ClientCipherState0_bertie_tls__tls13record__0(
+      bertie_tls__tls13record__ClientCipherState0(
+        bertie_tls__tls13record__0,
+        bertie_tls__tls13record__1,
+        bertie_tls__tls13record__2,
+        bertie_tls__tls13record__3
+      )
+    ) = bertie_tls__tls13record__0.
+reduc forall 
+  bertie_tls__tls13record__0: bertie_tls__tls13crypto__algorithm_types__t_AeadAlgorithm,
+  bertie_tls__tls13record__1: bertie_tls__tls13crypto__t_AeadKeyIV,
+  bertie_tls__tls13record__2: nat,
+  bertie_tls__tls13record__3: bertie_tls__tls13keyscheduler__key_schedule__t_TagKey
+;
+    accessor_bertie_tls__tls13record__t_ClientCipherState0_bertie_tls__tls13record__1(
+      bertie_tls__tls13record__ClientCipherState0(
+        bertie_tls__tls13record__0,
+        bertie_tls__tls13record__1,
+        bertie_tls__tls13record__2,
+        bertie_tls__tls13record__3
+      )
+    ) = bertie_tls__tls13record__1.
+reduc forall 
+  bertie_tls__tls13record__0: bertie_tls__tls13crypto__algorithm_types__t_AeadAlgorithm,
+  bertie_tls__tls13record__1: bertie_tls__tls13crypto__t_AeadKeyIV,
+  bertie_tls__tls13record__2: nat,
+  bertie_tls__tls13record__3: bertie_tls__tls13keyscheduler__key_schedule__t_TagKey
+;
+    accessor_bertie_tls__tls13record__t_ClientCipherState0_bertie_tls__tls13record__2(
+      bertie_tls__tls13record__ClientCipherState0(
+        bertie_tls__tls13record__0,
+        bertie_tls__tls13record__1,
+        bertie_tls__tls13record__2,
+        bertie_tls__tls13record__3
+      )
+    ) = bertie_tls__tls13record__2.
+reduc forall 
+  bertie_tls__tls13record__0: bertie_tls__tls13crypto__algorithm_types__t_AeadAlgorithm,
+  bertie_tls__tls13record__1: bertie_tls__tls13crypto__t_AeadKeyIV,
+  bertie_tls__tls13record__2: nat,
+  bertie_tls__tls13record__3: bertie_tls__tls13keyscheduler__key_schedule__t_TagKey
+;
+    accessor_bertie_tls__tls13record__t_ClientCipherState0_bertie_tls__tls13record__3(
+      bertie_tls__tls13record__ClientCipherState0(
+        bertie_tls__tls13record__0,
+        bertie_tls__tls13record__1,
+        bertie_tls__tls13record__2,
+        bertie_tls__tls13record__3
+      )
+    ) = bertie_tls__tls13record__3.
+
 type bertie_tls__tls13record__t_ServerCipherState0.
 
 fun bertie_tls__tls13record__t_ServerCipherState0_to_bitstring(
@@ -1031,6 +1108,34 @@ reduc forall
         bertie_tls__tls13formats__f_transcript
       )
     ) = bertie_tls__tls13formats__f_transcript.
+
+type bertie_tls__tls13cert__t_CertificateKey.
+
+fun bertie_tls__tls13cert__t_CertificateKey_to_bitstring(
+      bertie_tls__tls13cert__t_CertificateKey
+    )
+    : bitstring [typeConverter].
+fun bertie_tls__tls13cert__t_CertificateKey_from_bitstring(bitstring)
+    : bertie_tls__tls13cert__t_CertificateKey [typeConverter].
+const bertie_tls__tls13cert__t_CertificateKey_default_value: bertie_tls__tls13cert__t_CertificateKey.
+letfun bertie_tls__tls13cert__t_CertificateKey_default() =
+       bertie_tls__tls13cert__t_CertificateKey_default_value.
+letfun bertie_tls__tls13cert__t_CertificateKey_err() =
+       let x = construct_fail() in bertie_tls__tls13cert__t_CertificateKey_default_value.
+fun bertie_tls__tls13cert__CertificateKey(nat, nat)
+    : bertie_tls__tls13cert__t_CertificateKey [data].
+reduc forall bertie_tls__tls13cert__0: nat, bertie_tls__tls13cert__1: nat;
+    accessor_bertie_tls__tls13cert__t_CertificateKey_bertie_tls__tls13cert__0(
+      bertie_tls__tls13cert__CertificateKey(
+        bertie_tls__tls13cert__0, bertie_tls__tls13cert__1
+      )
+    ) = bertie_tls__tls13cert__0.
+reduc forall bertie_tls__tls13cert__0: nat, bertie_tls__tls13cert__1: nat;
+    accessor_bertie_tls__tls13cert__t_CertificateKey_bertie_tls__tls13cert__1(
+      bertie_tls__tls13cert__CertificateKey(
+        bertie_tls__tls13cert__0, bertie_tls__tls13cert__1
+      )
+    ) = bertie_tls__tls13cert__1.
 
 type bertie_tls__server__t_ServerInfo.
 
@@ -2842,6 +2947,73 @@ letfun bertie_tls__tls13crypto__sign(
        ) in
        (rng, hax_temp_output).
 
+
+fun extern__vk_from_sk(bertie_tls__tls13utils__byte_types__t_Bytes): bertie_tls__tls13crypto__algorithm_types__t_PublicVerificationKey.
+
+fun extern__sign_inner_rsa(
+                 bertie_tls__tls13utils__byte_types__t_Bytes, (* sk *)
+                 bertie_tls__tls13utils__byte_types__t_Bytes  (* input *)
+             )
+             : bertie_tls__tls13utils__byte_types__t_Bytes.
+
+fun bertie_tls__tls13crypto__verify(
+            bertie_tls__tls13crypto__algorithm_types__t_SignatureScheme, 
+            bertie_tls__tls13crypto__algorithm_types__t_PublicVerificationKey,
+            bertie_tls__tls13utils__byte_types__t_Bytes, (* input *)
+            bertie_tls__tls13utils__byte_types__t_Bytes  (* sig *)
+        )
+    : bitstring
+
+  reduc forall
+                     sk: bertie_tls__tls13utils__byte_types__t_Bytes,
+                  input: bertie_tls__tls13utils__byte_types__t_Bytes;
+
+        bertie_tls__tls13crypto__verify(
+            bertie_tls__tls13crypto__algorithm_types__SignatureScheme_RsaPssRsaSha256(
+
+),
+            extern__vk_from_sk(sk),
+            input,
+            extern__sign_inner_rsa(
+                sk,
+                input
+            )
+        )
+        = ()
+
+  otherwise forall
+                sk                   : bertie_tls__tls13utils__byte_types__t_Bytes,
+                input                : bertie_tls__tls13utils__byte_types__t_Bytes;
+
+        bertie_tls__tls13crypto__verify(
+            bertie_tls__tls13crypto__algorithm_types__SignatureScheme_EcdsaSecp256r1Sha256(
+
+),
+            extern__vk_from_sk(sk),
+            input,
+            extern__sign_inner(
+                bertie_tls__tls13crypto__algorithm_types__SignatureScheme_EcdsaSecp256r1Sha256(
+
+),
+                sk,
+                input
+            )
+        )
+        = ().
+
+fun extern__kem_pk_from_sk(bertie_tls__tls13utils__byte_types__t_Bytes): bertie_tls__tls13utils__byte_types__t_Bytes.
+
+letfun bertie_tls__tls13crypto__kem_keygen(
+         alg : bertie_tls__tls13crypto__algorithm_types__t_KemScheme,
+         rng : impl_CryptoRng
+       ) =
+       let hax_temp_output = (
+         (new kem_sk: bertie_tls__tls13utils__byte_types__t_Bytes;
+       let kem_pk = extern__kem_pk_from_sk(kem_sk) in
+       (kem_sk, kem_pk))
+       ) in
+       (rng, hax_temp_output).
+
 fun extern__kem_encapsulation(bertie_tls__tls13utils__byte_types__t_Bytes, bertie_tls__tls13utils__byte_types__t_Bytes): bertie_tls__tls13utils__byte_types__t_Bytes.
 
 letfun bertie_tls__tls13crypto__kem_encap(
@@ -2856,6 +3028,11 @@ letfun bertie_tls__tls13crypto__kem_encap(
        ) in
        (rng, hax_temp_output).
 
+reduc forall alg: bertie_tls__tls13crypto__algorithm_types__t_KemScheme, kem_sk: bertie_tls__tls13utils__byte_types__t_Bytes, shared_secret: bertie_tls__tls13utils__byte_types__t_Bytes;
+     bertie_tls__tls13crypto__kem_decap(
+     alg, extern__kem_encapsulation(extern__kem_pk_from_sk(kem_sk), shared_secret), kem_sk
+     ) = shared_secret.
+
 letfun bertie_tls__tls13crypto__impl_5__hash(
          self : bertie_tls__tls13crypto__algorithm_types__t_Algorithms
        ) =
@@ -2867,6 +3044,13 @@ letfun bertie_tls__tls13crypto__impl_5__signature(
          self : bertie_tls__tls13crypto__algorithm_types__t_Algorithms
        ) =
        accessor_bertie_tls__tls13crypto__algorithm_types__t_Algorithms_bertie_tls__tls13crypto__algorithm_types__f_signature(
+         self
+       ).
+
+letfun bertie_tls__tls13crypto__impl_5__kem(
+         self : bertie_tls__tls13crypto__algorithm_types__t_Algorithms
+       ) =
+       accessor_bertie_tls__tls13crypto__algorithm_types__t_Algorithms_bertie_tls__tls13crypto__algorithm_types__f_kem(
          self
        ).
 
@@ -3013,6 +3197,11 @@ letfun bertie_tls__tls13keyscheduler__key_schedule__v_XTR(
        ) in
        (ks, hax_temp_output).
 
+letfun bertie_tls__tls13formats__handshake_data__impl_HandshakeData__len(
+         self : bertie_tls__tls13formats__handshake_data__t_HandshakeData
+       ) =
+       (0).
+
 (* marked as constructor *)
 fun bertie_tls__tls13formats__handshake_data__impl_HandshakeData__concat(
       bertie_tls__tls13formats__handshake_data__t_HandshakeData,
@@ -3031,6 +3220,11 @@ reduc forall
             )
             = (hs1, hs2).
     
+
+letfun bertie_tls__tls13formats__handshake_data__impl_HandshakeData__to_two(
+         self : bertie_tls__tls13formats__handshake_data__t_HandshakeData
+       ) =
+       bertie_tls__tls13formats__handshake_data__to_two_inner(self).
 
 reduc forall
                    hs1: bertie_tls__tls13utils__byte_types__t_Bytes,
@@ -3057,11 +3251,24 @@ reduc forall
                hs3,
                hs4).
 
+letfun bertie_tls__tls13formats__handshake_data__impl_HandshakeData__to_four(
+         self : bertie_tls__tls13formats__handshake_data__t_HandshakeData
+       ) =
+       bertie_tls__tls13formats__handshake_data__to_four_inner(self).
+
 (* marked as constructor *)
 fun bertie_tls__tls13formats__handshake_data__to_bytes_inner(
       bertie_tls__tls13formats__handshake_data__t_HandshakeData
     )
     : bertie_tls__tls13utils__byte_types__t_Bytes [data].
+
+letfun bertie_tls__tls13record__client_cipher_state0(
+         ae : bertie_tls__tls13crypto__algorithm_types__t_AeadAlgorithm,
+         kiv : bertie_tls__tls13crypto__t_AeadKeyIV,
+         c : nat,
+         k : bertie_tls__tls13keyscheduler__key_schedule__t_TagKey
+       ) =
+       bertie_tls__tls13record__ClientCipherState0(ae, kiv, c, k).
 
 letfun bertie_tls__tls13record__server_cipher_state0(
          key_iv : bertie_tls__tls13crypto__t_AeadKeyIV,
@@ -3248,8 +3455,8 @@ letfun bertie_tls__tls13keyscheduler__derive_hk_handles(
          )
        ) in
        let ks = (tmp0) in
-       let hoist40 = (v_out) in
-       let early_secret = hoist40 in let digest_emp = bertie_tls__tls13keyscheduler__hash_empty(
+       let hoist58 = (v_out) in
+       let early_secret = hoist58 in let digest_emp = bertie_tls__tls13keyscheduler__hash_empty(
          ha
        ) in (
          let
@@ -3268,8 +3475,8 @@ letfun bertie_tls__tls13keyscheduler__derive_hk_handles(
            )
          ) in
          let ks = (tmp0) in
-         let hoist41 = (v_out) in
-         let derived_secret = hoist41 in (
+         let hoist59 = (v_out) in
+         let derived_secret = hoist59 in (
            let
              (
                tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
@@ -3285,8 +3492,8 @@ letfun bertie_tls__tls13keyscheduler__derive_hk_handles(
              )
            ) in
            let ks = (tmp0) in
-           let hoist42 = (v_out) in
-           let handshake_secret = hoist42 in (
+           let hoist60 = (v_out) in
+           let handshake_secret = hoist60 in (
              let
                (
                  tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
@@ -3303,8 +3510,8 @@ letfun bertie_tls__tls13keyscheduler__derive_hk_handles(
                )
              ) in
              let ks = (tmp0) in
-             let hoist43 = (v_out) in
-             let client_handshake_traffic_secret = hoist43 in (
+             let hoist61 = (v_out) in
+             let client_handshake_traffic_secret = hoist61 in (
                let
                  (
                    tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
@@ -3321,8 +3528,8 @@ letfun bertie_tls__tls13keyscheduler__derive_hk_handles(
                  )
                ) in
                let ks = (tmp0) in
-               let hoist44 = (v_out) in
-               let server_handshake_traffic_secret = hoist44 in (
+               let hoist62 = (v_out) in
+               let server_handshake_traffic_secret = hoist62 in (
                  let
                    (
                      tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
@@ -3339,8 +3546,8 @@ letfun bertie_tls__tls13keyscheduler__derive_hk_handles(
                    )
                  ) in
                  let ks = (tmp0) in
-                 let hoist45 = (v_out) in
-                 let master_secret_ = hoist45 in (
+                 let hoist63 = (v_out) in
+                 let master_secret_ = hoist63 in (
                    let
                      (
                        tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
@@ -3368,8 +3575,8 @@ letfun bertie_tls__tls13keyscheduler__derive_hk_handles(
                      )
                    ) in
                    let ks = (tmp0) in
-                   let hoist46 = (v_out) in
-                   let master_secret = hoist46 in (
+                   let hoist64 = (v_out) in
+                   let master_secret = hoist64 in (
                      let hax_temp_output = (
                        (
                          client_handshake_traffic_secret,
@@ -3412,8 +3619,8 @@ letfun bertie_tls__tls13keyscheduler__derive_hk_ms(
          )
        ) in
        let ks = (tmp0) in
-       let hoist47 = (v_out) in
-       let client_finished_key = hoist47 in (
+       let hoist65 = (v_out) in
+       let client_finished_key = hoist65 in (
          let
            (
              tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
@@ -3425,8 +3632,8 @@ letfun bertie_tls__tls13keyscheduler__derive_hk_ms(
            )
          ) in
          let ks = (tmp0) in
-         let hoist48 = (v_out) in
-         let server_finished_key = hoist48 in (
+         let hoist66 = (v_out) in
+         let server_finished_key = hoist66 in (
            let
              (
                tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
@@ -3438,8 +3645,8 @@ letfun bertie_tls__tls13keyscheduler__derive_hk_ms(
              )
            ) in
            let ks = (tmp0) in
-           let hoist49 = (v_out) in
-           let client_write_key_iv = hoist49 in (
+           let hoist67 = (v_out) in
+           let client_write_key_iv = hoist67 in (
              let
                (
                  tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
@@ -3451,8 +3658,8 @@ letfun bertie_tls__tls13keyscheduler__derive_hk_ms(
                )
              ) in
              let ks = (tmp0) in
-             let hoist50 = (v_out) in
-             let server_write_key_iv = hoist50 in (
+             let hoist68 = (v_out) in
+             let server_write_key_iv = hoist68 in (
                let hax_temp_output = (
                  (
                    client_write_key_iv,
@@ -3493,8 +3700,8 @@ letfun bertie_tls__tls13keyscheduler__derive_app_handles(
          )
        ) in
        let ks = (tmp0) in
-       let hoist51 = (v_out) in
-       let client_application_traffic_secret_0_ = hoist51 in (
+       let hoist69 = (v_out) in
+       let client_application_traffic_secret_0_ = hoist69 in (
          let
            (
              tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
@@ -3511,8 +3718,8 @@ letfun bertie_tls__tls13keyscheduler__derive_app_handles(
            )
          ) in
          let ks = (tmp0) in
-         let hoist52 = (v_out) in
-         let server_application_traffic_secret_0_ = hoist52 in (
+         let hoist70 = (v_out) in
+         let server_application_traffic_secret_0_ = hoist70 in (
            let
              (
                tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
@@ -3529,8 +3736,8 @@ letfun bertie_tls__tls13keyscheduler__derive_app_handles(
              )
            ) in
            let ks = (tmp0) in
-           let hoist53 = (v_out) in
-           let exporter_master_secret = hoist53 in (
+           let hoist71 = (v_out) in
+           let exporter_master_secret = hoist71 in (
              let hax_temp_output = (
                (
                  client_application_traffic_secret_0_,
@@ -3564,8 +3771,8 @@ letfun bertie_tls__tls13keyscheduler__derive_app_keys(
          )
        ) in
        let ks = (tmp0) in
-       let hoist54 = (v_out) in
-       let client_write_key_iv = hoist54 in (
+       let hoist72 = (v_out) in
+       let client_write_key_iv = hoist72 in (
          let
            (
              tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
@@ -3577,8 +3784,8 @@ letfun bertie_tls__tls13keyscheduler__derive_app_keys(
            )
          ) in
          let ks = (tmp0) in
-         let hoist55 = (v_out) in
-         let server_write_key_iv = hoist55 in (
+         let hoist73 = (v_out) in
+         let server_write_key_iv = hoist73 in (
            let hax_temp_output = ((client_write_key_iv, server_write_key_iv)) in
            (ks, hax_temp_output)
          )
@@ -3613,6 +3820,39 @@ letfun bertie_tls__tls13keyscheduler__derive_rms(
 
 const bertie_tls__tls13formats__v_PREFIX_SERVER_SIGNATURE: bitstring.
 
+fun extern__client_hello_c(
+      bertie_tls__tls13utils__byte_types__t_Bytes, (* client_randomness *)
+      bertie_tls__tls13utils__byte_types__t_Bytes, (* session_id *)
+      bertie_tls__tls13utils__byte_types__t_Bytes, (*server name /sni*)
+      bertie_tls__tls13utils__byte_types__t_Bytes, (*kem_pk / gx*)
+      Option, (*tkto*)
+      Option, (*bindero*)
+      nat) (*trunc_len*)
+      : bertie_tls__tls13formats__handshake_data__t_HandshakeData [data].
+
+letfun bertie_tls__tls13formats__set_client_hello_binder(
+         ciphersuite : bertie_tls__tls13crypto__algorithm_types__t_Algorithms,
+         binder : Option,
+         client_hello : bertie_tls__tls13formats__handshake_data__t_HandshakeData,
+         trunc_len : Option
+       ) =
+       
+       let extern__client_hello_c(client_randomness,
+                                  session_id,
+                                  server_name,
+                                  kem_pk,
+                                  tkto,
+                                  old_binder,
+                                  old_trunc_len)
+        = client_hello in
+          extern__client_hello_c(client_randomness,
+                                  session_id,
+                                  server_name,
+                                  kem_pk,
+                                  tkto,
+                                  binder,
+                                  0).
+
 
 fun bertie_tls__tls13formats__parse_client_hello(
   bertie_tls__tls13crypto__algorithm_types__t_Algorithms,
@@ -3642,13 +3882,99 @@ reduc forall
                             binder,
                             0).
 
+letfun bertie_tls__tls13formats__client_hello(
+         algorithms : bertie_tls__tls13crypto__algorithm_types__t_Algorithms,
+         client_random : bertie_tls__tls13utils__byte_types__t_Bytes,
+         kem_pk : bertie_tls__tls13utils__byte_types__t_Bytes,
+         server_name : bertie_tls__tls13utils__byte_types__t_Bytes,
+         session_ticket : Option
+       ) =
+       (extern__client_hello_c(
+         client_random,
+         bertie_tls__tls13utils__byte_types__t_Bytes_default(),
+         server_name,
+         kem_pk,
+         session_ticket,
+         None(),
+         0),
+     0).
+
+
+
+(* marked as constructor *)
+fun bertie_tls__tls13formats__server_hello(
+      bertie_tls__tls13crypto__algorithm_types__t_Algorithms,
+      bertie_tls__tls13utils__byte_types__t_Bytes,
+      bertie_tls__tls13utils__byte_types__t_Bytes,
+      bertie_tls__tls13utils__byte_types__t_Bytes
+    )
+    : bertie_tls__tls13formats__handshake_data__t_HandshakeData [data].
 
 
 
 
+        reduc forall
+   algs: bertie_tls__tls13crypto__algorithm_types__t_Algorithms,
+   server_random: bertie_tls__tls13utils__byte_types__t_Bytes,
+   sid: bertie_tls__tls13utils__byte_types__t_Bytes,
+   gy: bertie_tls__tls13utils__byte_types__t_Bytes;
+
+   bertie_tls__tls13formats__parse_server_hello(
+     algs,
+     bertie_tls__tls13formats__server_hello(algs, server_random, sid, gy)
+) = (server_random, gy).
 
 
 
+
+(* marked as constructor *)
+fun bertie_tls__tls13formats__encrypted_extensions(bertie_tls__tls13crypto__algorithm_types__t_Algorithms
+    )
+    : bertie_tls__tls13formats__handshake_data__t_HandshakeData [data].
+
+
+reduc forall algs: bertie_tls__tls13crypto__algorithm_types__t_Algorithms;
+
+      bertie_tls__tls13formats__parse_encrypted_extensions(
+        algs,
+        bertie_tls__tls13formats__encrypted_extensions(algs)
+      ) = ().
+
+
+
+
+(* marked as constructor *)
+fun bertie_tls__tls13formats__server_certificate(
+      bertie_tls__tls13crypto__algorithm_types__t_Algorithms, bertie_tls__tls13utils__byte_types__t_Bytes
+    )
+    : bertie_tls__tls13formats__handshake_data__t_HandshakeData [data].
+
+
+reduc forall
+algs: bertie_tls__tls13crypto__algorithm_types__t_Algorithms,
+cert: bertie_tls__tls13utils__byte_types__t_Bytes;
+
+  bertie_tls__tls13formats__parse_server_certificate(
+     bertie_tls__tls13formats__server_certificate(algs, cert)
+  ) = cert.
+
+
+
+
+(* marked as constructor *)
+fun bertie_tls__tls13formats__certificate_verify(
+      bertie_tls__tls13crypto__algorithm_types__t_Algorithms, bertie_tls__tls13utils__byte_types__t_Bytes
+    )
+    : bertie_tls__tls13formats__handshake_data__t_HandshakeData [data].
+
+
+reduc forall
+algs: bertie_tls__tls13crypto__algorithm_types__t_Algorithms,
+cert: bertie_tls__tls13utils__byte_types__t_Bytes;
+
+      bertie_tls__tls13formats__parse_certificate_verify(
+        algs,bertie_tls__tls13formats__certificate_verify(algs, cert)
+      ) = cert.
 
 
 
@@ -3723,6 +4049,53 @@ fun bertie_tls__tls13formats__impl_Transcript__transcript_hash_without_client_he
     )
     : bertie_tls__tls13utils__byte_types__t_Bytes [data].
 
+
+(* This is a private constructor, so the attacker can't create their own certificate for a given server name. *)
+fun extern__certificate(
+            bertie_tls__tls13utils__byte_types__t_Bytes, (* server name *)
+            bertie_tls__tls13crypto__algorithm_types__t_SignatureScheme,
+            bertie_tls__tls13crypto__algorithm_types__t_PublicVerificationKey
+        )
+        : bertie_tls__tls13utils__byte_types__t_Bytes [private].
+
+(* If we have a certificate created using the constructor above, proceed. Otherwise this blocks. *)
+reduc forall 
+            server_name: bertie_tls__tls13utils__byte_types__t_Bytes, (* server name *)
+            alg:         bertie_tls__tls13crypto__algorithm_types__t_SignatureScheme,
+            vk:          bertie_tls__tls13crypto__algorithm_types__t_PublicVerificationKey;
+
+    bertie_tls__tls13cert__verification_key_from_cert(
+            extern__certificate(
+               server_name,
+               alg,
+               vk
+            )
+    ) = extern__certificate(
+               server_name,
+               alg,
+               vk
+            ).
+
+
+
+
+
+(* If we have a certificate created using the private constructor above, return vk. Otherwise this blocks. *)
+reduc forall 
+            server_name: bertie_tls__tls13utils__byte_types__t_Bytes, (* server name *)
+            alg:         bertie_tls__tls13crypto__algorithm_types__t_SignatureScheme,
+            vk:          bertie_tls__tls13crypto__algorithm_types__t_PublicVerificationKey,
+            spki:        bertie_tls__tls13utils__byte_types__t_Bytes;
+
+    bertie_tls__tls13cert__cert_public_key(
+            extern__certificate(
+               server_name,
+               alg,
+               vk
+            ),
+            spki
+    ) = vk.
+
 letfun bertie_tls__server__lookup_db(
          ciphersuite : bertie_tls__tls13crypto__algorithm_types__t_Algorithms,
          db : bertie_tls__server__server_db__t_ServerDB,
@@ -3781,10 +4154,884 @@ letfun bertie_tls__server__lookup_db(
 
 
 
+letfun bertie_tls__tls13handshake__algs_post_client_hello(
+         st : bertie_tls__tls13handshake__t_ClientPostClientHello
+       ) =
+       accessor_bertie_tls__tls13handshake__t_ClientPostClientHello_bertie_tls__tls13handshake__1(
+         st
+       ).
+
+letfun bertie_tls__tls13handshake__algs_post_server_hello(
+         st : bertie_tls__tls13handshake__t_ClientPostServerHello
+       ) =
+       accessor_bertie_tls__tls13handshake__t_ClientPostServerHello_bertie_tls__tls13handshake__2(
+         st
+       ).
+
+letfun bertie_tls__tls13handshake__algs_post_client_finished(
+         st : bertie_tls__tls13handshake__t_ClientPostClientFinished
+       ) =
+       accessor_bertie_tls__tls13handshake__t_ClientPostClientFinished_bertie_tls__tls13handshake__2(
+         st
+       ).
+
+letfun bertie_tls__tls13handshake__server_info_post_client_hello(
+         st : bertie_tls__tls13handshake__t_ClientPostClientHello
+       ) =
+       accessor_bertie_tls__tls13handshake__t_ClientPostClientHello_bertie_tls__tls13handshake__2(
+         st
+       ).
+
+letfun bertie_tls__tls13handshake__server_info_post_server_hello(
+         st : bertie_tls__tls13handshake__t_ClientPostServerHello
+       ) =
+       accessor_bertie_tls__tls13handshake__t_ClientPostServerHello_bertie_tls__tls13handshake__3(
+         st
+       ).
+
+letfun bertie_tls__tls13handshake__server_info_post_client_finished(
+         st : bertie_tls__tls13handshake__t_ClientPostClientFinished
+       ) =
+       accessor_bertie_tls__tls13handshake__t_ClientPostClientFinished_bertie_tls__tls13handshake__3(
+         st
+       ).
+
+letfun bertie_tls__tls13handshake__compute_psk_binder_zero_rtt(
+         algs0 : bertie_tls__tls13crypto__algorithm_types__t_Algorithms,
+         ch : bertie_tls__tls13formats__handshake_data__t_HandshakeData,
+         trunc_len : nat,
+         psk : Option,
+         tx : bertie_tls__tls13formats__t_Transcript,
+         ks : bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler
+       ) =
+       let
+         bertie_tls__tls13crypto__algorithm_types__Algorithms(
+           ha,ae,e_sa,e_ks,psk_mode,zero_rtt
+         )
+        = (algs0) in
+       let
+         (
+           ks: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
+           hax_temp_output: bitstring
+         )
+        = (
+         let (
+           =true,
+           Some(bertie_tls__tls13utils__byte_types__t_Bytes_to_bitstring(k)),
+           wildcard6: bitstring
+         ) = (psk_mode, psk, trunc_len) in (
+           let psk_handle = (
+             bertie_tls__tls13keyscheduler__key_schedule__Handle(
+               bertie_tls__tls13keyscheduler__key_names__TLSnames_PSK(),ha,0
+             )
+           ) in
+           let ks = (
+             bertie_tls__tls13keyscheduler__key_schedule__set_by_handle(
+               ks, psk_handle, k
+             )
+           ) in
+           let th_trunc = bertie_tls__tls13formats__impl_Transcript__transcript_hash_without_client_hello(
+             tx, ch, trunc_len
+           ) in (
+             let
+               (
+                 tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
+                 v_out: bertie_tls__tls13keyscheduler__key_schedule__t_Handle
+               )
+              = (
+               bertie_tls__tls13keyscheduler__derive_binder_key(
+                 ha, psk_handle, ks
+               )
+             ) in
+             let ks = (tmp0) in
+             let hoist18 = (v_out) in
+             let mk_handle = hoist18 in (
+               let
+                 (
+                   tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
+                   v_out: bertie_tls__tls13keyscheduler__key_schedule__t_Handle
+                 )
+                = (
+                 bertie_tls__tls13keyscheduler__key_schedule__v_XPD(
+                   ks,
+                   bertie_tls__tls13keyscheduler__key_names__TLSnames_Binder(),
+                   0,
+                   mk_handle,
+                   true,
+                   th_trunc
+                 )
+               ) in
+               let ks = (tmp0) in
+               let hoist19 = (v_out) in
+               let binder_handle = hoist19 in let hoist20 = bertie_tls__tls13keyscheduler__key_schedule__tagkey_from_handle(
+                 ks, binder_handle
+               ) in (
+                 let binder = (
+                   accessor_bertie_tls__tls13keyscheduler__key_schedule__t_TagKey_bertie_tls__tls13keyscheduler__key_schedule__f_val(
+                     hoist20
+                   )
+                 ) in
+                 let nch = bertie_tls__tls13formats__set_client_hello_binder(
+                   algs0,
+                   Some(
+                     bertie_tls__tls13utils__byte_types__t_Bytes_to_bitstring(
+                       binder
+                     )
+                   ),
+                   ch,
+                   Some(nat_to_bitstring(trunc_len))
+                 ) in let tx_ch = bertie_tls__tls13formats__impl_Transcript__add(
+                   tx, nch
+                 ) in (
+                   if zero_rtt
+                   then
+                     (let th = bertie_tls__tls13formats__impl_Transcript__transcript_hash(
+                        tx_ch
+                      ) in (
+                        let
+                          (
+                            tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
+                            v_out: bitstring
+                          )
+                         = (
+                          bertie_tls__tls13keyscheduler__derive_0rtt_keys(
+                            ha, ae, psk_handle, th, ks
+                          )
+                        ) in
+                        let ks = (tmp0) in
+                        let hoist21 = (v_out) in
+                        let (
+                          aek: bertie_tls__tls13crypto__t_AeadKeyIV,
+                          handle: bertie_tls__tls13keyscheduler__key_schedule__t_Handle
+                        ) = hoist21 in let key = bertie_tls__tls13keyscheduler__key_schedule__tagkey_from_handle(
+                          ks, handle
+                        ) in (
+                          let cipher0 = (
+                            Some(
+                              bertie_tls__tls13record__t_ClientCipherState0_to_bitstring(
+                                bertie_tls__tls13record__client_cipher_state0(
+                                  ae, aek, 0, key
+                                )
+                              )
+                            )
+                          ) in
+                          (ks, (nch, cipher0, tx_ch))
+                        )
+                        else bitstring_err()
+                        else bitstring_err()
+                      )
+                      else bitstring_err())
+                   else ((ks, (nch, None(), tx_ch)))
+                 )
+                 else bitstring_err()
+                 else bitstring_err()
+               )
+               else bitstring_err()
+               else bitstring_err()
+             )
+             else bitstring_err()
+           )
+           else bitstring_err()
+         )
+         else let (=false, None(), =0) = (psk_mode, psk, trunc_len) in let tx_ch = bertie_tls__tls13formats__impl_Transcript__add(
+           tx, ch
+         ) in (ks, (ch, None(), tx_ch))
+         else bitstring_err()
+         else (ks, bitstring_err())
+       ) in
+       (ks, hax_temp_output).
+
+letfun bertie_tls__tls13handshake__build_client_hello(
+         ciphersuite : bertie_tls__tls13crypto__algorithm_types__t_Algorithms,
+         server_name : bertie_tls__tls13utils__byte_types__t_Bytes,
+         session_ticket : Option,
+         psk : Option,
+         rng : impl_CryptoRng,
+         ks : bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler
+       ) =
+       let tx = (
+         bertie_tls__tls13formats__impl_Transcript__new(
+           bertie_tls__tls13crypto__impl_5__hash(ciphersuite)
+         )
+       ) in
+       let client_random = (rust_primitives__hax__repeat(0, 32)) in
+       let (tmp0: impl_CryptoRng, tmp1: bitstring) = (
+         rand_core__f_fill_bytes(rng, client_random)
+       ) in
+       let rng = (tmp0) in
+       let client_random = (tmp1) in
+       let wildcard7: bitstring = (()) in
+       let (tmp0: impl_CryptoRng, v_out: bitstring) = (
+         bertie_tls__tls13crypto__kem_keygen(
+           bertie_tls__tls13crypto__impl_5__kem(ciphersuite), rng
+         )
+       ) in
+       let rng = (tmp0) in
+       let hoist16 = (v_out) in
+       let (
+         kem_sk: bertie_tls__tls13utils__byte_types__t_Bytes,
+         kem_pk: bertie_tls__tls13utils__byte_types__t_Bytes
+       ) = hoist16 in let (
+         client_hello: bertie_tls__tls13formats__handshake_data__t_HandshakeData,
+         trunc_len: nat
+       ) = bertie_tls__tls13formats__client_hello(
+         ciphersuite,
+         bertie_tls__tls13utils__bytes(client_random),
+         kem_pk,
+         server_name,
+         session_ticket
+       ) in (
+         let
+           (
+             tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
+             v_out: bitstring
+           )
+          = (
+           bertie_tls__tls13handshake__compute_psk_binder_zero_rtt(
+             ciphersuite, client_hello, trunc_len, psk, tx, ks
+           )
+         ) in
+         let ks = (tmp0) in
+         let hoist17 = (v_out) in
+         let (
+           nch: bertie_tls__tls13formats__handshake_data__t_HandshakeData,
+           cipher0: Option,
+           tx_ch: bertie_tls__tls13formats__t_Transcript
+         ) = hoist17 in (
+           let hax_temp_output = (
+             (
+               nch,
+               cipher0,
+               bertie_tls__tls13handshake__ClientPostClientHello(
+                 bertie_tls__tls13utils__byte_types__t_Bytes_from_bitstring(
+                   client_random
+                 ),
+                 ciphersuite,
+                 bertie_tls__server__ServerPubInfo(
+                   server_name,None(),None(),session_ticket
+                 ),
+                 kem_sk,
+                 psk,
+                 tx_ch
+               )
+             )
+           ) in
+           (rng, ks, hax_temp_output)
+         )
+         else bitstring_err()
+       )
+       else bitstring_err()
+       else bitstring_err().
+
+letfun bertie_tls__tls13handshake__put_server_hello(
+         handshake : bertie_tls__tls13formats__handshake_data__t_HandshakeData,
+         state : bertie_tls__tls13handshake__t_ClientPostClientHello,
+         ks : bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler
+       ) =
+       let
+         bertie_tls__tls13handshake__ClientPostClientHello(
+           client_random, ciphersuite, server_info, sk, psk, tx
+         )
+        = (state) in
+       let (
+         sr: bertie_tls__tls13utils__byte_types__t_Bytes,
+         ct: bertie_tls__tls13utils__byte_types__t_Bytes
+       ) = bertie_tls__tls13formats__parse_server_hello(ciphersuite, handshake) in let tx = bertie_tls__tls13formats__impl_Transcript__add(
+         tx, handshake
+       ) in let shared_secret = bertie_tls__tls13crypto__kem_decap(
+         accessor_bertie_tls__tls13crypto__algorithm_types__t_Algorithms_bertie_tls__tls13crypto__algorithm_types__f_kem(
+           ciphersuite
+         ),
+         ct,
+         sk
+       ) in let th = bertie_tls__tls13formats__impl_Transcript__transcript_hash(
+         tx
+       ) in (
+         let shared_secret_handle = (
+           bertie_tls__tls13keyscheduler__key_schedule__Handle(
+             bertie_tls__tls13keyscheduler__key_names__TLSnames_KEM()
+             ,
+               accessor_bertie_tls__tls13crypto__algorithm_types__t_Algorithms_bertie_tls__tls13crypto__algorithm_types__f_hash(
+                 ciphersuite
+               )
+
+             ,0
+           )
+         ) in
+         let ks = (
+           bertie_tls__tls13keyscheduler__key_schedule__set_by_handle(
+             ks, shared_secret_handle, shared_secret
+           )
+         ) in
+         let
+           (
+             ks: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
+             psk_handle: Option
+           )
+          = (
+           let Some(
+             bertie_tls__tls13utils__byte_types__t_Bytes_to_bitstring(bytes)
+           ) = psk in (
+             let handle = (
+               bertie_tls__tls13keyscheduler__key_schedule__Handle(
+                 bertie_tls__tls13keyscheduler__key_names__TLSnames_PSK()
+                 ,
+                   accessor_bertie_tls__tls13crypto__algorithm_types__t_Algorithms_bertie_tls__tls13crypto__algorithm_types__f_hash(
+                     ciphersuite
+                   )
+
+                 ,0
+               )
+             ) in
+             let ks = (
+               bertie_tls__tls13keyscheduler__key_schedule__set_by_handle(
+                 ks, handle, bytes
+               )
+             ) in
+             (
+               ks,
+               Some(
+                 bertie_tls__tls13keyscheduler__key_schedule__t_Handle_to_bitstring(
+                   handle
+                 )
+               )
+             )
+           )
+           else let None() = psk in (ks, None())
+         ) in
+         let
+           (
+             tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
+             v_out: bitstring
+           )
+          = (
+           bertie_tls__tls13keyscheduler__derive_hk_handles(
+             accessor_bertie_tls__tls13crypto__algorithm_types__t_Algorithms_bertie_tls__tls13crypto__algorithm_types__f_hash(
+               ciphersuite
+             ),
+             shared_secret_handle,
+             psk_handle,
+             th,
+             ks
+           )
+         ) in
+         let ks = (tmp0) in
+         let hoist22 = (v_out) in
+         let (
+           ch_handle: bertie_tls__tls13keyscheduler__key_schedule__t_Handle,
+           sh_handle: bertie_tls__tls13keyscheduler__key_schedule__t_Handle,
+           ms_handle: bertie_tls__tls13keyscheduler__key_schedule__t_Handle
+         ) = hoist22 in (
+           let
+             (
+               tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
+               v_out: bitstring
+             )
+            = (
+             bertie_tls__tls13keyscheduler__derive_hk_ms(
+               accessor_bertie_tls__tls13crypto__algorithm_types__t_Algorithms_bertie_tls__tls13crypto__algorithm_types__f_hash(
+                 ciphersuite
+               ),
+               accessor_bertie_tls__tls13crypto__algorithm_types__t_Algorithms_bertie_tls__tls13crypto__algorithm_types__f_aead(
+                 ciphersuite
+               ),
+               ch_handle,
+               sh_handle,
+               ks
+             )
+           ) in
+           let ks = (tmp0) in
+           let hoist23 = (v_out) in
+           let (
+             chk: bertie_tls__tls13crypto__t_AeadKeyIV,
+             shk: bertie_tls__tls13crypto__t_AeadKeyIV,
+             cfk: bertie_tls__tls13utils__byte_types__t_Bytes,
+             sfk: bertie_tls__tls13utils__byte_types__t_Bytes
+           ) = hoist23 in (
+             let hax_temp_output = (
+               (
+                 bertie_tls__tls13record__impl_DuplexCipherStateH__new(
+                   chk, 0, shk, 0
+                 ),
+                 bertie_tls__tls13handshake__ClientPostServerHello(
+                   client_random,
+                   sr,
+                   ciphersuite,
+                   server_info,
+                   ms_handle,
+                   cfk,
+                   sfk,
+                   tx
+                 )
+               )
+             ) in
+             (ks, hax_temp_output)
+           )
+           else bitstring_err()
+         )
+         else bitstring_err()
+       )
+       else bitstring_err()
+       else bitstring_err()
+       else bitstring_err()
+       else bitstring_err().
+
 letfun bertie_tls__tls13handshake__server_signature_input(
          digest : bertie_tls__tls13utils__byte_types__t_Bytes
        ) =
        bertie_tls__tls13utils__impl_17__concat(bertie_tls__tls13utils__impl_17__from_slice(bertie_tls__tls13formats__v_PREFIX_SERVER_SIGNATURE), digest).
+
+letfun bertie_tls__tls13handshake__put_server_signature(
+         encrypted_extensions : bertie_tls__tls13formats__handshake_data__t_HandshakeData,
+         server_certificate : bertie_tls__tls13formats__handshake_data__t_HandshakeData,
+         server_certificate_verify : bertie_tls__tls13formats__handshake_data__t_HandshakeData,
+         handshake_state : bertie_tls__tls13handshake__t_ClientPostServerHello
+       ) =
+       let
+         bertie_tls__tls13handshake__ClientPostServerHello(
+           client_random,
+           server_random,
+           algorithms,
+           server_info,
+           master_secret_handle,
+           client_finished_key,
+           server_finished_key,
+           transcript
+         )
+        = (handshake_state) in
+       if
+         core_models__ops__bit__f_not(
+             bertie_tls__tls13crypto__impl_5__psk_mode(algorithms)
+           )
+       then
+         (let wildcard9: bitstring = bertie_tls__tls13formats__parse_encrypted_extensions(
+            algorithms, encrypted_extensions
+          ) in let transcript = bertie_tls__tls13formats__impl_Transcript__add(
+            transcript, encrypted_extensions
+          ) in let certificate = bertie_tls__tls13formats__parse_server_certificate(
+            server_certificate
+          ) in let transcript = bertie_tls__tls13formats__impl_Transcript__add(
+            transcript, server_certificate
+          ) in let transcript_hash_server_certificate = bertie_tls__tls13formats__impl_Transcript__transcript_hash(
+            transcript
+          ) in let spki = bertie_tls__tls13cert__verification_key_from_cert(
+            certificate
+          ) in let public_key = bertie_tls__tls13cert__cert_public_key(
+            certificate, spki
+          ) in let cert_signature = bertie_tls__tls13formats__parse_certificate_verify(
+            algorithms, server_certificate_verify
+          ) in let sigval = bertie_tls__tls13handshake__server_signature_input(
+            transcript_hash_server_certificate
+          ) in let wildcard8: bitstring = bertie_tls__tls13crypto__verify(
+            bertie_tls__tls13crypto__impl_5__signature(algorithms),
+            public_key,
+            sigval,
+            cert_signature
+          ) in let transcript = bertie_tls__tls13formats__impl_Transcript__add(
+            transcript, server_certificate_verify
+          ) in bertie_tls__tls13handshake__ClientPostCertificateVerify(
+            client_random,
+            server_random,
+            algorithms,
+            bertie_tls__server__ServerPubInfo(
+
+                accessor_bertie_tls__server__t_ServerPubInfo_bertie_tls__server__f_server_name(
+                  server_info
+                )
+
+              ,
+                Some(
+                  bertie_tls__tls13utils__byte_types__t_Bytes_to_bitstring(
+                    certificate
+                  )
+                )
+
+              ,
+                Some(
+                  bertie_tls__tls13crypto__algorithm_types__t_PublicVerificationKey_to_bitstring(
+                    public_key
+                  )
+                )
+
+              ,
+                accessor_bertie_tls__server__t_ServerPubInfo_bertie_tls__server__f_session_ticket(
+                  server_info
+                )
+
+            ),
+            master_secret_handle,
+            client_finished_key,
+            server_finished_key,
+            transcript
+          )
+          else bertie_tls__tls13handshake__t_ClientPostCertificateVerify_err()
+          else bertie_tls__tls13handshake__t_ClientPostCertificateVerify_err()
+          else bertie_tls__tls13handshake__t_ClientPostCertificateVerify_err()
+          else bertie_tls__tls13handshake__t_ClientPostCertificateVerify_err()
+          else bertie_tls__tls13handshake__t_ClientPostCertificateVerify_err()
+          else bertie_tls__tls13handshake__t_ClientPostCertificateVerify_err()
+          else bertie_tls__tls13handshake__t_ClientPostCertificateVerify_err()
+          else bertie_tls__tls13handshake__t_ClientPostCertificateVerify_err()
+          else bertie_tls__tls13handshake__t_ClientPostCertificateVerify_err()
+          else bertie_tls__tls13handshake__t_ClientPostCertificateVerify_err()
+          else bertie_tls__tls13handshake__t_ClientPostCertificateVerify_err())
+       else (bertie_tls__tls13handshake__t_ClientPostCertificateVerify_err()).
+
+letfun bertie_tls__tls13handshake__put_psk_skip_server_signature(
+         encrypted_extensions : bertie_tls__tls13formats__handshake_data__t_HandshakeData,
+         handshake_state : bertie_tls__tls13handshake__t_ClientPostServerHello
+       ) =
+       let
+         bertie_tls__tls13handshake__ClientPostServerHello(
+           client_random,
+           server_random,
+           algorithms,
+           server_info,
+           master_secret_handle,
+           client_finished_key,
+           server_finished_key,
+           transcript
+         )
+        = (handshake_state) in
+       if bertie_tls__tls13crypto__impl_5__psk_mode(algorithms)
+       then
+         (let wildcard10: bitstring = bertie_tls__tls13formats__parse_encrypted_extensions(
+            algorithms, encrypted_extensions
+          ) in let transcript = bertie_tls__tls13formats__impl_Transcript__add(
+            transcript, encrypted_extensions
+          ) in bertie_tls__tls13handshake__ClientPostCertificateVerify(
+            client_random,
+            server_random,
+            algorithms,
+            server_info,
+            master_secret_handle,
+            client_finished_key,
+            server_finished_key,
+            transcript
+          )
+          else bertie_tls__tls13handshake__t_ClientPostCertificateVerify_err()
+          else bertie_tls__tls13handshake__t_ClientPostCertificateVerify_err())
+       else (bertie_tls__tls13handshake__t_ClientPostCertificateVerify_err()).
+
+letfun bertie_tls__tls13handshake__put_server_finished(
+         server_finished : bertie_tls__tls13formats__handshake_data__t_HandshakeData,
+         handshake_state : bertie_tls__tls13handshake__t_ClientPostCertificateVerify,
+         ks : bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler
+       ) =
+       let
+         bertie_tls__tls13handshake__ClientPostCertificateVerify(
+           client_random,
+           server_random,
+           algorithms,
+           server_info,
+           master_secret_handle,
+           client_finished_key,
+           server_finished_key,
+           transcript
+         )
+        = (handshake_state) in
+       let
+         bertie_tls__tls13crypto__algorithm_types__Algorithms(
+           hash,aead,signature,kem,psk_mode,zero_rtt
+         )
+        = (algorithms) in
+       let transcript_hash = bertie_tls__tls13formats__impl_Transcript__transcript_hash(
+         transcript
+       ) in let verify_data = bertie_tls__tls13formats__parse_finished(
+         server_finished
+       ) in let wildcard11: bitstring = bertie_tls__tls13crypto__hmac_verify(
+         hash, server_finished_key, transcript_hash, verify_data
+       ) in let transcript = bertie_tls__tls13formats__impl_Transcript__add(
+         transcript, server_finished
+       ) in let transcript_hash_server_finished = bertie_tls__tls13formats__impl_Transcript__transcript_hash(
+         transcript
+       ) in (
+         let
+           (
+             tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
+             v_out: bitstring
+           )
+          = (
+           bertie_tls__tls13keyscheduler__derive_app_handles(
+             hash, master_secret_handle, transcript_hash_server_finished, ks
+           )
+         ) in
+         let ks = (tmp0) in
+         let hoist24 = (v_out) in
+         let (
+           ca_handle: bertie_tls__tls13keyscheduler__key_schedule__t_Handle,
+           sa_handle: bertie_tls__tls13keyscheduler__key_schedule__t_Handle,
+           exp_handle: bertie_tls__tls13keyscheduler__key_schedule__t_Handle
+         ) = hoist24 in (
+           let
+             (
+               tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
+               v_out: bitstring
+             )
+            = (
+             bertie_tls__tls13keyscheduler__derive_app_keys(
+               hash, aead, ca_handle, sa_handle, ks
+             )
+           ) in
+           let ks = (tmp0) in
+           let hoist25 = (v_out) in
+           let (
+             cak: bertie_tls__tls13crypto__t_AeadKeyIV,
+             sak: bertie_tls__tls13crypto__t_AeadKeyIV
+           ) = hoist25 in let exp = bertie_tls__tls13keyscheduler__key_schedule__tagkey_from_handle(
+             ks, exp_handle
+           ) in (
+             let cipher1 = (
+               bertie_tls__tls13record__duplex_cipher_state1(
+                 aead, cak, 0, sak, 0, exp
+               )
+             ) in
+             let hax_temp_output = (
+               (
+                 cipher1,
+                 bertie_tls__tls13handshake__ClientPostServerFinished(
+                   client_random,
+                   server_random,
+                   algorithms,
+                   server_info,
+                   master_secret_handle,
+                   client_finished_key,
+                   transcript
+                 )
+               )
+             ) in
+             (ks, hax_temp_output)
+           )
+           else bitstring_err()
+           else bitstring_err()
+         )
+         else bitstring_err()
+       )
+       else bitstring_err()
+       else bitstring_err()
+       else bitstring_err()
+       else bitstring_err()
+       else bitstring_err().
+
+letfun bertie_tls__tls13handshake__get_client_finished(
+         handshake_state : bertie_tls__tls13handshake__t_ClientPostServerFinished,
+         ks : bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler
+       ) =
+       let
+         bertie_tls__tls13handshake__ClientPostServerFinished(
+           client_random,
+           server_random,
+           algorithms,
+           server_info,
+           master_secret_handle,
+           client_finished_key,
+           transcript
+         )
+        = (handshake_state) in
+       let transcript_hash = bertie_tls__tls13formats__impl_Transcript__transcript_hash(
+         transcript
+       ) in let verify_data = bertie_tls__tls13crypto__hmac_tag(
+         bertie_tls__tls13crypto__impl_5__hash(algorithms),
+         client_finished_key,
+         transcript_hash
+       ) in let client_finished = bertie_tls__tls13formats__finished(verify_data
+       ) in let transcript = bertie_tls__tls13formats__impl_Transcript__add(
+         transcript, client_finished
+       ) in let transcript_hash = bertie_tls__tls13formats__impl_Transcript__transcript_hash(
+         transcript
+       ) in (
+         let
+           (
+             tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
+             v_out: bertie_tls__tls13keyscheduler__key_schedule__t_Handle
+           )
+          = (
+           bertie_tls__tls13keyscheduler__derive_rms(
+             bertie_tls__tls13crypto__impl_5__hash(algorithms),
+             master_secret_handle,
+             transcript_hash,
+             ks
+           )
+         ) in
+         let ks = (tmp0) in
+         let hoist26 = (v_out) in
+         let resumption_master_secret = hoist26 in (
+           let hax_temp_output = (
+             (
+               client_finished,
+               bertie_tls__tls13handshake__ClientPostClientFinished(
+                 client_random,
+                 server_random,
+                 algorithms,
+                 server_info,
+                 resumption_master_secret,
+                 transcript
+               )
+             )
+           ) in
+           (ks, hax_temp_output)
+         )
+         else bitstring_err()
+       )
+       else bitstring_err()
+       else bitstring_err()
+       else bitstring_err()
+       else bitstring_err()
+       else bitstring_err().
+
+letfun bertie_tls__tls13handshake__client_init(
+         algs : bertie_tls__tls13crypto__algorithm_types__t_Algorithms,
+         sn : bertie_tls__tls13utils__byte_types__t_Bytes,
+         tkt : Option,
+         psk : Option,
+         rng : impl_CryptoRng,
+         ks : bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler
+       ) =
+       let
+         (
+           tmp0: impl_CryptoRng,
+           tmp1: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
+           v_out: bitstring
+         )
+        = (
+         bertie_tls__tls13handshake__build_client_hello(
+           algs, sn, tkt, psk, rng, ks
+         )
+       ) in
+       let rng = (tmp0) in
+       let ks = (tmp1) in
+       let hax_temp_output = (v_out) in
+       (rng, ks, hax_temp_output).
+
+letfun bertie_tls__tls13handshake__client_set_params(
+         payload : bertie_tls__tls13formats__handshake_data__t_HandshakeData,
+         st : bertie_tls__tls13handshake__t_ClientPostClientHello,
+         ks : bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler
+       ) =
+       let
+         (
+           tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
+           v_out: bitstring
+         )
+        = (bertie_tls__tls13handshake__put_server_hello(payload, st, ks)) in
+       let ks = (tmp0) in
+       let hax_temp_output = (v_out) in
+       (ks, hax_temp_output).
+
+letfun bertie_tls__tls13handshake__client_finish(
+         payload : bertie_tls__tls13formats__handshake_data__t_HandshakeData,
+         handshake_state : bertie_tls__tls13handshake__t_ClientPostServerHello,
+         ks : bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler
+       ) =
+       let
+         (
+           ks: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
+           hax_temp_output: bitstring
+         )
+        = (
+         let (=false) = bertie_tls__tls13crypto__impl_5__psk_mode(
+           bertie_tls__tls13handshake__algs_post_server_hello(handshake_state)
+         ) in let (
+           encrypted_extensions: bertie_tls__tls13formats__handshake_data__t_HandshakeData,
+           server_certificate: bertie_tls__tls13formats__handshake_data__t_HandshakeData,
+           server_certificate_verify: bertie_tls__tls13formats__handshake_data__t_HandshakeData,
+           server_finished: bertie_tls__tls13formats__handshake_data__t_HandshakeData
+         ) = bertie_tls__tls13formats__handshake_data__impl_HandshakeData__to_four(
+           payload
+         ) in let client_state_certificate_verify = bertie_tls__tls13handshake__put_server_signature(
+           encrypted_extensions,
+           server_certificate,
+           server_certificate_verify,
+           handshake_state
+         ) in (
+           let
+             (
+               tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
+               v_out: bitstring
+             )
+            = (
+             bertie_tls__tls13handshake__put_server_finished(
+               server_finished, client_state_certificate_verify, ks
+             )
+           ) in
+           let ks = (tmp0) in
+           let hoist27 = (v_out) in
+           let (
+             cipher: bertie_tls__tls13record__t_DuplexCipherState1,
+             client_state_server_finished: bertie_tls__tls13handshake__t_ClientPostServerFinished
+           ) = hoist27 in (
+             let
+               (
+                 tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
+                 v_out: bitstring
+               )
+              = (
+               bertie_tls__tls13handshake__get_client_finished(
+                 client_state_server_finished, ks
+               )
+             ) in
+             let ks = (tmp0) in
+             let hoist28 = (v_out) in
+             let (
+               client_finished: bertie_tls__tls13formats__handshake_data__t_HandshakeData,
+               client_state: bertie_tls__tls13handshake__t_ClientPostClientFinished
+             ) = hoist28 in (ks, (client_finished, cipher, client_state))
+             else bitstring_err()
+           )
+           else bitstring_err()
+         )
+         else bitstring_err()
+         else bitstring_err()
+         else let (=true) = bertie_tls__tls13crypto__impl_5__psk_mode(
+           bertie_tls__tls13handshake__algs_post_server_hello(handshake_state)
+         ) in let (
+           encrypted_extensions: bertie_tls__tls13formats__handshake_data__t_HandshakeData,
+           server_finished: bertie_tls__tls13formats__handshake_data__t_HandshakeData
+         ) = bertie_tls__tls13formats__handshake_data__impl_HandshakeData__to_two(
+           payload
+         ) in let client_state_certificate_verify = bertie_tls__tls13handshake__put_psk_skip_server_signature(
+           encrypted_extensions, handshake_state
+         ) in (
+           let
+             (
+               tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
+               v_out: bitstring
+             )
+            = (
+             bertie_tls__tls13handshake__put_server_finished(
+               server_finished, client_state_certificate_verify, ks
+             )
+           ) in
+           let ks = (tmp0) in
+           let hoist29 = (v_out) in
+           let (
+             cipher: bertie_tls__tls13record__t_DuplexCipherState1,
+             client_state_server_finished: bertie_tls__tls13handshake__t_ClientPostServerFinished
+           ) = hoist29 in (
+             let
+               (
+                 tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
+                 v_out: bitstring
+               )
+              = (
+               bertie_tls__tls13handshake__get_client_finished(
+                 client_state_server_finished, ks
+               )
+             ) in
+             let ks = (tmp0) in
+             let hoist30 = (v_out) in
+             let (
+               client_finished: bertie_tls__tls13formats__handshake_data__t_HandshakeData,
+               client_state: bertie_tls__tls13handshake__t_ClientPostClientFinished
+             ) = hoist30 in (ks, (client_finished, cipher, client_state))
+             else bitstring_err()
+           )
+           else bitstring_err()
+         )
+         else bitstring_err()
+         else bitstring_err()
+       ) in
+       (ks, hax_temp_output).
 
 letfun bertie_tls__tls13handshake__process_psk_binder_zero_rtt(
          ciphersuite : bertie_tls__tls13crypto__algorithm_types__t_Algorithms,
@@ -3843,13 +5090,13 @@ letfun bertie_tls__tls13handshake__process_psk_binder_zero_rtt(
              )
            ) in
            let ks = (tmp0) in
-           let hoist14 = (v_out) in
-           let mk_handle = hoist14 in let hoist15 = bertie_tls__tls13keyscheduler__key_schedule__tagkey_from_handle(
+           let hoist32 = (v_out) in
+           let mk_handle = hoist32 in let hoist33 = bertie_tls__tls13keyscheduler__key_schedule__tagkey_from_handle(
              ks, mk_handle
            ) in (
              let mk = (
                accessor_bertie_tls__tls13keyscheduler__key_schedule__t_TagKey_bertie_tls__tls13keyscheduler__key_schedule__f_val(
-                 hoist15
+                 hoist33
                )
              ) in
              let
@@ -3868,16 +5115,16 @@ letfun bertie_tls__tls13handshake__process_psk_binder_zero_rtt(
                )
              ) in
              let ks = (tmp0) in
-             let hoist16 = (v_out) in
-             let binder_handle = hoist16 in let hoist17 = bertie_tls__tls13keyscheduler__key_schedule__tagkey_from_handle(
+             let hoist34 = (v_out) in
+             let binder_handle = hoist34 in let hoist35 = bertie_tls__tls13keyscheduler__key_schedule__tagkey_from_handle(
                ks, binder_handle
              ) in (
                let binder = (
                  accessor_bertie_tls__tls13keyscheduler__key_schedule__t_TagKey_bertie_tls__tls13keyscheduler__key_schedule__f_val(
-                   hoist17
+                   hoist35
                  )
                ) in
-               let wildcard6: bitstring = bertie_tls__tls13crypto__hmac_verify(
+               let wildcard12: bitstring = bertie_tls__tls13crypto__hmac_verify(
                  accessor_bertie_tls__tls13crypto__algorithm_types__t_Algorithms_bertie_tls__tls13crypto__algorithm_types__f_hash(
                    ciphersuite
                  ),
@@ -3909,11 +5156,11 @@ letfun bertie_tls__tls13handshake__process_psk_binder_zero_rtt(
                       )
                     ) in
                     let ks = (tmp0) in
-                    let hoist18 = (v_out) in
+                    let hoist36 = (v_out) in
                     let (
                       key_iv: bertie_tls__tls13crypto__t_AeadKeyIV,
                       early_exporter_ms_handle: bertie_tls__tls13keyscheduler__key_schedule__t_Handle
-                    ) = hoist18 in let early_exporter_ms = bertie_tls__tls13keyscheduler__key_schedule__tagkey_from_handle(
+                    ) = hoist36 in let early_exporter_ms = bertie_tls__tls13keyscheduler__key_schedule__tagkey_from_handle(
                       ks, early_exporter_ms_handle
                     ) in (
                       ks,
@@ -3995,8 +5242,8 @@ letfun bertie_tls__tls13handshake__put_client_hello(
              )
            ) in
            let ks = (tmp0) in
-           let hoist13 = (v_out) in
-           let cipher0 = hoist13 in (
+           let hoist31 = (v_out) in
+           let cipher0 = hoist31 in (
              let hax_temp_output = (
                (
                  cipher0,
@@ -4027,7 +5274,7 @@ letfun bertie_tls__tls13handshake__get_server_hello(
        ) in
        let rng = (tmp0) in
        let server_random = (tmp1) in
-       let wildcard7: bitstring = (()) in
+       let wildcard13: bitstring = (()) in
        let (tmp0: impl_CryptoRng, v_out: bitstring) = (
          bertie_tls__tls13crypto__kem_encap(
            accessor_bertie_tls__tls13crypto__algorithm_types__t_Algorithms_bertie_tls__tls13crypto__algorithm_types__f_kem(
@@ -4042,11 +5289,11 @@ letfun bertie_tls__tls13handshake__get_server_hello(
          )
        ) in
        let rng = (tmp0) in
-       let hoist19 = (v_out) in
+       let hoist37 = (v_out) in
        let (
          shared_secret: bertie_tls__tls13utils__byte_types__t_Bytes,
          gy: bertie_tls__tls13utils__byte_types__t_Bytes
-       ) = hoist19 in (
+       ) = hoist37 in (
          let shared_secret_handle = (
            bertie_tls__tls13keyscheduler__key_schedule__Handle(
              bertie_tls__tls13keyscheduler__key_names__TLSnames_KEM()
@@ -4146,12 +5393,12 @@ letfun bertie_tls__tls13handshake__get_server_hello(
              )
            ) in
            let ks = (tmp0) in
-           let hoist20 = (v_out) in
+           let hoist38 = (v_out) in
            let (
              ch_handle: bertie_tls__tls13keyscheduler__key_schedule__t_Handle,
              sh_handle: bertie_tls__tls13keyscheduler__key_schedule__t_Handle,
              ms_handle: bertie_tls__tls13keyscheduler__key_schedule__t_Handle
-           ) = hoist20 in (
+           ) = hoist38 in (
              let
                (
                  tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
@@ -4175,13 +5422,13 @@ letfun bertie_tls__tls13handshake__get_server_hello(
                )
              ) in
              let ks = (tmp0) in
-             let hoist21 = (v_out) in
+             let hoist39 = (v_out) in
              let (
                chk: bertie_tls__tls13crypto__t_AeadKeyIV,
                shk: bertie_tls__tls13crypto__t_AeadKeyIV,
                cfk: bertie_tls__tls13utils__byte_types__t_Bytes,
                sfk: bertie_tls__tls13utils__byte_types__t_Bytes
-             ) = hoist21 in (
+             ) = hoist39 in (
                let hax_temp_output = (
                  (
                    sh,
@@ -4260,7 +5507,7 @@ letfun bertie_tls__tls13handshake__get_server_signature_no_psk(
          let
            (
              rng: impl_CryptoRng,
-             hoist22: bertie_tls__tls13utils__byte_types__t_Bytes
+             hoist40: bertie_tls__tls13utils__byte_types__t_Bytes
            )
           = (
            let bertie_tls__tls13crypto__algorithm_types__SignatureScheme_EcdsaSecp256r1Sha256(
@@ -4296,7 +5543,7 @@ letfun bertie_tls__tls13handshake__get_server_signature_no_psk(
            )
            else (rng, bertie_tls__tls13utils__byte_types__t_Bytes_err())
          ) in
-         let sig = hoist22 in let scv = bertie_tls__tls13formats__certificate_verify(
+         let sig = hoist40 in let scv = bertie_tls__tls13formats__certificate_verify(
            accessor_bertie_tls__tls13handshake__t_ServerPostServerHello_bertie_tls__tls13handshake__f_ciphersuite(
              state
            ),
@@ -4401,12 +5648,12 @@ letfun bertie_tls__tls13handshake__get_server_finished(
            )
          ) in
          let ks = (tmp0) in
-         let hoist23 = (v_out) in
+         let hoist41 = (v_out) in
          let (
            ca_handle: bertie_tls__tls13keyscheduler__key_schedule__t_Handle,
            sa_handle: bertie_tls__tls13keyscheduler__key_schedule__t_Handle,
            exp_handle: bertie_tls__tls13keyscheduler__key_schedule__t_Handle
-         ) = hoist23 in (
+         ) = hoist41 in (
            let
              (
                tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
@@ -4418,11 +5665,11 @@ letfun bertie_tls__tls13handshake__get_server_finished(
              )
            ) in
            let ks = (tmp0) in
-           let hoist24 = (v_out) in
+           let hoist42 = (v_out) in
            let (
              cak: bertie_tls__tls13crypto__t_AeadKeyIV,
              sak: bertie_tls__tls13crypto__t_AeadKeyIV
-           ) = hoist24 in let exp = bertie_tls__tls13keyscheduler__key_schedule__tagkey_from_handle(
+           ) = hoist42 in let exp = bertie_tls__tls13keyscheduler__key_schedule__tagkey_from_handle(
              ks, exp_handle
            ) in (
              let cipher1 = (
@@ -4464,7 +5711,7 @@ letfun bertie_tls__tls13handshake__put_client_finished(
         = (st) in
        let th = bertie_tls__tls13formats__impl_Transcript__transcript_hash(tx) in let vd = bertie_tls__tls13formats__parse_finished(
          cfin
-       ) in let wildcard8: bitstring = bertie_tls__tls13crypto__hmac_verify(
+       ) in let wildcard14: bitstring = bertie_tls__tls13crypto__hmac_verify(
          bertie_tls__tls13crypto__impl_5__hash(algs), cfk, th, vd
        ) in let tx = bertie_tls__tls13formats__impl_Transcript__add(tx, cfin) in let th = bertie_tls__tls13formats__impl_Transcript__transcript_hash(
          tx
@@ -4480,8 +5727,8 @@ letfun bertie_tls__tls13handshake__put_client_finished(
            )
          ) in
          let ks = (tmp0) in
-         let hoist25 = (v_out) in
-         let rms = hoist25 in (
+         let hoist43 = (v_out) in
+         let rms = hoist43 in (
            let hax_temp_output = (
              bertie_tls__tls13handshake__ServerPostClientFinished(
                cr, sr, algs, rms, tx
@@ -4511,11 +5758,11 @@ letfun bertie_tls__tls13handshake__server_init_no_psk(
          )
         = (bertie_tls__tls13handshake__put_client_hello(algs, ch, db, ks)) in
        let ks = (tmp0) in
-       let hoist26 = (v_out) in
+       let hoist44 = (v_out) in
        let (
          cipher0: Option,
          st: bertie_tls__tls13handshake__t_ServerPostClientHello
-       ) = hoist26 in (
+       ) = hoist44 in (
          let
            (
              tmp0: impl_CryptoRng,
@@ -4525,23 +5772,23 @@ letfun bertie_tls__tls13handshake__server_init_no_psk(
           = (bertie_tls__tls13handshake__get_server_hello(st, rng, ks)) in
          let rng = (tmp0) in
          let ks = (tmp1) in
-         let hoist27 = (v_out) in
+         let hoist45 = (v_out) in
          let (
            sh: bertie_tls__tls13formats__handshake_data__t_HandshakeData,
            cipher_hs: bertie_tls__tls13record__t_DuplexCipherStateH,
            st: bertie_tls__tls13handshake__t_ServerPostServerHello
-         ) = hoist27 in (
+         ) = hoist45 in (
            let (tmp0: impl_CryptoRng, v_out: bitstring) = (
              bertie_tls__tls13handshake__get_server_signature(st, rng)
            ) in
            let rng = (tmp0) in
-           let hoist28 = (v_out) in
+           let hoist46 = (v_out) in
            let (
              ee: bertie_tls__tls13formats__handshake_data__t_HandshakeData,
              sc: bertie_tls__tls13formats__handshake_data__t_HandshakeData,
              scv: bertie_tls__tls13formats__handshake_data__t_HandshakeData,
              st: bertie_tls__tls13handshake__t_ServerPostCertificateVerify
-           ) = hoist28 in (
+           ) = hoist46 in (
              let
                (
                  tmp0: bertie_tls__tls13keyscheduler__key_schedule__t_TLSkeyscheduler,
@@ -4549,26 +5796,26 @@ letfun bertie_tls__tls13handshake__server_init_no_psk(
                )
               = (bertie_tls__tls13handshake__get_server_finished(st, ks)) in
              let ks = (tmp0) in
-             let hoist29 = (v_out) in
+             let hoist47 = (v_out) in
              let (
                sfin: bertie_tls__tls13formats__handshake_data__t_HandshakeData,
                cipher1: bertie_tls__tls13record__t_DuplexCipherState1,
                st: bertie_tls__tls13handshake__t_ServerPostServerFinished
-             ) = hoist29 in let hoist30 = bertie_tls__tls13formats__handshake_data__impl_HandshakeData__concat(
+             ) = hoist47 in let hoist48 = bertie_tls__tls13formats__handshake_data__impl_HandshakeData__concat(
                ee, sc
              ) in (
-               let hoist31 = (
+               let hoist49 = (
                  bertie_tls__tls13formats__handshake_data__impl_HandshakeData__concat(
-                   hoist30, scv
+                   hoist48, scv
                  )
                ) in
-               let hoist32 = hoist31 in (
-                 let hoist33 = (
+               let hoist50 = hoist49 in (
+                 let hoist51 = (
                    bertie_tls__tls13formats__handshake_data__impl_HandshakeData__concat(
-                     hoist32, sfin
+                     hoist50, sfin
                    )
                  ) in
-                 let flight = hoist33 in (
+                 let flight = hoist51 in (
                    let hax_temp_output = (
                      (sh, flight, cipher0, cipher_hs, cipher1, st)
                    ) in

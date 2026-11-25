@@ -101,7 +101,7 @@ cargo_hax_into_pv = [
     "bertie-tls",
     "--no-default-features",
     "--features",
-    "hax-pv,std",
+    "hax-pv,defensive,std,client,sha256,chacha20poly1305,ecdsa-p256,x25519,p256,mlkem768",
     ";",
     "into",
 ]
