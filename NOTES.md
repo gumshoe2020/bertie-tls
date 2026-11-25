@@ -204,3 +204,65 @@ or hook bypass. Memory tools unavailable, so no palace diary filed.
 Evidence: target/proverif/run3-extract.log, run3-analysis.log,
 run3-metrics.json, run3-final-checks.txt and run3-*-final.log.
 PROVERIF-BLOCKED
+
+## 2026-11-25T15:55:52-05:00 — ProVerif P1 run 4: approved hash-length abstraction
+
+Start 757caa8, branch proofs/proverif-ci. Andrew approved the hash-length
+model fix and requires completion queries 1 and 2 to return true before M3.
+Replaced only server_signature_input's ProVerif body, using the existing
+hax_lib::proverif::replace_body mechanism. The replacement retains Bytes::from_slice
+of PREFIX_SERVER_SIGNATURE and Bytes::concat with digest; it removes only the
+length-guard failure branch in the symbolic body. Both callers pass transcript
+hash output, whose SHA-256/384/512 lengths are 32/48/64. Runtime Rust is unchanged.
+HACL* backing sources and the unverified libcrux refinement boundary are listed
+by file/commit in TRUSTED.md (Spec.Agile.Hash.fsti/.fst and Spec.Hash.Definitions.fst,
+f557259007db9933442dde10aa995c1b00bd3446). Sources retained under target/proverif.
+No handwritten declaration added yet. Fresh extraction, strict F* and pinned
+formal-coverage v1.9.1 checks started. Results will be appended.
+
+The final replacement uses `${Bytes::concat}(${Bytes::from_slice}(${PREFIX_SERVER_SIGNATURE}), digest)`.
+These are expression antiquotations, matching the existing `Bytes::prefix`
+replacement in src/tls13utils.rs. An initial use of type antiquotation `$:{...}`
+failed extraction with E0223/E0747; corrected without changing model semantics.
+That failed attempt is retained as run4-extract.log, successful extraction as
+run4-extract-fixed.log. lib.pvl is generated only by pinned hax, never hand-edited;
+diffstat: 4 insertions / 26 deletions. It drops the length wrapper/dependency and
+failure branch, preserves prefix/concat, and reorders the bytes helper.
+
+Full analysis now fails at extraction/lib.pvl:3097:
+`Error: type bertie__tls13formats__handshake_data__t_HandshakeData not declared.`
+ProVerif exit 2 / driver exit 1; wall 0.071852625 s, peak RSS 11656 KiB
+(Linux RUSAGE_CHILDREN including driver). The stale declaration is generated from
+src/tls13record.rs:212–224's existing encrypt_handshake replacement, which still
+hardcodes old crate/type names, alongside interpolated current names in its peer.
+Other stale hardcoded names occur in tls13formats replacements (server_hello,
+encrypted_extensions, server_certificate, certificate_verify, finished) and in
+analysis.pv. These are not new missing standard-library data functions. Adding an
+unrelated abstract old HandshakeData type would not establish identity with the
+current type and would model message/authentication logic outside run 3's limits.
+Repair requires reviewed rename/interpolation fixes outside the digest helper;
+no such repair was attempted in run 4. No query/analysis.pv changes or declarations.
+
+Queries 1–7: all NO RESULT (input rejected). Thus queries 1 and 2 do not meet the
+mandatory true guard. No false security result or attack trace was produced.
+M2 blocked, M3/M4 not implemented, no expected-results file or ProVerif CI job.
+Final source checks PASS: workspace tests, all ten feature configurations, fmt,
+clippy -D warnings, cargo deny, actionlint. Exact logs under target/proverif/run4-*.
+The initial concurrent F* run was deliberately discarded after correcting the
+attribute syntax (its frozen source binding would be stale); a fresh final-source
+strict F* run was started. Coverage/ratchet results will be appended.
+
+### Run 4 coverage result (recorded by Claude Code continuation, 2026-11-25)
+formal-coverage v1.9.1 (pinned commit b737912) run per COVERAGE.md on the final tree,
+after a fresh strict F* run (all roots exit 0, run4-fstar.log). Measured first-party
+security SLoC: 5084 (baseline 5078). proven-extracted 4117 (baseline 4111, +6: the new
+comment and attribute lines, credited), tested 253 (unchanged), unverified 714
+(unchanged, trusted 161 included). Proven share 80.96% -> 80.98%. No unit lost credit.
+`write-coverage.py --check` fails only because coverage/baseline.json and COVERAGE.md
+still hold the old totals (5078/4111); run4-coverage.log. Not updated here: the run
+prompt forbids touching the baseline while blocked. If the replace_body is kept, the
+maintainer refreshes baseline.json and COVERAGE.md from target/coverage-ci/report.json.
+Blocker (unchanged): stale hardcoded `bertie__...` names in existing proverif::replace
+strings (tls13record.rs encrypt_handshake, tls13formats.rs, analysis.pv). Needs a
+decision to permit reviewed rename-only edits to those strings and analysis.pv.
+Queries 1-7 not evaluated; vacuity guard unmet; no expected-results file or CI job.

@@ -2741,14 +2741,15 @@ reduc forall
 
 const bertie_tls__tls13utils__v_UNSUPPORTED_ALGORITHM: bitstring.
 
-const bertie_tls__tls13utils__v_PAYLOAD_TOO_LONG: bitstring.
-
 const bertie_tls__tls13utils__v_PSK_MODE_MISMATCH: bitstring.
 
 const bertie_tls__tls13utils__v_PARSE_FAILED: bitstring.
 
 letfun bertie_tls__tls13utils__parse_failed(wildcard1 : bitstring) =
        bertie_tls__tls13utils__v_PARSE_FAILED.
+
+letfun bertie_tls__tls13utils__bytes(x : bitstring) =
+       bertie_tls__tls13utils__byte_types__t_Bytes_from_bitstring(x).
 
 (* marked as constructor *)
 fun bertie_tls__tls13utils__impl_17__new(bitstring)
@@ -2757,18 +2758,6 @@ fun bertie_tls__tls13utils__impl_17__new(bitstring)
 (* marked as constructor *)
 fun bertie_tls__tls13utils__impl_17__zeroes(nat)
     : bertie_tls__tls13utils__byte_types__t_Bytes [data].
-
-letfun bertie_tls__tls13utils__impl_17__len(
-         self : bertie_tls__tls13utils__byte_types__t_Bytes
-       ) =
-       alloc__vec__impl_1__len(
-         accessor_bertie_tls__tls13utils__byte_types__t_Bytes_bertie_tls__tls13utils__byte_types__0(
-           self
-         )
-       ).
-
-letfun bertie_tls__tls13utils__bytes(x : bitstring) =
-       bertie_tls__tls13utils__byte_types__t_Bytes_from_bitstring(x).
 
 letfun bertie_tls__tls13utils__impl_17__from_slice(s : bitstring) =
        bertie_tls__tls13utils__byte_types__t_Bytes_from_bitstring(s).
@@ -3795,18 +3784,7 @@ letfun bertie_tls__server__lookup_db(
 letfun bertie_tls__tls13handshake__server_signature_input(
          digest : bertie_tls__tls13utils__byte_types__t_Bytes
        ) =
-       if
-         core_models__cmp__f_gt(bertie_tls__tls13utils__impl_17__len(digest), 64
-           )
-       then (bertie_tls__tls13utils__byte_types__t_Bytes_err())
-       else (
-         bertie_tls__tls13utils__impl_17__concat(
-           bertie_tls__tls13utils__impl_17__from_slice(
-             bertie_tls__tls13formats__v_PREFIX_SERVER_SIGNATURE
-           ),
-           digest
-         )
-       ).
+       bertie_tls__tls13utils__impl_17__concat(bertie_tls__tls13utils__impl_17__from_slice(bertie_tls__tls13formats__v_PREFIX_SERVER_SIGNATURE), digest).
 
 letfun bertie_tls__tls13handshake__process_psk_binder_zero_rtt(
          ciphersuite : bertie_tls__tls13crypto__algorithm_types__t_Algorithms,

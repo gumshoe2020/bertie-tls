@@ -163,13 +163,33 @@ code rather than as an assumed instance. Nothing in this module is listed as tru
 
 ## ProVerif model assumptions
 
-P1 run 3 (2026-11-25) introduced **no new handwritten declarations or model
-assumptions**. The regenerated library is unchanged and remains unchecked:
-ProVerif rejects the missing `alloc__vec__impl_1__len` before evaluating queries.
-This Rust `Vec::len` call feeds the `digest.len() > 64` guard in
-`tls13handshake::server_signature_input`, before CertificateVerify signing and
-verification. Its abstraction has not been shown independent of handshake
-reachability, so it was not added under the run-3 limited authorization.
-The abstract hash constructor has no modelled digest-length guarantee. Resolving
-that interaction requires a further reviewed modelling decision; no symbolic
-security result follows from this failed input check. See NOTES.md for evidence.
+P1 run 4 (Andrew approved, 2026-11-25) replaces only the ProVerif body of
+`tls13handshake::server_signature_input`, via `hax_lib::proverif::replace_body`
+under `cfg_attr(feature = "hax-pv")`. It preserves prefix conversion and
+concatenation with the digest, and omits the `digest.len() > 64` failure branch.
+Both callers supply `Transcript::transcript_hash()` output. The model assumes
+that the abstract hash returns its selected algorithm's output length: SHA-256,
+SHA-384 and SHA-512 produce 32, 48 and 64 bytes, respectively. Thus the omitted
+branch is unreachable for these callers with the real hash implementation.
+Runtime Rust and the strict F* extraction (which does not enable `hax-pv`) retain
+the check. This is a symbolic-model assumption, not a new Rust/F* proof or a
+checked end-to-end refinement from libcrux to HACL*.
+
+Backing upstream specification/proof source: HACL* commit
+`f557259007db9933442dde10aa995c1b00bd3446`,
+[`specs/Spec.Agile.Hash.fsti`](https://github.com/hacl-star/hacl-star/blob/f557259007db9933442dde10aa995c1b00bd3446/specs/Spec.Agile.Hash.fsti)
+(`hash'` returns `lbytes (hash_length' a l)`, `hash` specializes fixed lengths),
+with implementation `specs/Spec.Agile.Hash.fst`. The corresponding
+[`specs/Spec.Hash.Definitions.fst`](https://github.com/hacl-star/hacl-star/blob/f557259007db9933442dde10aa995c1b00bd3446/specs/Spec.Hash.Definitions.fst)
+defines `hash_length`, `hash_length'`, `word_length` and `hash_word_length`, giving
+the lengths above. This run inspects those sources; it does not reverify HACL*.
+The replacement uses the same upstream Bertie `replace_body` mechanism already
+used by `tls13crypto::sign` and `tls13formats::client_hello`.
+
+New handwritten declarations in run 4: **0/15**. Fresh extraction removes the
+missing Vec::len dependency, but full ProVerif analysis now rejects a stale
+`bertie__tls13formats__handshake_data__t_HandshakeData` type emitted by the
+existing `tls13record::encrypt_handshake` replacement (`src/tls13record.rs`).
+Repairing that replacement is outside the approved digest-guard scope. No query
+is evaluated, so the completion guard is unmet and no security result is claimed.
+Other old names also remain in replacement strings and `analysis.pv`; see NOTES.md.
