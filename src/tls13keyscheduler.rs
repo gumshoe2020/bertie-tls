@@ -2,8 +2,9 @@ pub(crate) mod key_names;
 pub(crate) mod key_schedule;
 #[cfg(any(test, hax))]
 mod rfc8446_spec;
-#[cfg(test)]
-mod rfc8446_vectors;
+// RFC 8448 §3 uses SHA-256; HKDF over it needs the sha256 feature.
+#[cfg(all(test, feature = "sha256"))]
+mod test_rfc8448_vectors;
 
 use crate::{
     tls13crypto::{hash, AeadAlgorithm, AeadKey, AeadKeyIV, Digest, HashAlgorithm, MacKey},
