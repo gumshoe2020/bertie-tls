@@ -62,8 +62,8 @@ Run from the repository root. Coverage/proof commands require the pinned tools d
 - `scripts/test-features` (each algorithm alone, with defaults disabled)
 - `python3 scripts/verify-fstar.py` (fresh extraction and strict F*, no admits)
 - `cargo deny check`
-- `python3 -m unittest discover -s scripts/tests -v`
-- `scripts/check-coverage BASELINE REPORT DIFF` (measurement equality and ratchet)
+- `python3 -m unittest discover -s /path/to/formal-coverage/ci/tests -v` (pinned v1.9.0 kit)
+- `python3 /path/to/formal-coverage/ci/run.py ...` (measurement equality and ratchet; exact invocation and pin in COVERAGE.md)
 - `cargo fmt --all -- --check`
 - `cargo clippy --locked -- -D warnings`
 - `actionlint`

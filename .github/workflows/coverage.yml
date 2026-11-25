@@ -17,7 +17,6 @@ permissions:
 env:
   CARGO_TERM_COLOR: always
   HAX_COMMIT: 5ccf89dd2e996c9f88f2267eaa2a64739c4ca41a
-  FORMAL_COVERAGE_COMMIT: 7f4927cae26728ebfea0e135856e0fed40493b14 # public v1.8.5; same tree as private a995961
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -28,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
-      ratchet: ${{ steps.ratchet.outcome }}
+      ratchet: ${{ steps.coverage.outputs.ratchet }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -38,20 +37,6 @@ jobs:
           repository: cryspen/hax
           ref: ${{ env.HAX_COMMIT }}
           path: hax-src
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          repository: gumshoe2020/formal-coverage
-          ref: ${{ env.FORMAL_COVERAGE_COMMIT }}
-          path: formal-coverage-src
-
-      - name: Cache formal-coverage build
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
-        with:
-          path: formal-coverage-src/target
-          key: formal-coverage-${{ env.FORMAL_COVERAGE_COMMIT }}
-      - name: Build formal-coverage at the pinned commit
-        run: cargo build --release --locked --manifest-path formal-coverage-src/Cargo.toml
-
       - uses: ./.github/actions/setup-hax
         with:
           fstar: v2025.10.06
@@ -64,66 +49,18 @@ jobs:
           eval "$(opam env 2>/dev/null || true)"
           FSTAR_JOBS="$(nproc)" python3 scripts/verify-fstar.py
 
-      - name: Measure
-        id: measure
-        run: |
-          tool=formal-coverage-src/target/release/formal-coverage
-          args=(report . --config formal-coverage.toml --fstar-log target/ci-logs/fstar/fstar.log
-                --json target/ci-logs/report.json --markdown target/ci-logs/report.md)
-          if ! "$tool" "${args[@]}"; then
-            # Only the informational proof/code ratio may be downgraded to a warning:
-            # rerun with that one gate off; any other failure stays a failure.
-            "$tool" "${args[@]}" --no-proof-ratio-gate
-            echo "::warning::proof-to-code ratio is outside the configured range (informational, not blocking)"
-            echo "Proof-to-code ratio is outside the configured range: informational, not blocking." >> "$GITHUB_STEP_SUMMARY"
-          fi
-      - name: COVERAGE.md and baseline.json match the measurement
-        run: python3 scripts/write-coverage.py target/ci-logs/report.json --check
+      - name: Measure, check committed outputs and apply ratchet
+        id: coverage
+        uses: gumshoe2020/formal-coverage/.github/actions/coverage@2c7e26a8c90afb44323ecebce69822e8b4bc9ca5 # v1.9.0
+        with:
+          report-args: '["--fstar-log","target/ci-logs/fstar/fstar.log"]'
 
-      - name: Floor and diff from the merge base
-        id: floor
-        run: |
-          if [ "${{ github.event_name }}" = pull_request ]; then
-            base=$(git merge-base "origin/${{ github.base_ref }}" HEAD)
-          else
-            base="${{ github.event.before }}"
-          fi
-          if [ -z "$base" ] || [ "$base" = 0000000000000000000000000000000000000000 ] \
-             || ! git cat-file -e "$base:coverage/baseline.json" 2>/dev/null; then
-            echo "::warning::no coverage/baseline.json at the base commit: bootstrap run, using the committed baseline as the floor"
-            cp coverage/baseline.json target/ci-logs/floor.json
-            : > target/ci-logs/diff.patch
-            echo "range=" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          git show "$base:coverage/baseline.json" > target/ci-logs/floor.json
-          git diff "$base" HEAD > target/ci-logs/diff.patch
-          echo "range=$base..HEAD" >> "$GITHUB_OUTPUT"
-      - name: Ratchet
-        id: ratchet
-        run: |
-          commits=()
-          if [ -n "${{ steps.floor.outputs.range }}" ]; then
-            for c in $(git rev-list "${{ steps.floor.outputs.range }}"); do commits+=(--commit "$c"); done
-          fi
-          scripts/check-coverage target/ci-logs/floor.json target/ci-logs/report.json \
-            target/ci-logs/diff.patch "${commits[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
-
-      - name: Summary
-        if: always()
-        run: |
-          {
-            echo "### Formal coverage"
-            sed -n '/measured coverage: begin/,/measured coverage: end/p' COVERAGE.md | grep -v 'measured coverage'
-          } >> "$GITHUB_STEP_SUMMARY"
-      - name: Keep report and logs
+      - name: Keep F* receipts and logs
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: coverage-report
           path: |
-            target/ci-logs/report.json
-            target/ci-logs/report.md
             target/ci-logs/fstar/*.log
             target/ci-logs/fstar/*.json
             target/ci-logs/fstar/interface-only.json
@@ -139,21 +76,7 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Write badges
-        run: |
-          result=fail
-          if [ "${{ needs.coverage.outputs.ratchet }}" = success ] && [ "${{ needs.coverage.result }}" = success ]; then
-            result=pass
-          fi
-          python3 scripts/write-badges.py coverage/baseline.json badges-out "$result"
       - name: Publish to the badges branch
-        run: |
-          git fetch origin badges:badges 2>/dev/null || git checkout --orphan badges
-          git switch badges 2>/dev/null || true
-          git rm -rfq --ignore-unmatch . >/dev/null
-          cp badges-out/*.json .
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add ./*.json
-          git diff --cached --quiet || git commit -m "Update coverage badges for ${GITHUB_SHA}"
-          git push origin badges
+        uses: gumshoe2020/formal-coverage/.github/actions/publish-badges@2c7e26a8c90afb44323ecebce69822e8b4bc9ca5 # v1.9.0
+        with:
+          coverage-result: ${{ needs.coverage.result }}
