@@ -1,6 +1,6 @@
 # Maintained Bertie trust boundary
 
-Updated 2026-11-23.
+Updated 2026-11-25.
 
 ## Cryptographic backend
 
@@ -160,3 +160,30 @@ excluded `from_hex` and `random_bytes` helpers remain unproven as described abov
 Every offset and length step is checked against the buffer and returns an error when the input is
 too short or inconsistent. `CertificateKey` writes out `Clone` and `Copy` so hax extracts them as
 code rather than as an assumed instance. Nothing in this module is listed as trusted.
+
+## Specifications
+
+`src/tls13keyscheduler/rfc8446_spec.rs` is an executable specification, compiled
+only with `cfg(test)` or `cfg(hax)`. It covers RFC 8446 §7.1 (full handshake,
+(EC)DHE, no PSK/0-RTT), §7.3 write keys/IVs and §4.4.4 Finished keys.
+RFC line citations and per-item miTLS provenance are in the source. Structure
+is ported from miTLS at `9a75fa8c46e50897b1f43002885d25a34dfa929a`:
+`src/parsers/MiTLS.Parsers.HKDF.rfc:1–5`, `src/tls/MiTLS.HKDF.fst:188,216,241`,
+`src/tls/MiTLS.Old.KeySchedule.fst:155,160,234,236,265,458,460,463,549,573`
+and `.fsti:255,267`. The specification is a trusted translation; extraction alone
+is not evidence of RFC conformance. Vector-gate status is recorded in project
+PROGRESS.md. No implementation functional contract is claimed yet.
+
+The intended mathematical meaning of the existing HKDF backend boundary is
+HACL*'s RFC 5869 specification, commit
+`f557259007db9933442dde10aa995c1b00bd3446`,
+`specs/Spec.Agile.HKDF.fst:17` (extract), `:37–72` (expand).
+Its `.fsti:12,27` exposes opaque functions with size/precondition contracts.
+The Rust specification and implementation call the same bertie crypto functions;
+no equality between these backend calls and HACL* is assumed or proved.
+M0 pinned-tool probe (2026-11-25): HACL* extract can be called and its
+32-byte SHA-256 length checked, but the generated backend cannot prove even
+success with that length (F* Error 19, could not prove post-condition). Thus
+there is no checked link for replacing the shared opaque operations by HACL*.
+Probe sources, commands and exits are in `target/rfc-p2/M0.*` locally. No
+HACL*/miTLS F* module is imported into the production proof build.

@@ -150,6 +150,13 @@ the module no longer carries an assumed instance, and the proof-to-code ratio is
 backend; short AEAD ciphertexts and malformed NIST KEM points are now rejected without panicking.
 Proven moves from 3,332 to 3,635 lines (62.89% to 67.29%); the proof-to-code ratio is 0.16.
 
+## RFC 8446 key-schedule specification (P2)
+
+`tls13keyscheduler::rfc8446_spec` is compiled only for tests and hax and is
+checked as an additional strict F* root. M0 adds no functional (RFC) contracts
+to implementation units: the existing key-schedule proofs remain safety-only.
+The vector gate must pass before implementation/spec equality proofs begin.
+
 ## Meaning and limits
 
 “Proven” here sums the tool's `proven` and `proven-extracted` runtime categories;
@@ -248,7 +255,7 @@ python3 -m unittest discover -s /path/to/formal-coverage/ci/tests -v
 For the local rebuilt toolchain, prefix verification with
 `BERTIE_DOCKER_TOOLS=/Users/gumshoe/src/bertie-toolchain`. It copies the project to
 `target/ci-logs/fstar/workspace`, fetches locked dependencies into a disposable
-cache, extracts frozen sources and checks eighteen strict F* roots. No proof patch,
+cache, extracts frozen sources and checks nineteen strict F* roots. No proof patch,
 admission, lax check or checked cache is used. The original upstream snapshots
 remain in git as historical artifacts; they are not inputs to this verification.
 

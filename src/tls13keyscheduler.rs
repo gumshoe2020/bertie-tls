@@ -1,5 +1,7 @@
 pub(crate) mod key_names;
 pub(crate) mod key_schedule;
+#[cfg(any(test, hax))]
+mod rfc8446_spec;
 
 use crate::{
     tls13crypto::{hash, AeadAlgorithm, AeadKey, AeadKeyIV, Digest, HashAlgorithm, MacKey},
