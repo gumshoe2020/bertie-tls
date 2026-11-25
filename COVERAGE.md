@@ -47,18 +47,28 @@ count as evidence for shipped code. Every shipped unit kept its tier and size. C
 proven 3,635 of 5,402 (67.29%) to 3,776 of 5,078 (74.36%). Full comparisons: formal-coverage
 `dev/v183/compare.md` at tag v1.8.3 and `dev/v184/compare.md` at tag v1.8.4.
 
+**Re-measured with formal-coverage v1.8.5 (2026-11-24).** The tool changed, not the code.
+hax names methods in numbered inherent impl blocks `impl_<N>__method`, and the tool could not
+match those to Rust, so their F* proofs earned no credit. v1.8.5 maps a numbered group to an
+impl block only when the module's whole method set selects exactly one block and the F* text
+names that block's type; trait impls and ambiguous groups stay unmapped, and interface-only
+methods stay trusted. 39 units in `tls13crypto` (`Algorithms`, `HashAlgorithm`,
+`AeadAlgorithm`), `tls13formats` (`ContentType`) and `tls13utils` (`Bytes`, `AppData`) moved
+to proven; no unit lost a tier. Proven 3,776 to 4,027 of 5,078 (74.36% to 79.30%). Full comparison: formal-coverage
+`dev/v185/compare.md` at tag v1.8.5.
+
 <!-- measured coverage: begin -->
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 3776 | 74.36% |
-| tested | 421 | 8.29% |
-| unverified | 881 | 17.35% |
+| proven | 4027 | 79.30% |
+| tested | 281 | 5.53% |
+| unverified | 770 | 15.16% |
 
 Total: **5078** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (3776 lines); Verus proven: 0 lines.
+`proven-extracted` hax credit (4027 lines); Verus proven: 0 lines.
 
-Proof-to-code ratio: **0.16** (587 proof SLoC / 3776 proven + proven-extracted runtime SLoC); informational, never blocking.
+Proof-to-code ratio: **0.15** (587 proof SLoC / 4027 proven + proven-extracted runtime SLoC); informational, never blocking.
 
 Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code SLoC, and 61 inline `cfg(hax)` SLoC (overlaps count once). F* models: 1 SLoC of trusted assumptions, excluded from the ratio.
 
@@ -71,11 +81,13 @@ Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code 
 | bertie_tls::tls13api::Server | 63 | 0 | 0.00 |
 | bertie_tls::tls13cert | 306 | 45 | 0.15 |
 | bertie_tls::tls13crypto | 297 | 0 | 0.00 |
+| bertie_tls::tls13crypto::AeadAlgorithm | 16 | 0 | 0.00 |
 | bertie_tls::tls13crypto::AeadKey | 3 | 0 | 0.00 |
 | bertie_tls::tls13crypto::AeadKeyIV | 3 | 0 | 0.00 |
-| bertie_tls::tls13crypto::Algorithms | 0 | 13 | n/a |
-| bertie_tls::tls13crypto::HashAlgorithm | 0 | 1 | n/a |
+| bertie_tls::tls13crypto::Algorithms | 115 | 13 | 0.11 |
+| bertie_tls::tls13crypto::HashAlgorithm | 12 | 1 | 0.08 |
 | bertie_tls::tls13formats | 834 | 71 | 0.09 |
+| bertie_tls::tls13formats::ContentType | 9 | 0 | 0.00 |
 | bertie_tls::tls13formats::Extensions | 8 | 0 | 0.00 |
 | bertie_tls::tls13formats::Transcript | 53 | 1 | 0.02 |
 | bertie_tls::tls13formats::handshake_data | 94 | 4 | 0.04 |
@@ -88,7 +100,8 @@ Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code 
 | bertie_tls::tls13utils | 303 | 106 | 0.35 |
 | bertie_tls::tls13utils::<constC:usize>From<&[u8 ; C]>forBytes | 0 | 1 | n/a |
 | bertie_tls::tls13utils::<constC:usize>From<[u8 ; C]>forBytes | 0 | 1 | n/a |
-| bertie_tls::tls13utils::Bytes | 0 | 26 | n/a |
+| bertie_tls::tls13utils::AppData | 9 | 0 | 0.00 |
+| bertie_tls::tls13utils::Bytes | 90 | 26 | 0.29 |
 | bertie_tls::tls13utils::From<&[u8]>forBytes | 0 | 1 | n/a |
 | bertie_tls::tls13utils::core::ops::Index<Range<usize>>forBytes | 0 | 1 | n/a |
 
@@ -190,8 +203,8 @@ Any rejected receipt or unmapped function retains zero credit; see the full repo
 
 ## Reproduction and pins
 
-- formal-coverage commit `e072bd0` (private) / `f844c8746ca1457ac020156d37e804217ef3e8a5`
-  (public tag v1.8.4, identical tree; CI uses the public commit; version string `1.8.4`).
+- formal-coverage commit `a995961` (private) / `7f4927cae26728ebfea0e135856e0fed40493b14`
+  (public tag v1.8.5, identical tree; CI uses the public commit; version string `1.8.5`).
 - hax `0.4.2`, source `5ccf89dd2e996c9f88f2267eaa2a64739c4ca41a`.
 - Rust extraction toolchain `nightly-2025-11-08`; F* `2025.10.06`, Z3 `4.13.3`.
 - Local container images: `fc-verify-hax:v17` (aarch64) and
