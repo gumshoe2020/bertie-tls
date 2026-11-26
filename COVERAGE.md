@@ -224,6 +224,28 @@ cache, extracts frozen sources and checks eighteen strict F* roots. No proof pat
 admission, lax check or checked cache is used. The original upstream snapshots
 remain in git as historical artifacts; they are not inputs to this verification.
 
+### What CI caches
+
+- `hax.yml` (pass/fail gate) caches F*'s per-module `.checked` files. Pull requests may read the cache; only a
+  push to `main` writes it. The key binds the hax commit, F* and Z3 versions, the hash of
+  `scripts/verify-fstar.py` and the hash of the extraction inputs (`src/**`, `Cargo.toml`, `Cargo.lock`,
+  `hax-driver.py`, `proofs/fstar/libcrux-models/**`), and F* re-checks any module whose own digest or
+  whose dependencies' digests differ. hax extraction is never cached.
+- `coverage.yml` is never cached. formal-coverage v1.11.0 rejects `--cache_checked_modules`, any `.checked`
+  file in the receipt scope, and any module without its own fresh `Verified module:` line (F* prints that line
+  even when it loads a module from the cache), so cached results cannot be honest evidence.
+  `scripts/verify-fstar.py --cache-dir DIR` therefore writes no `fstar.log.evidence.json`.
+- `proverif.yml` also succeeds quickly on unrelated PRs. Its separate input policy covers Rust/workspace
+  manifests, Cargo configuration/toolchain/build scripts, `hax-driver.py`, `proofs/proverif/**` (including
+  handwritten libraries, extraction and expected results), `scripts/{install,check}-proverif`, both setup
+  actions, its workflow and the detector/tests. F*-only inputs are unrelated; unknown paths run the job.
+  Pushes to main and dispatch always run ProVerif.
+- `hax.yml` succeeds quickly, with a log line, on a pull request that changes nothing F* reads
+  (`scripts/ci-changes.py`: docs and unrelated workflows only; every other path counts). Pushes, the nightly
+  schedule and manual dispatch always run. Coverage is never skipped.
+- To force an uncached run: start `hax` from the Actions tab (`workflow_dispatch`) with `no_cache` ticked. The
+  nightly schedule is always uncached. Locally, omit `--cache-dir` (the default).
+
 ## Ratchet and exceptions
 
 The floor is `baselines/<merge-base-full-sha>.json` on `coverage-data` (on a main

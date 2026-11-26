@@ -63,6 +63,8 @@ jobs:
           path: formal-coverage-src
       - name: Unit tests for shared coverage kit
         run: python3 -m unittest discover -s formal-coverage-src/ci/tests -v
+      - name: Unit tests for CI scripts
+        run: python3 -m unittest discover -s scripts/tests -v
       - name: Lint workflows
         run: |
           bash <(curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/03d0035246f3e81f36aed592ffb4bebf33a03106/scripts/download-actionlint.bash) 1.7.7

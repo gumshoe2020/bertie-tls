@@ -320,3 +320,63 @@ Interpretation of the guard: "queries 1 and 2 must be true" means the completion
 Gap estimate (requested by the decision): symbols `core_models__*`/`alloc__*` used in lib.pvl and defined
 neither there nor in handwritten_lib.pvl: none remain (ProVerif reaches the queries; its "not defined" error
 is the exact check).
+
+## 2026-11-25 — CI speed run 2
+
+Merged origin/main 110802a with merge commit 02cf61b, without conflicts. Preserved
+main's coverage v1.11.0 actions and all-target lint; fixed the stale reproduction
+pin left by the automatic documentation merge. Coverage stays uncached (choice b).
+
+ProVerif's separate skip policy follows its workflow, setup-hax/setup-proverif,
+hax-driver.py extract-proverif, install-proverif and check-proverif: Rust sources,
+Cargo manifests/lock/config/toolchain/build scripts, driver, proofs/proverif/**
+(including handwritten libraries, extraction, analysis and expected results),
+installer/checker, both setup actions, workflow and detector/tests. Explicit
+inputs override generic documentation ignores; unknown paths run. F*-only inputs
+can skip ProVerif. Push/dispatch always run. PR comparison uses merge-base and
+--no-renames so removed inputs remain visible. The job itself always starts and
+logs a successful skip before any tool installation.
+
+Native workspace tests, feature matrix, fmt, all-target clippy -D warnings,
+cargo deny, actionlint and 19 Python tests passed. Final acceptance results are
+recorded below and in the project workspace's PROGRESS.md under "CI speed run 2".
+Memory tools are unavailable. No push, GitHub API use or dependency changes.
+
+
+### 2026-11-25T23:49:54-05:00 — CI speed run 2 final acceptance
+
+origin/main advanced from 110802a to e261c81 (#91) during the first verification.
+Merged it without conflicts as c09ea5c, preserving main's DER cfg(hax) change,
+measurement and maintainer-approved exception. Re-ran all project checks on
+this updated tree. Our diff against e261c81 touches no Rust/security code,
+coverage baseline/configuration or coverage.yml floor logic.
+
+Final checks: cargo test --locked --workspace (4s); scripts/test-features (13s);
+fmt (<1s); cargo clippy --locked --all-targets -- -D warnings (1s); cargo deny
+check (1s); actionlint on all workflows (<1s); 19 skip/cache Python tests (<1s);
+git diff --check. All passed. Existing ignored workspace tests were not changed.
+The kit is archived from main's exact v1.11.0 commit
+888fdbf8f0c23973d76c679fd56188636c38e57c, built locally; its 80 tests passed.
+
+Local proof command: BERTIE_DOCKER_TOOLS=/Users/gumshoe/src/bertie-toolchain
+FSTAR_JOBS=1 python3 scripts/verify-fstar.py [--cache-dir "$PWD/target/m2/cache"].
+Uncached: 1602s; restored cache: 161s; exact-tree warm repeat: 173s (9.3x vs
+uncached). All 18 roots exit 0 in all three runs; all 19 dependency levels pass
+for cached runs, 94 checked artifacts. Only the uncached run wrote a receipt.
+No cached-report equality claim: choice (b) deliberately produces no receipt
+from cached runs. v1.11.0 coverage kit ran against merge-base e261c81: 75s,
+"coverage baseline and document match measurement", "ratchet PASS". Measurement:
+4065/5032 proven (80.78%), tested 253, unverified 714, proof ratio 0.16;
+the ratio warning is informational. All current source hashes still match the
+fresh receipt. Fresh proof artifacts are preserved in
+target/run2/latest/uncached; kit outputs in target/run2/latest/coverage-ci.
+
+Earlier 110802a results remain in target/run2: uncached 1580s, restored 418s,
+warm 177s; baseline/document equality and ratchet passed (58s). Latest native
+summaries: target/run2/latest/checks.txt; proof timings: latest/fstar.txt.
+Commits: 02cf61b initial merge, 3cc1d5d ProVerif skip/tests, c09ea5c updated merge;
+final documentation commit follows. No pushes or GitHub API calls. Real GitHub
+workflow/cache restore-save and required-check behavior were not exercised;
+independent reviewer reruns are still required. No full ProVerif analysis was
+requested or run in this CI-skip task.
+CI-SPEED-2-READY

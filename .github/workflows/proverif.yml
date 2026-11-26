@@ -27,21 +27,36 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - uses: ./.github/actions/setup-hax
+        with:
+          fetch-depth: 0
+      - name: Detect whether this change touches anything ProVerif reads
+        id: changes
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          python3 scripts/ci-changes.py --job proverif ${BASE_SHA:+"$BASE_SHA"}
+      - name: Skipped, nothing ProVerif reads changed
+        if: steps.changes.outputs.relevant != 'true'
+        run: echo "No extraction or ProVerif input changed in this pull request; skipping ProVerif (push and dispatch always run it)."
+      - if: steps.changes.outputs.relevant == 'true'
+        uses: ./.github/actions/setup-hax
         with:
           fstar: v2025.10.06
           hax_commit: ${{ env.HAX_COMMIT }}
-      - uses: ./.github/actions/setup-proverif
+      - if: steps.changes.outputs.relevant == 'true'
+        uses: ./.github/actions/setup-proverif
       - name: Regenerate the model and require it to match the committed one
+        if: steps.changes.outputs.relevant == 'true'
         run: |
           eval "$(opam env 2>/dev/null || true)"
           cargo fetch --locked
           python3 hax-driver.py extract-proverif
           git diff --exit-code -- proofs/proverif/extraction
       - name: Run ProVerif and compare with expected results
+        if: steps.changes.outputs.relevant == 'true'
         run: python3 scripts/check-proverif --timeout 3600
       - name: Keep logs
-        if: always()
+        if: always() && steps.changes.outputs.relevant == 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: proverif-logs

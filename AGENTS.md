@@ -61,7 +61,9 @@ PRs commit policy, proofs and code, not measured numbers; see COVERAGE.md.
 Run from the repository root. Coverage/proof commands require the pinned tools described in COVERAGE.md.
 - `cargo test --locked --workspace`
 - `scripts/test-features` (each algorithm alone, with defaults disabled)
-- `python3 scripts/verify-fstar.py` (fresh extraction and strict F*, no admits)
+- `python3 scripts/verify-fstar.py` (fresh extraction and strict F*, no admits; uncached, and the only form that
+  produces a coverage receipt. `--cache-dir DIR` is an optional incremental gate for local use and the `hax` job, see COVERAGE.md)
+- `python3 -m unittest discover -s scripts/tests -v` (CI scripts)
 - `cargo deny check`
 - `python3 -m unittest discover -s /path/to/formal-coverage/ci/tests -v` (pinned v1.11.0 kit)
 - `python3 /path/to/formal-coverage/ci/run.py ...` (recorded-floor ratchet; exact invocation and pin in COVERAGE.md)
