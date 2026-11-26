@@ -36,8 +36,10 @@ current numbers on `coverage-data` (`COVERAGE-MEASURED.md` and append-only `base
 PRs commit policy, proofs and code, not measured numbers; see COVERAGE.md.
 1. No commit may increase the number of unverified security lines, or lower the proven share.
 2. Every commit that touches security code must increase the proven share, by proving new or
-   existing code. Commits that do not touch security code (docs, CI, tests only) are exempt but
-   must not lower the share.
+   existing code, or, at equal proven share, increase the number of proven security lines with
+   functional contracts (the two functional contract categories combined), by strengthening the
+   contracts of proven code. Unverified security lines may never increase. Commits that do not
+   touch security code (docs, CI, tests only) are exempt but must not lower the share.
 3. Don't game it: splitting, renaming or moving code without adding proofs doesn't count as an
    improvement, and redefining what counts as security code needs maintainer approval.
 4. The proof-to-code ratio (proof lines per proven code line) is reported alongside, as a
