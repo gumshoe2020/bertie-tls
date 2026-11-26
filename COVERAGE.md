@@ -192,9 +192,18 @@ now refuses to run on a checkout with uncommitted changes, including untracked f
 ignore, because it compares the base to HEAD while measuring the files on disk. Commit before
 running it locally. CI's hax checkout (`hax-src/`) is git-ignored for this reason.
 
+**formal-coverage v1.12.3 (2026-11-26).** Three changes. (1) Test code is identified only by structural
+evidence (built-in `#[test]`/`#[bench]`, `#[cfg(test)]`, or a test target); other attributes named `test` are
+measured as runtime. This is a measurement change; bertie-tls's numbers are unchanged by it. (2) Main's coverage
+record now stores each unit's status, which allows a deletion-only share drop (see AGENTS.md rule 1) once main has
+a record written by 1.12.3. (3) A failing ratchet prints its reason as the last line of the CI output.
+
+**formal-coverage v1.12.4 (2026-11-26).** Test scope follows `#[path]` module files and no longer trusts a
+bare `#[test]` that an import could shadow. These are measurement changes; bertie-tls's numbers are unchanged.
+
 ## Reproduction and pins
 
-- formal-coverage v1.12.1, public commit `9b24a08ca57ec5d3b1d14c31532645cd4cbae050`.
+- formal-coverage v1.12.4, public commit `04bfae9bdeef910980313061b8c8b425c1efb563`.
   All three shared CI actions pin this commit, which also pins the measurement tool.
 - ProVerif `2.05`, official source
   `https://bblanche.gitlabpages.inria.fr/proverif/proverif2.05.tar.gz`,
