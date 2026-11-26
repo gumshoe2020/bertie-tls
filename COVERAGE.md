@@ -84,20 +84,20 @@ v1.11.0.
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 4125 | 81.01% |
-| tested | 253 | 4.97% |
-| unverified | 714 | 14.02% |
+| proven | 4065 | 80.78% |
+| tested | 253 | 5.03% |
+| unverified | 714 | 14.19% |
 
-Total: **5092** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (4125 lines); Verus proven: 0 lines.
+Total: **5032** first-party security runtime SLoC. Proven includes explicitly labelled
+`proven-extracted` hax credit (4065 lines); Verus proven: 0 lines.
 
-Proof-to-code ratio: **0.14** (587 proof SLoC / 4125 proven + proven-extracted runtime SLoC); informational, never blocking.
+Proof-to-code ratio: **0.16** (655 proof SLoC / 4065 proven + proven-extracted runtime SLoC); informational, never blocking.
 
-Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code SLoC, and 61 inline `cfg(hax)` SLoC (overlaps count once). F* models: 1 SLoC of trusted assumptions, excluded from the ratio.
+Proof components: 287 hax annotation SLoC, 333 standalone `cfg(hax)` proof-code SLoC, and 35 inline `cfg(hax)` SLoC (overlaps count once). F* models: 1 SLoC of trusted assumptions, excluded from the ratio.
 
 | Module | Proven runtime | Proof SLoC | Proof / proven runtime |
 | --- | ---: | ---: | ---: |
-| bertie_tls::der | 150 | 296 | 1.97 |
+| bertie_tls::der | 90 | 364 | 4.04 |
 | bertie_tls::server | 31 | 0 | 0.00 |
 | bertie_tls::server::ServerDB | 13 | 0 | 0.00 |
 | bertie_tls::tls13api | 16 | 0 | 0.00 |
@@ -136,9 +136,9 @@ Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code 
 
 | Contract depth | Lines | Share of proven lines |
 | --- | ---: | ---: |
-| safety-only | 3811 | 92.39% |
-| functional, checked only against own code | 235 | 5.70% |
-| functional | 79 | 1.92% |
+| safety-only | 3753 | 92.32% |
+| functional, checked only against own code | 167 | 4.11% |
+| functional | 145 | 3.57% |
 
 Safety-only means proven free of panics, overflows and out-of-bounds access, including length and range facts; it says nothing about what the code computes.
 

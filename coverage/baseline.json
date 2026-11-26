@@ -1,74 +1,34 @@
 {
   "inventory": [
     {
-      "end_line": 88,
+      "end_line": 130,
       "file": "src/der.rs",
-      "line": 84
+      "line": 112
     },
     {
-      "end_line": 99,
+      "end_line": 340,
       "file": "src/der.rs",
-      "line": 90
+      "line": 323
     },
     {
-      "end_line": 104,
+      "end_line": 365,
       "file": "src/der.rs",
-      "line": 101
+      "line": 346
     },
     {
-      "end_line": 124,
+      "end_line": 392,
       "file": "src/der.rs",
-      "line": 106
+      "line": 367
     },
     {
-      "end_line": 159,
+      "end_line": 427,
       "file": "src/der.rs",
-      "line": 126
+      "line": 398
     },
     {
-      "end_line": 168,
+      "end_line": 472,
       "file": "src/der.rs",
-      "line": 161
-    },
-    {
-      "end_line": 179,
-      "file": "src/der.rs",
-      "line": 170
-    },
-    {
-      "end_line": 199,
-      "file": "src/der.rs",
-      "line": 181
-    },
-    {
-      "end_line": 330,
-      "file": "src/der.rs",
-      "line": 313
-    },
-    {
-      "end_line": 355,
-      "file": "src/der.rs",
-      "line": 336
-    },
-    {
-      "end_line": 382,
-      "file": "src/der.rs",
-      "line": 357
-    },
-    {
-      "end_line": 417,
-      "file": "src/der.rs",
-      "line": 388
-    },
-    {
-      "end_line": 462,
-      "file": "src/der.rs",
-      "line": 419
-    },
-    {
-      "end_line": 592,
-      "file": "src/der.rs",
-      "line": 556
+      "line": 429
     },
     {
       "end_line": 34,
@@ -1986,22 +1946,22 @@
       "line": 1047
     }
   ],
-  "proof_ratio": 0.1423030303030303,
-  "proof_sloc": 587,
-  "proven": 4125,
+  "proof_ratio": 0.16113161131611317,
+  "proof_sloc": 655,
+  "proven": 4065,
   "schema": 1,
   "scope": "first-party security runtime",
   "statuses": {
     "hazard": 0,
     "proven": 0,
     "proven-bounded": 0,
-    "proven-extracted": 4125,
+    "proven-extracted": 4065,
     "proven-upstream": 0,
     "tested": 253,
     "trusted": 161,
     "unverified": 553
   },
   "tested": 253,
-  "total": 5092,
+  "total": 5032,
   "unverified": 714
 }
