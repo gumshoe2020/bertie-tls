@@ -112,6 +112,7 @@ pub(crate) type U8 = u8;
 
 #[cfg(not(feature = "secret_integers"))]
 #[allow(non_snake_case)]
+#[hax_lib::ensures(|result| result == x)]
 pub(crate) const fn U8(x: u8) -> U8 {
     x
 }
@@ -132,6 +133,7 @@ pub(crate) type U16 = u16;
 
 #[cfg(not(feature = "secret_integers"))]
 #[allow(non_snake_case)]
+#[hax_lib::ensures(|result| result == x)]
 pub(crate) const fn U16(x: u16) -> U16 {
     x
 }
@@ -194,7 +196,9 @@ impl From<Vec<U8>> for Bytes {
 }
 
 #[cfg(not(feature = "secret_integers"))]
+#[hax_lib::attributes]
 impl From<Vec<u8>> for Bytes {
+    #[hax_lib::ensures(|result| fstar!("result.Bertie_tls.Tls13utils.Byte_types._0._0 == x._0"))]
     fn from(x: Vec<u8>) -> Bytes {
         Bytes(x)
     }
@@ -205,7 +209,9 @@ impl From<Vec<u8>> for Bytes {
     proverif::replace("fun ${concat_inner}($:{Bytes}, $:{Bytes}): $:{Bytes} [data].")
 )]
 #[hax_lib::requires(bytes.0.len().lift() + other.0.len().lift() <= usize::MAX.lift())]
-#[hax_lib::ensures(|result| result.0.len().lift() == bytes.0.len().lift() + other.0.len().lift())]
+#[hax_lib::ensures(|result| (result.0.len().lift() == bytes.0.len().lift() + other.0.len().lift()).to_prop().and(fstar!(
+    "result.Bertie_tls.Tls13utils.Byte_types._0._0 == Seq.append bytes.Bertie_tls.Tls13utils.Byte_types._0._0 other.Bertie_tls.Tls13utils.Byte_types._0._0"
+)))]
 pub(crate) fn concat_inner(bytes: Bytes, other: Bytes) -> Bytes {
     let mut result = bytes;
     result.extend_from_slice(&other);
@@ -233,9 +239,13 @@ impl Bytes {
         feature = "hax-pv",
         proverif::replace_body("${Bytes::concat}($:{Bytes}_from_bitstring(prefix), self)")
     )]
-    #[hax_lib::ensures(|result| result.len() >= self.len() && result.len() - self.len() == prefix.len())]
+    #[hax_lib::ensures(|result| (result.len() >= self.len() && result.len() - self.len() == prefix.len()).to_prop().and(fstar!(
+    "result.Bertie_tls.Tls13utils.Byte_types._0._0 == Seq.append prefix self.Bertie_tls.Tls13utils.Byte_types._0._0"
+)))]
     #[hax_lib::requires(self.0.len().lift() + prefix.len().lift() <= usize::MAX.lift())]
     pub(crate) fn prefix(self, prefix: &[U8]) -> Self {
+        #[cfg(hax)]
+        hax_lib::fstar!("FStar.Seq.append_empty_l prefix");
         let mut out = Vec::with_capacity(prefix.len() + self.len());
 
         out.extend_from_slice(prefix);
@@ -265,7 +275,7 @@ impl Bytes {
 
     /// Get a reference to the raw bytes.
     #[allow(dead_code)]
-    #[hax_lib::ensures(|result| result.len() == self.0.len())]
+    #[hax_lib::ensures(|result| (result.len() == self.0.len()).to_prop().and(fstar!("result == self.Bertie_tls.Tls13utils.Byte_types._0._0")))]
     pub(crate) fn as_raw(&self) -> &[U8] {
         &self.0
     }
@@ -285,8 +295,12 @@ impl Bytes {
 
 #[hax_lib::attributes]
 impl From<&[u8]> for Bytes {
-    #[hax_lib::ensures(|result| result.len() == x.len())]
+    #[hax_lib::ensures(|result| (result.len() == x.len()).to_prop().and(fstar!(
+        "result.Bertie_tls.Tls13utils.Byte_types._0._0 == x"
+    ))) ]
     fn from(x: &[u8]) -> Bytes {
+        #[cfg(hax)]
+        hax_lib::fstar!("FStar.Seq.append_empty_l x");
         x.to_vec().into()
     }
 }
@@ -495,14 +509,18 @@ impl Bytes {
 
     /// Push `x` into these [`Bytes`].
     #[hax_lib::requires(self.0.len() < usize::MAX)]
-    #[hax_lib::ensures(|_| future(self).0.len().lift() == self.0.len().lift() + 1usize.lift())]
+    #[hax_lib::ensures(|_| (future(self).0.len().lift() == self.0.len().lift() + 1usize.lift()).to_prop().and(fstar!(
+        "self_e_future.Bertie_tls.Tls13utils.Byte_types._0._0 == Seq.append self.Bertie_tls.Tls13utils.Byte_types._0._0 (Seq.create 1 x)"
+    )))]
     pub(crate) fn push(&mut self, x: U8) {
         self.0.push(x)
     }
 
     /// Extend `self` with the slice `x`.
     #[hax_lib::requires(self.0.len().lift() + x.0.len().lift() <= usize::MAX.lift())]
-    #[hax_lib::ensures(|_| future(self).0.len().lift() == self.0.len().lift() + x.0.len().lift())]
+    #[hax_lib::ensures(|_| (future(self).0.len().lift() == self.0.len().lift() + x.0.len().lift()).to_prop().and(fstar!(
+        "self_e_future.Bertie_tls.Tls13utils.Byte_types._0._0 == Seq.append self.Bertie_tls.Tls13utils.Byte_types._0._0 x.Bertie_tls.Tls13utils.Byte_types._0._0"
+    )))]
     pub(crate) fn extend_from_slice(&mut self, x: &Bytes) {
         self.0.extend_from_slice(&x.0)
     }
@@ -515,7 +533,9 @@ impl Bytes {
     }
 
     /// Generate a new [`Bytes`] struct from slice `s`.
-    #[hax_lib::ensures(|result| result.len() == s.len())]
+    #[hax_lib::ensures(|result| (result.len() == s.len()).to_prop().and(fstar!(
+    "result.Bertie_tls.Tls13utils.Byte_types._0._0 == s"
+)))]
     pub(crate) fn from_slice(s: &[u8]) -> Bytes {
         s.into()
     }
@@ -542,7 +562,9 @@ impl Bytes {
     }
 
     /// Concatenate `other` with these bytes and return a copy as [`Bytes`].
-    #[hax_lib::ensures(|result| result.0.len().lift() == self.0.len().lift() + other.0.len().lift())]
+    #[hax_lib::ensures(|result| (result.0.len().lift() == self.0.len().lift() + other.0.len().lift()).to_prop().and(fstar!(
+    "result.Bertie_tls.Tls13utils.Byte_types._0._0 == Seq.append self.Bertie_tls.Tls13utils.Byte_types._0._0 other.Bertie_tls.Tls13utils.Byte_types._0._0"
+)))]
     #[hax_lib::requires(self.0.len().lift() + other.0.len().lift() <= usize::MAX.lift())]
     pub fn concat(self, other: Bytes) -> Bytes {
         concat_inner(self, other)
@@ -793,14 +815,23 @@ pub(crate) fn check_mem(b1: &[U8], b2: &[U8]) -> Result<(), TLSError> {
 /// the length of `bytes` exceeds what can be encoded in one byte.
 #[hax_lib::pv_constructor]
 #[hax_lib::ensures(|result| match result {
-                                    Result::Ok(lenb) => bytes.len() < 256 && lenb.len() >= 1 && lenb.len() - 1 == bytes.len(),
-                                    _ => true})]
+    Result::Ok(lenb) => (bytes.len() < 256 && lenb.len() >= 1 && lenb.len() - 1 == bytes.len())
+        .to_prop().and(fstar!(
+            "lenb.Bertie_tls.Tls13utils.Byte_types._0._0 == Seq.append (Seq.create 1 (mk_u8 (Seq.length bytes % 256))) bytes"
+        )),
+    _ => true.to_prop(),
+})]
 pub(crate) fn encode_length_u8(bytes: &[U8]) -> Result<Bytes, TLSError> {
     let len = bytes.len();
     if len >= 256 {
         Err(PAYLOAD_TOO_LONG)
     } else {
         let mut lenb = Bytes::new_alloc(1 + bytes.len());
+        #[cfg(hax)]
+        hax_lib::fstar!(
+            "FStar.Seq.lemma_empty lenb.Bertie_tls.Tls13utils.Byte_types._0._0;
+             FStar.Seq.append_empty_l (Seq.create 1 (mk_u8 (Seq.length bytes % 256)))"
+        );
         lenb.push(U8(len as u8));
         lenb.0.extend_from_slice(bytes);
         Ok(lenb)
