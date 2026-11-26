@@ -240,7 +240,7 @@ Any rejected receipt or unmapped function retains zero credit; see the full repo
 
 ## Reproduction and pins
 
-- formal-coverage v1.9.1, public commit `b7379121068c3d5db257e10a5013c2a85d0c9fe4`.
+- formal-coverage v1.11.0, public commit `888fdbf8f0c23973d76c679fd56188636c38e57c`.
   Both shared CI actions pin this commit, which also pins the measurement tool.
 - ProVerif `2.05`, official source
   `https://bblanche.gitlabpages.inria.fr/proverif/proverif2.05.tar.gz`,
@@ -286,6 +286,11 @@ remain in git as historical artifacts; they are not inputs to this verification.
   file in the receipt scope, and any module without its own fresh `Verified module:` line (F* prints that line
   even when it loads a module from the cache), so cached results cannot be honest evidence.
   `scripts/verify-fstar.py --cache-dir DIR` therefore writes no `fstar.log.evidence.json`.
+- `proverif.yml` also succeeds quickly on unrelated PRs. Its separate input policy covers Rust/workspace
+  manifests, Cargo configuration/toolchain/build scripts, `hax-driver.py`, `proofs/proverif/**` (including
+  handwritten libraries, extraction and expected results), `scripts/{install,check}-proverif`, both setup
+  actions, its workflow and the detector/tests. F*-only inputs are unrelated; unknown paths run the job.
+  Pushes to main and dispatch always run ProVerif.
 - `hax.yml` succeeds quickly, with a log line, on a pull request that changes nothing F* reads
   (`scripts/ci-changes.py`: docs and unrelated workflows only; every other path counts). Pushes, the nightly
   schedule and manual dispatch always run. Coverage is never skipped.

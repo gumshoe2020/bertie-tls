@@ -320,3 +320,25 @@ Interpretation of the guard: "queries 1 and 2 must be true" means the completion
 Gap estimate (requested by the decision): symbols `core_models__*`/`alloc__*` used in lib.pvl and defined
 neither there nor in handwritten_lib.pvl: none remain (ProVerif reaches the queries; its "not defined" error
 is the exact check).
+
+## 2026-11-25 — CI speed run 2
+
+Merged origin/main 110802a with merge commit 02cf61b, without conflicts. Preserved
+main's coverage v1.11.0 actions and all-target lint; fixed the stale reproduction
+pin left by the automatic documentation merge. Coverage stays uncached (choice b).
+
+ProVerif's separate skip policy follows its workflow, setup-hax/setup-proverif,
+hax-driver.py extract-proverif, install-proverif and check-proverif: Rust sources,
+Cargo manifests/lock/config/toolchain/build scripts, driver, proofs/proverif/**
+(including handwritten libraries, extraction, analysis and expected results),
+installer/checker, both setup actions, workflow and detector/tests. Explicit
+inputs override generic documentation ignores; unknown paths run. F*-only inputs
+can skip ProVerif. Push/dispatch always run. PR comparison uses merge-base and
+--no-renames so removed inputs remain visible. The job itself always starts and
+logs a successful skip before any tool installation.
+
+Native workspace tests, feature matrix, fmt, all-target clippy -D warnings,
+cargo deny, actionlint and 19 Python tests passed. F* and pinned-kit acceptance
+are in progress; full timings/results are recorded in the project workspace's
+PROGRESS.md under "CI speed run 2", with logs in target/run2. Memory tools are
+unavailable. No push, GitHub API use, dependency or security-source changes.
