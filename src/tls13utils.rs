@@ -341,12 +341,14 @@ impl U32 {
     : bitstring [data]."
     )
 )]
+#[cfg_attr(
+    not(feature = "secret_integers"),
+    hax_lib::ensures(|result| result[0] == (val >> 8) as u8 && result[1] == val as u8)
+)]
 pub(crate) fn u16_as_be_bytes(val: U16) -> [U8; 2] {
-    #[cfg(not(feature = "secret_integers"))]
-    let val = val.to_be_bytes();
     #[cfg(feature = "secret_integers")]
-    let val = val.0.to_be_bytes();
-    [U8(val[0]), U8(val[1])]
+    let val = val.0;
+    [U8((val >> 8) as u8), U8(val as u8)]
 }
 
 pub(crate) fn u32_as_be_bytes(val: U32) -> [U8; 4] {
@@ -1083,6 +1085,14 @@ impl From<Bytes> for AppData {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn u16_encoder_matches_to_be_bytes() {
+        for val in [0, 1, 0xff, 0x100, 0x1234, 0x8001, 0xff00, 0xffff] {
+            let encoded = u16_as_be_bytes(U16(val));
+            assert_eq!(encoded.map(|byte| byte.declassify()), val.to_be_bytes());
+        }
+    }
 
     #[test]
     fn declassify_array_checks_length_and_preserves_values() {
