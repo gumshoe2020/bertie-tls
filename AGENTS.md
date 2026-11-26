@@ -31,8 +31,9 @@ working under a person's direction. This file is the rulebook for all of them.
 
 ## Formal coverage (the ratchet)
 Coverage of security code is measured with formal-coverage (github.com/gumshoe2020/formal-coverage),
-which sorts every line of security code into proven, tested or unverified. The current numbers live
-in COVERAGE.md and are updated by every PR that changes them.
+which sorts every line of security code into proven, tested or unverified. Main records the
+current numbers on `coverage-data` (`COVERAGE-MEASURED.md` and append-only `baselines/<sha>.json`).
+PRs commit policy, proofs and code, not measured numbers; see COVERAGE.md.
 1. No commit may increase the number of unverified security lines, or lower the proven share.
 2. Every commit that touches security code must increase the proven share, by proving new or
    existing code. Commits that do not touch security code (docs, CI, tests only) are exempt but
@@ -63,7 +64,7 @@ Run from the repository root. Coverage/proof commands require the pinned tools d
 - `python3 scripts/verify-fstar.py` (fresh extraction and strict F*, no admits)
 - `cargo deny check`
 - `python3 -m unittest discover -s /path/to/formal-coverage/ci/tests -v` (pinned v1.11.0 kit)
-- `python3 /path/to/formal-coverage/ci/run.py ...` (measurement equality and ratchet; exact invocation and pin in COVERAGE.md)
+- `python3 /path/to/formal-coverage/ci/run.py ...` (recorded-floor ratchet; exact invocation and pin in COVERAGE.md)
 - `cargo fmt --all -- --check`
 - `cargo clippy --locked --all-targets -- -D warnings` (library, tests and benches)
 - `actionlint`
