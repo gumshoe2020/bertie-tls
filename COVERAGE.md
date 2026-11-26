@@ -71,6 +71,15 @@ does not record the extraction's feature set. 15 units changed and none lost a t
 table below counts trusted with unverified (770 to 714). Full comparison: formal-coverage
 `dev/v191/compare.md` at tag v1.9.1.
 
+**Re-measured with formal-coverage v1.11.0 (2026-11-25).** The tool changed, not the code.
+v1.11.0 reports what each proof establishes. A postcondition that only states lengths or
+integer ranges now counts as safety-only, and a functional contract that is checked only
+against first-party runtime code is labelled as such. No unit changed tier, status or size:
+proven stays 4,125 of 5,092 (81.01%) and the proof ratio stays 0.14. The new Proof depth table
+below splits the proven lines: 92.39% safety-only, 5.70% functional but checked only against
+own code, 1.92% functional. Full comparison: formal-coverage `dev/v1110/compare.md` at tag
+v1.11.0.
+
 <!-- measured coverage: begin -->
 
 | Security runtime | Lines | Share |
@@ -122,6 +131,16 @@ Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code 
 | bertie_tls::tls13utils::From<&[u8]>forBytes | 0 | 1 | n/a |
 | bertie_tls::tls13utils::From<Bytes>forAppData | 3 | 0 | 0.00 |
 | bertie_tls::tls13utils::core::ops::Index<Range<usize>>forBytes | 0 | 1 | n/a |
+
+### Proof depth
+
+| Contract depth | Lines | Share of proven lines |
+| --- | ---: | ---: |
+| safety-only | 3811 | 92.39% |
+| functional, checked only against own code | 235 | 5.70% |
+| functional | 79 | 1.92% |
+
+Safety-only means proven free of panics, overflows and out-of-bounds access, including length and range facts; it says nothing about what the code computes.
 
 <!-- measured coverage: end -->
 
