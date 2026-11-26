@@ -1,0 +1,1972 @@
+{
+  "inventory": [
+    {
+      "end_line": 130,
+      "file": "src/der.rs",
+      "line": 112
+    },
+    {
+      "end_line": 340,
+      "file": "src/der.rs",
+      "line": 323
+    },
+    {
+      "end_line": 365,
+      "file": "src/der.rs",
+      "line": 346
+    },
+    {
+      "end_line": 392,
+      "file": "src/der.rs",
+      "line": 367
+    },
+    {
+      "end_line": 427,
+      "file": "src/der.rs",
+      "line": 398
+    },
+    {
+      "end_line": 472,
+      "file": "src/der.rs",
+      "line": 429
+    },
+    {
+      "end_line": 34,
+      "file": "src/server.rs",
+      "line": 19
+    },
+    {
+      "end_line": 60,
+      "file": "src/server.rs",
+      "line": 54
+    },
+    {
+      "end_line": 89,
+      "file": "src/server.rs",
+      "line": 62
+    },
+    {
+      "end_line": 21,
+      "file": "src/stream/bertie_stream.rs",
+      "line": 19
+    },
+    {
+      "end_line": 27,
+      "file": "src/stream/bertie_stream.rs",
+      "line": 25
+    },
+    {
+      "end_line": 32,
+      "file": "src/stream/bertie_stream.rs",
+      "line": 31
+    },
+    {
+      "end_line": 35,
+      "file": "src/stream/bertie_stream.rs",
+      "line": 34
+    },
+    {
+      "end_line": 38,
+      "file": "src/stream/bertie_stream.rs",
+      "line": 37
+    },
+    {
+      "end_line": 95,
+      "file": "src/stream/bertie_stream.rs",
+      "line": 48
+    },
+    {
+      "end_line": 37,
+      "file": "src/stream/client.rs",
+      "line": 30
+    },
+    {
+      "end_line": 54,
+      "file": "src/stream/client.rs",
+      "line": 41
+    },
+    {
+      "end_line": 73,
+      "file": "src/stream/client.rs",
+      "line": 56
+    },
+    {
+      "end_line": 77,
+      "file": "src/stream/client.rs",
+      "line": 75
+    },
+    {
+      "end_line": 92,
+      "file": "src/stream/client.rs",
+      "line": 81
+    },
+    {
+      "end_line": 111,
+      "file": "src/stream/client.rs",
+      "line": 96
+    },
+    {
+      "end_line": 122,
+      "file": "src/stream/client.rs",
+      "line": 113
+    },
+    {
+      "end_line": 225,
+      "file": "src/stream/client.rs",
+      "line": 124
+    },
+    {
+      "end_line": 232,
+      "file": "src/stream/client.rs",
+      "line": 227
+    },
+    {
+      "end_line": 239,
+      "file": "src/stream/client.rs",
+      "line": 234
+    },
+    {
+      "end_line": 247,
+      "file": "src/stream/client.rs",
+      "line": 241
+    },
+    {
+      "end_line": 48,
+      "file": "src/stream/server.rs",
+      "line": 40
+    },
+    {
+      "end_line": 65,
+      "file": "src/stream/server.rs",
+      "line": 52
+    },
+    {
+      "end_line": 84,
+      "file": "src/stream/server.rs",
+      "line": 67
+    },
+    {
+      "end_line": 88,
+      "file": "src/stream/server.rs",
+      "line": 86
+    },
+    {
+      "end_line": 107,
+      "file": "src/stream/server.rs",
+      "line": 92
+    },
+    {
+      "end_line": 187,
+      "file": "src/stream/server.rs",
+      "line": 111
+    },
+    {
+      "end_line": 238,
+      "file": "src/stream/server.rs",
+      "line": 189
+    },
+    {
+      "end_line": 251,
+      "file": "src/stream/server.rs",
+      "line": 240
+    },
+    {
+      "end_line": 266,
+      "file": "src/stream/server.rs",
+      "line": 253
+    },
+    {
+      "end_line": 276,
+      "file": "src/stream/server.rs",
+      "line": 268
+    },
+    {
+      "end_line": 283,
+      "file": "src/stream/server.rs",
+      "line": 278
+    },
+    {
+      "end_line": 291,
+      "file": "src/stream/server.rs",
+      "line": 285
+    },
+    {
+      "end_line": 336,
+      "file": "src/stream/server.rs",
+      "line": 294
+    },
+    {
+      "end_line": 346,
+      "file": "src/stream/server.rs",
+      "line": 338
+    },
+    {
+      "end_line": 50,
+      "file": "src/tls13api.rs",
+      "line": 40
+    },
+    {
+      "end_line": 68,
+      "file": "src/tls13api.rs",
+      "line": 52
+    },
+    {
+      "end_line": 104,
+      "file": "src/tls13api.rs",
+      "line": 72
+    },
+    {
+      "end_line": 144,
+      "file": "src/tls13api.rs",
+      "line": 108
+    },
+    {
+      "end_line": 173,
+      "file": "src/tls13api.rs",
+      "line": 146
+    },
+    {
+      "end_line": 189,
+      "file": "src/tls13api.rs",
+      "line": 175
+    },
+    {
+      "end_line": 248,
+      "file": "src/tls13api.rs",
+      "line": 209
+    },
+    {
+      "end_line": 271,
+      "file": "src/tls13api.rs",
+      "line": 250
+    },
+    {
+      "end_line": 287,
+      "file": "src/tls13api.rs",
+      "line": 273
+    },
+    {
+      "end_line": 310,
+      "file": "src/tls13api.rs",
+      "line": 289
+    },
+    {
+      "end_line": 323,
+      "file": "src/tls13api.rs",
+      "line": 312
+    },
+    {
+      "end_line": 40,
+      "file": "src/tls13cert.rs",
+      "line": 38
+    },
+    {
+      "end_line": 56,
+      "file": "src/tls13cert.rs",
+      "line": 52
+    },
+    {
+      "end_line": 79,
+      "file": "src/tls13cert.rs",
+      "line": 61
+    },
+    {
+      "end_line": 96,
+      "file": "src/tls13cert.rs",
+      "line": 82
+    },
+    {
+      "end_line": 114,
+      "file": "src/tls13cert.rs",
+      "line": 101
+    },
+    {
+      "end_line": 129,
+      "file": "src/tls13cert.rs",
+      "line": 116
+    },
+    {
+      "end_line": 153,
+      "file": "src/tls13cert.rs",
+      "line": 131
+    },
+    {
+      "end_line": 167,
+      "file": "src/tls13cert.rs",
+      "line": 155
+    },
+    {
+      "end_line": 177,
+      "file": "src/tls13cert.rs",
+      "line": 169
+    },
+    {
+      "end_line": 187,
+      "file": "src/tls13cert.rs",
+      "line": 179
+    },
+    {
+      "end_line": 204,
+      "file": "src/tls13cert.rs",
+      "line": 189
+    },
+    {
+      "end_line": 218,
+      "file": "src/tls13cert.rs",
+      "line": 206
+    },
+    {
+      "end_line": 228,
+      "file": "src/tls13cert.rs",
+      "line": 220
+    },
+    {
+      "end_line": 249,
+      "file": "src/tls13cert.rs",
+      "line": 230
+    },
+    {
+      "end_line": 259,
+      "file": "src/tls13cert.rs",
+      "line": 251
+    },
+    {
+      "end_line": 268,
+      "file": "src/tls13cert.rs",
+      "line": 261
+    },
+    {
+      "end_line": 277,
+      "file": "src/tls13cert.rs",
+      "line": 270
+    },
+    {
+      "end_line": 283,
+      "file": "src/tls13cert.rs",
+      "line": 281
+    },
+    {
+      "end_line": 286,
+      "file": "src/tls13cert.rs",
+      "line": 284
+    },
+    {
+      "end_line": 289,
+      "file": "src/tls13cert.rs",
+      "line": 287
+    },
+    {
+      "end_line": 297,
+      "file": "src/tls13cert.rs",
+      "line": 291
+    },
+    {
+      "end_line": 314,
+      "file": "src/tls13cert.rs",
+      "line": 299
+    },
+    {
+      "end_line": 336,
+      "file": "src/tls13cert.rs",
+      "line": 316
+    },
+    {
+      "end_line": 355,
+      "file": "src/tls13cert.rs",
+      "line": 338
+    },
+    {
+      "end_line": 376,
+      "file": "src/tls13cert.rs",
+      "line": 357
+    },
+    {
+      "end_line": 437,
+      "file": "src/tls13cert.rs",
+      "line": 378
+    },
+    {
+      "end_line": 457,
+      "file": "src/tls13cert.rs",
+      "line": 439
+    },
+    {
+      "end_line": 481,
+      "file": "src/tls13cert.rs",
+      "line": 459
+    },
+    {
+      "end_line": 520,
+      "file": "src/tls13cert.rs",
+      "line": 494
+    },
+    {
+      "end_line": 561,
+      "file": "src/tls13cert.rs",
+      "line": 522
+    },
+    {
+      "end_line": 43,
+      "file": "src/tls13crypto.rs",
+      "line": 40
+    },
+    {
+      "end_line": 56,
+      "file": "src/tls13crypto.rs",
+      "line": 53
+    },
+    {
+      "end_line": 71,
+      "file": "src/tls13crypto.rs",
+      "line": 65
+    },
+    {
+      "end_line": 84,
+      "file": "src/tls13crypto.rs",
+      "line": 75
+    },
+    {
+      "end_line": 90,
+      "file": "src/tls13crypto.rs",
+      "line": 86
+    },
+    {
+      "end_line": 99,
+      "file": "src/tls13crypto.rs",
+      "line": 93
+    },
+    {
+      "end_line": 132,
+      "file": "src/tls13crypto.rs",
+      "line": 101
+    },
+    {
+      "end_line": 144,
+      "file": "src/tls13crypto.rs",
+      "line": 134
+    },
+    {
+      "end_line": 157,
+      "file": "src/tls13crypto.rs",
+      "line": 146
+    },
+    {
+      "end_line": 168,
+      "file": "src/tls13crypto.rs",
+      "line": 160
+    },
+    {
+      "end_line": 178,
+      "file": "src/tls13crypto.rs",
+      "line": 170
+    },
+    {
+      "end_line": 205,
+      "file": "src/tls13crypto.rs",
+      "line": 181
+    },
+    {
+      "end_line": 233,
+      "file": "src/tls13crypto.rs",
+      "line": 207
+    },
+    {
+      "end_line": 265,
+      "file": "src/tls13crypto.rs",
+      "line": 235
+    },
+    {
+      "end_line": 313,
+      "file": "src/tls13crypto.rs",
+      "line": 267
+    },
+    {
+      "end_line": 416,
+      "file": "src/tls13crypto.rs",
+      "line": 315
+    },
+    {
+      "end_line": 427,
+      "file": "src/tls13crypto.rs",
+      "line": 418
+    },
+    {
+      "end_line": 434,
+      "file": "src/tls13crypto.rs",
+      "line": 429
+    },
+    {
+      "end_line": 469,
+      "file": "src/tls13crypto.rs",
+      "line": 436
+    },
+    {
+      "end_line": 480,
+      "file": "src/tls13crypto.rs",
+      "line": 471
+    },
+    {
+      "end_line": 493,
+      "file": "src/tls13crypto.rs",
+      "line": 482
+    },
+    {
+      "end_line": 532,
+      "file": "src/tls13crypto.rs",
+      "line": 495
+    },
+    {
+      "end_line": 546,
+      "file": "src/tls13crypto.rs",
+      "line": 534
+    },
+    {
+      "end_line": 571,
+      "file": "src/tls13crypto.rs",
+      "line": 548
+    },
+    {
+      "end_line": 592,
+      "file": "src/tls13crypto.rs",
+      "line": 575
+    },
+    {
+      "end_line": 634,
+      "file": "src/tls13crypto.rs",
+      "line": 594
+    },
+    {
+      "end_line": 639,
+      "file": "src/tls13crypto.rs",
+      "line": 636
+    },
+    {
+      "end_line": 644,
+      "file": "src/tls13crypto.rs",
+      "line": 641
+    },
+    {
+      "end_line": 649,
+      "file": "src/tls13crypto.rs",
+      "line": 646
+    },
+    {
+      "end_line": 654,
+      "file": "src/tls13crypto.rs",
+      "line": 651
+    },
+    {
+      "end_line": 659,
+      "file": "src/tls13crypto.rs",
+      "line": 656
+    },
+    {
+      "end_line": 664,
+      "file": "src/tls13crypto.rs",
+      "line": 661
+    },
+    {
+      "end_line": 684,
+      "file": "src/tls13crypto.rs",
+      "line": 666
+    },
+    {
+      "end_line": 701,
+      "file": "src/tls13crypto.rs",
+      "line": 686
+    },
+    {
+      "end_line": 714,
+      "file": "src/tls13crypto.rs",
+      "line": 703
+    },
+    {
+      "end_line": 727,
+      "file": "src/tls13crypto.rs",
+      "line": 716
+    },
+    {
+      "end_line": 758,
+      "file": "src/tls13crypto.rs",
+      "line": 733
+    },
+    {
+      "end_line": 769,
+      "file": "src/tls13crypto.rs",
+      "line": 763
+    },
+    {
+      "end_line": 954,
+      "file": "src/tls13crypto.rs",
+      "line": 946
+    },
+    {
+      "end_line": 963,
+      "file": "src/tls13crypto.rs",
+      "line": 955
+    },
+    {
+      "end_line": 35,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 29
+    },
+    {
+      "end_line": 44,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 37
+    },
+    {
+      "end_line": 53,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 46
+    },
+    {
+      "end_line": 66,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 55
+    },
+    {
+      "end_line": 82,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 68
+    },
+    {
+      "end_line": 98,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 84
+    },
+    {
+      "end_line": 116,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 100
+    },
+    {
+      "end_line": 132,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 118
+    },
+    {
+      "end_line": 140,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 134
+    },
+    {
+      "end_line": 146,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 142
+    },
+    {
+      "end_line": 166,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 148
+    },
+    {
+      "end_line": 184,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 168
+    },
+    {
+      "end_line": 195,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 186
+    },
+    {
+      "end_line": 208,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 197
+    },
+    {
+      "end_line": 219,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 210
+    },
+    {
+      "end_line": 241,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 230
+    },
+    {
+      "end_line": 254,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 243
+    },
+    {
+      "end_line": 267,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 256
+    },
+    {
+      "end_line": 279,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 269
+    },
+    {
+      "end_line": 288,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 286
+    },
+    {
+      "end_line": 291,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 289
+    },
+    {
+      "end_line": 295,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 292
+    },
+    {
+      "end_line": 304,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 299
+    },
+    {
+      "end_line": 311,
+      "file": "src/tls13crypto/backend.rs",
+      "line": 306
+    },
+    {
+      "end_line": 72,
+      "file": "src/tls13formats.rs",
+      "line": 61
+    },
+    {
+      "end_line": 87,
+      "file": "src/tls13formats.rs",
+      "line": 74
+    },
+    {
+      "end_line": 95,
+      "file": "src/tls13formats.rs",
+      "line": 89
+    },
+    {
+      "end_line": 101,
+      "file": "src/tls13formats.rs",
+      "line": 97
+    },
+    {
+      "end_line": 106,
+      "file": "src/tls13formats.rs",
+      "line": 103
+    },
+    {
+      "end_line": 110,
+      "file": "src/tls13formats.rs",
+      "line": 108
+    },
+    {
+      "end_line": 118,
+      "file": "src/tls13formats.rs",
+      "line": 112
+    },
+    {
+      "end_line": 123,
+      "file": "src/tls13formats.rs",
+      "line": 120
+    },
+    {
+      "end_line": 129,
+      "file": "src/tls13formats.rs",
+      "line": 125
+    },
+    {
+      "end_line": 134,
+      "file": "src/tls13formats.rs",
+      "line": 131
+    },
+    {
+      "end_line": 139,
+      "file": "src/tls13formats.rs",
+      "line": 136
+    },
+    {
+      "end_line": 145,
+      "file": "src/tls13formats.rs",
+      "line": 141
+    },
+    {
+      "end_line": 158,
+      "file": "src/tls13formats.rs",
+      "line": 147
+    },
+    {
+      "end_line": 163,
+      "file": "src/tls13formats.rs",
+      "line": 160
+    },
+    {
+      "end_line": 168,
+      "file": "src/tls13formats.rs",
+      "line": 165
+    },
+    {
+      "end_line": 179,
+      "file": "src/tls13formats.rs",
+      "line": 170
+    },
+    {
+      "end_line": 198,
+      "file": "src/tls13formats.rs",
+      "line": 182
+    },
+    {
+      "end_line": 202,
+      "file": "src/tls13formats.rs",
+      "line": 200
+    },
+    {
+      "end_line": 206,
+      "file": "src/tls13formats.rs",
+      "line": 204
+    },
+    {
+      "end_line": 226,
+      "file": "src/tls13formats.rs",
+      "line": 217
+    },
+    {
+      "end_line": 238,
+      "file": "src/tls13formats.rs",
+      "line": 229
+    },
+    {
+      "end_line": 312,
+      "file": "src/tls13formats.rs",
+      "line": 240
+    },
+    {
+      "end_line": 336,
+      "file": "src/tls13formats.rs",
+      "line": 314
+    },
+    {
+      "end_line": 348,
+      "file": "src/tls13formats.rs",
+      "line": 338
+    },
+    {
+      "end_line": 358,
+      "file": "src/tls13formats.rs",
+      "line": 350
+    },
+    {
+      "end_line": 369,
+      "file": "src/tls13formats.rs",
+      "line": 360
+    },
+    {
+      "end_line": 387,
+      "file": "src/tls13formats.rs",
+      "line": 381
+    },
+    {
+      "end_line": 426,
+      "file": "src/tls13formats.rs",
+      "line": 395
+    },
+    {
+      "end_line": 444,
+      "file": "src/tls13formats.rs",
+      "line": 429
+    },
+    {
+      "end_line": 542,
+      "file": "src/tls13formats.rs",
+      "line": 446
+    },
+    {
+      "end_line": 602,
+      "file": "src/tls13formats.rs",
+      "line": 544
+    },
+    {
+      "end_line": 606,
+      "file": "src/tls13formats.rs",
+      "line": 604
+    },
+    {
+      "end_line": 625,
+      "file": "src/tls13formats.rs",
+      "line": 608
+    },
+    {
+      "end_line": 768,
+      "file": "src/tls13formats.rs",
+      "line": 627
+    },
+    {
+      "end_line": 824,
+      "file": "src/tls13formats.rs",
+      "line": 770
+    },
+    {
+      "end_line": 828,
+      "file": "src/tls13formats.rs",
+      "line": 826
+    },
+    {
+      "end_line": 832,
+      "file": "src/tls13formats.rs",
+      "line": 830
+    },
+    {
+      "end_line": 840,
+      "file": "src/tls13formats.rs",
+      "line": 834
+    },
+    {
+      "end_line": 909,
+      "file": "src/tls13formats.rs",
+      "line": 842
+    },
+    {
+      "end_line": 917,
+      "file": "src/tls13formats.rs",
+      "line": 911
+    },
+    {
+      "end_line": 951,
+      "file": "src/tls13formats.rs",
+      "line": 919
+    },
+    {
+      "end_line": 983,
+      "file": "src/tls13formats.rs",
+      "line": 953
+    },
+    {
+      "end_line": 988,
+      "file": "src/tls13formats.rs",
+      "line": 985
+    },
+    {
+      "end_line": 1023,
+      "file": "src/tls13formats.rs",
+      "line": 990
+    },
+    {
+      "end_line": 1062,
+      "file": "src/tls13formats.rs",
+      "line": 1025
+    },
+    {
+      "end_line": 1110,
+      "file": "src/tls13formats.rs",
+      "line": 1064
+    },
+    {
+      "end_line": 1132,
+      "file": "src/tls13formats.rs",
+      "line": 1112
+    },
+    {
+      "end_line": 1155,
+      "file": "src/tls13formats.rs",
+      "line": 1134
+    },
+    {
+      "end_line": 1199,
+      "file": "src/tls13formats.rs",
+      "line": 1190
+    },
+    {
+      "end_line": 1209,
+      "file": "src/tls13formats.rs",
+      "line": 1202
+    },
+    {
+      "end_line": 1213,
+      "file": "src/tls13formats.rs",
+      "line": 1211
+    },
+    {
+      "end_line": 1217,
+      "file": "src/tls13formats.rs",
+      "line": 1215
+    },
+    {
+      "end_line": 1236,
+      "file": "src/tls13formats.rs",
+      "line": 1219
+    },
+    {
+      "end_line": 1245,
+      "file": "src/tls13formats.rs",
+      "line": 1238
+    },
+    {
+      "end_line": 1261,
+      "file": "src/tls13formats.rs",
+      "line": 1256
+    },
+    {
+      "end_line": 1287,
+      "file": "src/tls13formats.rs",
+      "line": 1263
+    },
+    {
+      "end_line": 1293,
+      "file": "src/tls13formats.rs",
+      "line": 1289
+    },
+    {
+      "end_line": 1316,
+      "file": "src/tls13formats.rs",
+      "line": 1295
+    },
+    {
+      "end_line": 27,
+      "file": "src/tls13formats/handshake_data.rs",
+      "line": 12
+    },
+    {
+      "end_line": 56,
+      "file": "src/tls13formats/handshake_data.rs",
+      "line": 32
+    },
+    {
+      "end_line": 99,
+      "file": "src/tls13formats/handshake_data.rs",
+      "line": 57
+    },
+    {
+      "end_line": 112,
+      "file": "src/tls13formats/handshake_data.rs",
+      "line": 101
+    },
+    {
+      "end_line": 118,
+      "file": "src/tls13formats/handshake_data.rs",
+      "line": 114
+    },
+    {
+      "end_line": 131,
+      "file": "src/tls13formats/handshake_data.rs",
+      "line": 122
+    },
+    {
+      "end_line": 138,
+      "file": "src/tls13formats/handshake_data.rs",
+      "line": 133
+    },
+    {
+      "end_line": 144,
+      "file": "src/tls13formats/handshake_data.rs",
+      "line": 140
+    },
+    {
+      "end_line": 158,
+      "file": "src/tls13formats/handshake_data.rs",
+      "line": 146
+    },
+    {
+      "end_line": 183,
+      "file": "src/tls13formats/handshake_data.rs",
+      "line": 160
+    },
+    {
+      "end_line": 203,
+      "file": "src/tls13formats/handshake_data.rs",
+      "line": 185
+    },
+    {
+      "end_line": 212,
+      "file": "src/tls13formats/handshake_data.rs",
+      "line": 205
+    },
+    {
+      "end_line": 223,
+      "file": "src/tls13formats/handshake_data.rs",
+      "line": 214
+    },
+    {
+      "end_line": 249,
+      "file": "src/tls13formats/handshake_data.rs",
+      "line": 225
+    },
+    {
+      "end_line": 257,
+      "file": "src/tls13formats/handshake_data.rs",
+      "line": 254
+    },
+    {
+      "end_line": 77,
+      "file": "src/tls13handshake.rs",
+      "line": 74
+    },
+    {
+      "end_line": 81,
+      "file": "src/tls13handshake.rs",
+      "line": 78
+    },
+    {
+      "end_line": 85,
+      "file": "src/tls13handshake.rs",
+      "line": 82
+    },
+    {
+      "end_line": 90,
+      "file": "src/tls13handshake.rs",
+      "line": 87
+    },
+    {
+      "end_line": 94,
+      "file": "src/tls13handshake.rs",
+      "line": 91
+    },
+    {
+      "end_line": 98,
+      "file": "src/tls13handshake.rs",
+      "line": 95
+    },
+    {
+      "end_line": 187,
+      "file": "src/tls13handshake.rs",
+      "line": 141
+    },
+    {
+      "end_line": 240,
+      "file": "src/tls13handshake.rs",
+      "line": 189
+    },
+    {
+      "end_line": 306,
+      "file": "src/tls13handshake.rs",
+      "line": 242
+    },
+    {
+      "end_line": 324,
+      "file": "src/tls13handshake.rs",
+      "line": 310
+    },
+    {
+      "end_line": 378,
+      "file": "src/tls13handshake.rs",
+      "line": 326
+    },
+    {
+      "end_line": 411,
+      "file": "src/tls13handshake.rs",
+      "line": 380
+    },
+    {
+      "end_line": 464,
+      "file": "src/tls13handshake.rs",
+      "line": 413
+    },
+    {
+      "end_line": 502,
+      "file": "src/tls13handshake.rs",
+      "line": 466
+    },
+    {
+      "end_line": 526,
+      "file": "src/tls13handshake.rs",
+      "line": 509
+    },
+    {
+      "end_line": 536,
+      "file": "src/tls13handshake.rs",
+      "line": 528
+    },
+    {
+      "end_line": 575,
+      "file": "src/tls13handshake.rs",
+      "line": 538
+    },
+    {
+      "end_line": 605,
+      "file": "src/tls13handshake.rs",
+      "line": 579
+    },
+    {
+      "end_line": 644,
+      "file": "src/tls13handshake.rs",
+      "line": 607
+    },
+    {
+      "end_line": 716,
+      "file": "src/tls13handshake.rs",
+      "line": 646
+    },
+    {
+      "end_line": 731,
+      "file": "src/tls13handshake.rs",
+      "line": 718
+    },
+    {
+      "end_line": 780,
+      "file": "src/tls13handshake.rs",
+      "line": 733
+    },
+    {
+      "end_line": 799,
+      "file": "src/tls13handshake.rs",
+      "line": 782
+    },
+    {
+      "end_line": 828,
+      "file": "src/tls13handshake.rs",
+      "line": 801
+    },
+    {
+      "end_line": 843,
+      "file": "src/tls13handshake.rs",
+      "line": 830
+    },
+    {
+      "end_line": 874,
+      "file": "src/tls13handshake.rs",
+      "line": 849
+    },
+    {
+      "end_line": 898,
+      "file": "src/tls13handshake.rs",
+      "line": 876
+    },
+    {
+      "end_line": 906,
+      "file": "src/tls13handshake.rs",
+      "line": 900
+    },
+    {
+      "end_line": 918,
+      "file": "src/tls13handshake.rs",
+      "line": 915
+    },
+    {
+      "end_line": 18,
+      "file": "src/tls13keyscheduler.rs",
+      "line": 14
+    },
+    {
+      "end_line": 29,
+      "file": "src/tls13keyscheduler.rs",
+      "line": 20
+    },
+    {
+      "end_line": 82,
+      "file": "src/tls13keyscheduler.rs",
+      "line": 31
+    },
+    {
+      "end_line": 102,
+      "file": "src/tls13keyscheduler.rs",
+      "line": 84
+    },
+    {
+      "end_line": 122,
+      "file": "src/tls13keyscheduler.rs",
+      "line": 104
+    },
+    {
+      "end_line": 159,
+      "file": "src/tls13keyscheduler.rs",
+      "line": 124
+    },
+    {
+      "end_line": 194,
+      "file": "src/tls13keyscheduler.rs",
+      "line": 161
+    },
+    {
+      "end_line": 214,
+      "file": "src/tls13keyscheduler.rs",
+      "line": 196
+    },
+    {
+      "end_line": 232,
+      "file": "src/tls13keyscheduler.rs",
+      "line": 216
+    },
+    {
+      "end_line": 245,
+      "file": "src/tls13keyscheduler.rs",
+      "line": 234
+    },
+    {
+      "end_line": 254,
+      "file": "src/tls13keyscheduler.rs",
+      "line": 247
+    },
+    {
+      "end_line": 33,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 14
+    },
+    {
+      "end_line": 48,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 35
+    },
+    {
+      "end_line": 60,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 50
+    },
+    {
+      "end_line": 71,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 62
+    },
+    {
+      "end_line": 74,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 74
+    },
+    {
+      "end_line": 75,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 75
+    },
+    {
+      "end_line": 78,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 78
+    },
+    {
+      "end_line": 79,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 79
+    },
+    {
+      "end_line": 81,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 81
+    },
+    {
+      "end_line": 104,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 91
+    },
+    {
+      "end_line": 128,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 106
+    },
+    {
+      "end_line": 132,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 130
+    },
+    {
+      "end_line": 136,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 134
+    },
+    {
+      "end_line": 141,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 139
+    },
+    {
+      "end_line": 177,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 146
+    },
+    {
+      "end_line": 197,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 179
+    },
+    {
+      "end_line": 208,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 206
+    },
+    {
+      "end_line": 222,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 210
+    },
+    {
+      "end_line": 232,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 224
+    },
+    {
+      "end_line": 244,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 234
+    },
+    {
+      "end_line": 265,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 254
+    },
+    {
+      "end_line": 274,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 267
+    },
+    {
+      "end_line": 284,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 276
+    },
+    {
+      "end_line": 294,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 286
+    },
+    {
+      "end_line": 367,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 296
+    },
+    {
+      "end_line": 375,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 369
+    },
+    {
+      "end_line": 433,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "line": 377
+    },
+    {
+      "end_line": 22,
+      "file": "src/tls13record.rs",
+      "line": 14
+    },
+    {
+      "end_line": 42,
+      "file": "src/tls13record.rs",
+      "line": 31
+    },
+    {
+      "end_line": 66,
+      "file": "src/tls13record.rs",
+      "line": 53
+    },
+    {
+      "end_line": 81,
+      "file": "src/tls13record.rs",
+      "line": 71
+    },
+    {
+      "end_line": 97,
+      "file": "src/tls13record.rs",
+      "line": 83
+    },
+    {
+      "end_line": 125,
+      "file": "src/tls13record.rs",
+      "line": 99
+    },
+    {
+      "end_line": 136,
+      "file": "src/tls13record.rs",
+      "line": 127
+    },
+    {
+      "end_line": 164,
+      "file": "src/tls13record.rs",
+      "line": 138
+    },
+    {
+      "end_line": 186,
+      "file": "src/tls13record.rs",
+      "line": 168
+    },
+    {
+      "end_line": 206,
+      "file": "src/tls13record.rs",
+      "line": 188
+    },
+    {
+      "end_line": 243,
+      "file": "src/tls13record.rs",
+      "line": 208
+    },
+    {
+      "end_line": 292,
+      "file": "src/tls13record.rs",
+      "line": 245
+    },
+    {
+      "end_line": 309,
+      "file": "src/tls13record.rs",
+      "line": 294
+    },
+    {
+      "end_line": 323,
+      "file": "src/tls13record.rs",
+      "line": 311
+    },
+    {
+      "end_line": 333,
+      "file": "src/tls13record.rs",
+      "line": 325
+    },
+    {
+      "end_line": 346,
+      "file": "src/tls13record.rs",
+      "line": 334
+    },
+    {
+      "end_line": 22,
+      "file": "src/tls13utils.rs",
+      "line": 18
+    },
+    {
+      "end_line": 58,
+      "file": "src/tls13utils.rs",
+      "line": 55
+    },
+    {
+      "end_line": 64,
+      "file": "src/tls13utils.rs",
+      "line": 60
+    },
+    {
+      "end_line": 80,
+      "file": "src/tls13utils.rs",
+      "line": 78
+    },
+    {
+      "end_line": 86,
+      "file": "src/tls13utils.rs",
+      "line": 84
+    },
+    {
+      "end_line": 93,
+      "file": "src/tls13utils.rs",
+      "line": 91
+    },
+    {
+      "end_line": 100,
+      "file": "src/tls13utils.rs",
+      "line": 99
+    },
+    {
+      "end_line": 107,
+      "file": "src/tls13utils.rs",
+      "line": 105
+    },
+    {
+      "end_line": 117,
+      "file": "src/tls13utils.rs",
+      "line": 113
+    },
+    {
+      "end_line": 123,
+      "file": "src/tls13utils.rs",
+      "line": 121
+    },
+    {
+      "end_line": 137,
+      "file": "src/tls13utils.rs",
+      "line": 133
+    },
+    {
+      "end_line": 143,
+      "file": "src/tls13utils.rs",
+      "line": 141
+    },
+    {
+      "end_line": 154,
+      "file": "src/tls13utils.rs",
+      "line": 152
+    },
+    {
+      "end_line": 162,
+      "file": "src/tls13utils.rs",
+      "line": 160
+    },
+    {
+      "end_line": 172,
+      "file": "src/tls13utils.rs",
+      "line": 168
+    },
+    {
+      "end_line": 179,
+      "file": "src/tls13utils.rs",
+      "line": 176
+    },
+    {
+      "end_line": 186,
+      "file": "src/tls13utils.rs",
+      "line": 184
+    },
+    {
+      "end_line": 193,
+      "file": "src/tls13utils.rs",
+      "line": 191
+    },
+    {
+      "end_line": 200,
+      "file": "src/tls13utils.rs",
+      "line": 198
+    },
+    {
+      "end_line": 213,
+      "file": "src/tls13utils.rs",
+      "line": 203
+    },
+    {
+      "end_line": 227,
+      "file": "src/tls13utils.rs",
+      "line": 215
+    },
+    {
+      "end_line": 245,
+      "file": "src/tls13utils.rs",
+      "line": 231
+    },
+    {
+      "end_line": 258,
+      "file": "src/tls13utils.rs",
+      "line": 247
+    },
+    {
+      "end_line": 264,
+      "file": "src/tls13utils.rs",
+      "line": 260
+    },
+    {
+      "end_line": 271,
+      "file": "src/tls13utils.rs",
+      "line": 266
+    },
+    {
+      "end_line": 283,
+      "file": "src/tls13utils.rs",
+      "line": 275
+    },
+    {
+      "end_line": 291,
+      "file": "src/tls13utils.rs",
+      "line": 288
+    },
+    {
+      "end_line": 298,
+      "file": "src/tls13utils.rs",
+      "line": 296
+    },
+    {
+      "end_line": 306,
+      "file": "src/tls13utils.rs",
+      "line": 303
+    },
+    {
+      "end_line": 314,
+      "file": "src/tls13utils.rs",
+      "line": 311
+    },
+    {
+      "end_line": 321,
+      "file": "src/tls13utils.rs",
+      "line": 319
+    },
+    {
+      "end_line": 336,
+      "file": "src/tls13utils.rs",
+      "line": 323
+    },
+    {
+      "end_line": 344,
+      "file": "src/tls13utils.rs",
+      "line": 338
+    },
+    {
+      "end_line": 358,
+      "file": "src/tls13utils.rs",
+      "line": 346
+    },
+    {
+      "end_line": 363,
+      "file": "src/tls13utils.rs",
+      "line": 360
+    },
+    {
+      "end_line": 368,
+      "file": "src/tls13utils.rs",
+      "line": 365
+    },
+    {
+      "end_line": 373,
+      "file": "src/tls13utils.rs",
+      "line": 370
+    },
+    {
+      "end_line": 381,
+      "file": "src/tls13utils.rs",
+      "line": 378
+    },
+    {
+      "end_line": 398,
+      "file": "src/tls13utils.rs",
+      "line": 384
+    },
+    {
+      "end_line": 409,
+      "file": "src/tls13utils.rs",
+      "line": 404
+    },
+    {
+      "end_line": 430,
+      "file": "src/tls13utils.rs",
+      "line": 412
+    },
+    {
+      "end_line": 436,
+      "file": "src/tls13utils.rs",
+      "line": 434
+    },
+    {
+      "end_line": 442,
+      "file": "src/tls13utils.rs",
+      "line": 440
+    },
+    {
+      "end_line": 453,
+      "file": "src/tls13utils.rs",
+      "line": 449
+    },
+    {
+      "end_line": 467,
+      "file": "src/tls13utils.rs",
+      "line": 456
+    },
+    {
+      "end_line": 475,
+      "file": "src/tls13utils.rs",
+      "line": 471
+    },
+    {
+      "end_line": 481,
+      "file": "src/tls13utils.rs",
+      "line": 477
+    },
+    {
+      "end_line": 488,
+      "file": "src/tls13utils.rs",
+      "line": 483
+    },
+    {
+      "end_line": 494,
+      "file": "src/tls13utils.rs",
+      "line": 490
+    },
+    {
+      "end_line": 501,
+      "file": "src/tls13utils.rs",
+      "line": 496
+    },
+    {
+      "end_line": 508,
+      "file": "src/tls13utils.rs",
+      "line": 503
+    },
+    {
+      "end_line": 515,
+      "file": "src/tls13utils.rs",
+      "line": 510
+    },
+    {
+      "end_line": 521,
+      "file": "src/tls13utils.rs",
+      "line": 517
+    },
+    {
+      "end_line": 528,
+      "file": "src/tls13utils.rs",
+      "line": 523
+    },
+    {
+      "end_line": 535,
+      "file": "src/tls13utils.rs",
+      "line": 530
+    },
+    {
+      "end_line": 542,
+      "file": "src/tls13utils.rs",
+      "line": 537
+    },
+    {
+      "end_line": 549,
+      "file": "src/tls13utils.rs",
+      "line": 544
+    },
+    {
+      "end_line": 556,
+      "file": "src/tls13utils.rs",
+      "line": 551
+    },
+    {
+      "end_line": 574,
+      "file": "src/tls13utils.rs",
+      "line": 558
+    },
+    {
+      "end_line": 623,
+      "file": "src/tls13utils.rs",
+      "line": 612
+    },
+    {
+      "end_line": 628,
+      "file": "src/tls13utils.rs",
+      "line": 625
+    },
+    {
+      "end_line": 642,
+      "file": "src/tls13utils.rs",
+      "line": 630
+    },
+    {
+      "end_line": 695,
+      "file": "src/tls13utils.rs",
+      "line": 669
+    },
+    {
+      "end_line": 702,
+      "file": "src/tls13utils.rs",
+      "line": 698
+    },
+    {
+      "end_line": 715,
+      "file": "src/tls13utils.rs",
+      "line": 704
+    },
+    {
+      "end_line": 739,
+      "file": "src/tls13utils.rs",
+      "line": 717
+    },
+    {
+      "end_line": 749,
+      "file": "src/tls13utils.rs",
+      "line": 741
+    },
+    {
+      "end_line": 763,
+      "file": "src/tls13utils.rs",
+      "line": 751
+    },
+    {
+      "end_line": 787,
+      "file": "src/tls13utils.rs",
+      "line": 766
+    },
+    {
+      "end_line": 808,
+      "file": "src/tls13utils.rs",
+      "line": 789
+    },
+    {
+      "end_line": 830,
+      "file": "src/tls13utils.rs",
+      "line": 810
+    },
+    {
+      "end_line": 853,
+      "file": "src/tls13utils.rs",
+      "line": 832
+    },
+    {
+      "end_line": 876,
+      "file": "src/tls13utils.rs",
+      "line": 855
+    },
+    {
+      "end_line": 902,
+      "file": "src/tls13utils.rs",
+      "line": 878
+    },
+    {
+      "end_line": 917,
+      "file": "src/tls13utils.rs",
+      "line": 904
+    },
+    {
+      "end_line": 944,
+      "file": "src/tls13utils.rs",
+      "line": 919
+    },
+    {
+      "end_line": 955,
+      "file": "src/tls13utils.rs",
+      "line": 946
+    },
+    {
+      "end_line": 967,
+      "file": "src/tls13utils.rs",
+      "line": 957
+    },
+    {
+      "end_line": 979,
+      "file": "src/tls13utils.rs",
+      "line": 969
+    },
+    {
+      "end_line": 991,
+      "file": "src/tls13utils.rs",
+      "line": 981
+    },
+    {
+      "end_line": 1007,
+      "file": "src/tls13utils.rs",
+      "line": 993
+    },
+    {
+      "end_line": 1015,
+      "file": "src/tls13utils.rs",
+      "line": 1012
+    },
+    {
+      "end_line": 1020,
+      "file": "src/tls13utils.rs",
+      "line": 1017
+    },
+    {
+      "end_line": 1025,
+      "file": "src/tls13utils.rs",
+      "line": 1022
+    },
+    {
+      "end_line": 1031,
+      "file": "src/tls13utils.rs",
+      "line": 1029
+    },
+    {
+      "end_line": 1037,
+      "file": "src/tls13utils.rs",
+      "line": 1035
+    },
+    {
+      "end_line": 1043,
+      "file": "src/tls13utils.rs",
+      "line": 1041
+    },
+    {
+      "end_line": 1049,
+      "file": "src/tls13utils.rs",
+      "line": 1047
+    }
+  ],
+  "proof_depth": {
+    "functional": 145,
+    "functional_own_code_only": 167,
+    "safety_only": 3753
+  },
+  "proof_ratio": 0.16113161131611317,
+  "proof_sloc": 655,
+  "proven": 4065,
+  "schema": 1,
+  "scope": "first-party security runtime",
+  "statuses": {
+    "hazard": 0,
+    "proven": 0,
+    "proven-bounded": 0,
+    "proven-extracted": 4065,
+    "proven-upstream": 0,
+    "tested": 253,
+    "trusted": 161,
+    "unverified": 553
+  },
+  "tested": 253,
+  "total": 5032,
+  "unverified": 714
+}
