@@ -1,0 +1,6 @@
+{
+  "schema": 1,
+  "floor": "recorded",
+  "data_branch": "coverage-data",
+  "bootstrap_baseline": "coverage/baseline.json"
+}

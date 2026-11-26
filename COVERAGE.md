@@ -68,81 +68,24 @@ proven, although a canary showed F* rejects a broken body there. `aead_encrypt`,
 `aead_decrypt` and `tlserr` have feature-flag twins and stay unmapped, because the F* receipt
 does not record the extraction's feature set. 15 units changed and none lost a tier: proven
 4,027 to 4,111 of 5,078 (79.30% to 80.96%), trusted 118 to 161, unverified 652 to 553; the
-table below counts trusted with unverified (770 to 714). Full comparison: formal-coverage
+rendered table counts trusted with unverified (770 to 714). Full comparison: formal-coverage
 `dev/v191/compare.md` at tag v1.9.1.
 
 **Re-measured with formal-coverage v1.11.0 (2026-11-25).** The tool changed, not the code.
 v1.11.0 reports what each proof establishes. A postcondition that only states lengths or
 integer ranges now counts as safety-only, and a functional contract that is checked only
 against first-party runtime code is labelled as such. No unit changed tier, status or size:
-proven stays 4,125 of 5,092 (81.01%) and the proof ratio stays 0.14. The new Proof depth table
-below splits the proven lines: 92.39% safety-only, 5.70% functional but checked only against
+proven stays 4,125 of 5,092 (81.01%) and the proof ratio stays 0.14. The v1.11.0 Proof depth table
+splits the proven lines: 92.39% safety-only, 5.70% functional but checked only against
 own code, 1.92% functional. Full comparison: formal-coverage `dev/v1110/compare.md` at tag
 v1.11.0.
 
-<!-- measured coverage: begin -->
-
-| Security runtime | Lines | Share |
-| --- | ---: | ---: |
-| proven | 4065 | 80.78% |
-| tested | 253 | 5.03% |
-| unverified | 714 | 14.19% |
-
-Total: **5032** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (4065 lines); Verus proven: 0 lines.
-
-Proof-to-code ratio: **0.16** (655 proof SLoC / 4065 proven + proven-extracted runtime SLoC); informational, never blocking.
-
-Proof components: 287 hax annotation SLoC, 333 standalone `cfg(hax)` proof-code SLoC, and 35 inline `cfg(hax)` SLoC (overlaps count once). F* models: 1 SLoC of trusted assumptions, excluded from the ratio.
-
-| Module | Proven runtime | Proof SLoC | Proof / proven runtime |
-| --- | ---: | ---: | ---: |
-| bertie_tls::der | 90 | 364 | 4.04 |
-| bertie_tls::server | 31 | 0 | 0.00 |
-| bertie_tls::server::ServerDB | 13 | 0 | 0.00 |
-| bertie_tls::tls13api | 16 | 0 | 0.00 |
-| bertie_tls::tls13api::Client | 68 | 0 | 0.00 |
-| bertie_tls::tls13api::Server | 63 | 0 | 0.00 |
-| bertie_tls::tls13cert | 306 | 45 | 0.15 |
-| bertie_tls::tls13cert::CloneforCertificateKey | 3 | 0 | 0.00 |
-| bertie_tls::tls13crypto | 297 | 0 | 0.00 |
-| bertie_tls::tls13crypto::AeadAlgorithm | 16 | 0 | 0.00 |
-| bertie_tls::tls13crypto::AeadKey | 3 | 0 | 0.00 |
-| bertie_tls::tls13crypto::AeadKeyIV | 3 | 0 | 0.00 |
-| bertie_tls::tls13crypto::Algorithms | 115 | 13 | 0.11 |
-| bertie_tls::tls13crypto::HashAlgorithm | 12 | 1 | 0.08 |
-| bertie_tls::tls13formats | 834 | 71 | 0.09 |
-| bertie_tls::tls13formats::ContentType | 9 | 0 | 0.00 |
-| bertie_tls::tls13formats::Extensions | 8 | 0 | 0.00 |
-| bertie_tls::tls13formats::Transcript | 53 | 1 | 0.02 |
-| bertie_tls::tls13formats::handshake_data | 94 | 4 | 0.04 |
-| bertie_tls::tls13formats::handshake_data::HandshakeData | 76 | 13 | 0.17 |
-| bertie_tls::tls13handshake | 714 | 1 | 0.00 |
-| bertie_tls::tls13keyscheduler | 219 | 0 | 0.00 |
-| bertie_tls::tls13keyscheduler::key_schedule | 307 | 0 | 0.00 |
-| bertie_tls::tls13keyscheduler::key_schedule::KeySchedule<TLSnames>forTLSkeyscheduler | 45 | 0 | 0.00 |
-| bertie_tls::tls13record | 252 | 6 | 0.02 |
-| bertie_tls::tls13record::DuplexCipherStateH | 13 | 0 | 0.00 |
-| bertie_tls::tls13utils | 303 | 106 | 0.35 |
-| bertie_tls::tls13utils::<constC:usize>From<&[u8 ; C]>forBytes | 0 | 1 | n/a |
-| bertie_tls::tls13utils::<constC:usize>From<[u8 ; C]>forBytes | 0 | 1 | n/a |
-| bertie_tls::tls13utils::AppData | 9 | 0 | 0.00 |
-| bertie_tls::tls13utils::Bytes | 90 | 26 | 0.29 |
-| bertie_tls::tls13utils::From<&[u8]>forBytes | 0 | 1 | n/a |
-| bertie_tls::tls13utils::From<Bytes>forAppData | 3 | 0 | 0.00 |
-| bertie_tls::tls13utils::core::ops::Index<Range<usize>>forBytes | 0 | 1 | n/a |
-
-### Proof depth
-
-| Contract depth | Lines | Share of proven lines |
-| --- | ---: | ---: |
-| safety-only | 3753 | 92.32% |
-| functional, checked only against own code | 167 | 4.11% |
-| functional | 145 | 3.57% |
-
-Safety-only means proven free of panics, overflows and out-of-bounds access, including length and range facts; it says nothing about what the code computes.
-
-<!-- measured coverage: end -->
+Current measured tables (including module ratios and proof depth) live in
+[COVERAGE-MEASURED.md on coverage-data](https://github.com/gumshoe2020/bertie-tls/blob/coverage-data/COVERAGE-MEASURED.md).
+That page describes the most recently published measurement; overlapping main
+runs may finish out of order. Exact commit measurements are in
+`baselines/<full-sha>.json` on the same branch. The historical measurements
+in this document explain earlier changes and are not the current floor.
 
 The `tls13utils` bodies are now extracted and checked by strict F*, including
 byte conversion, length encoding, bounds and equality helpers. The four affected
@@ -172,7 +115,7 @@ Proven moves from 3,332 to 3,635 lines (62.89% to 67.29%); the proof-to-code rat
 ## Meaning and limits
 
 “Proven” here sums the tool's `proven` and `proven-extracted` runtime categories;
-they remain separate in baseline.json. Extracted credit trusts hax and only the
+they remain separate in each recorded baseline. Extracted credit trusts hax and only the
 accepted F* contracts. Safety-only contracts establish no panics/overflows under
 the abstract interfaces, not TLS correctness, crypto implementation correctness
 or RFC conformance. Functional contracts carry the tool's self-consistency
@@ -228,7 +171,7 @@ the remaining file provides only an empty namespace required by hax. These proof
 establish safety and the stated length contracts, not cryptographic correctness.
 
 Proof-to-code ratio: formal-coverage v1.8 measures hax/F* proof (annotations,
-`cfg(hax)` proof code), so the ratio above is measured, not estimated. About 200 of
+`cfg(hax)` proof code), so the reported ratio is measured, not estimated. About 200 of
 the 509 proof lines are annotations on functions F* does not yet verify, so the
 ratio flatters the verified code somewhat.
 
@@ -240,8 +183,8 @@ Any rejected receipt or unmapped function retains zero credit; see the full repo
 
 ## Reproduction and pins
 
-- formal-coverage v1.9.1, public commit `b7379121068c3d5db257e10a5013c2a85d0c9fe4`.
-  Both shared CI actions pin this commit, which also pins the measurement tool.
+- formal-coverage v1.11.0, public commit `888fdbf8f0c23973d76c679fd56188636c38e57c`.
+  All three shared CI actions pin this commit, which also pins the measurement tool.
 - ProVerif `2.05`, official source
   `https://bblanche.gitlabpages.inria.fr/proverif/proverif2.05.tar.gz`,
   SHA-256 `4871f53c32ab4a04669a060c4886ba5d9080496963fb980a9a62d2c429ceabc4`.
@@ -256,16 +199,22 @@ Any rejected receipt or unmapped function retains zero credit; see the full repo
   and every audit remain explicit, never suppressed for proof credit.
 
 ```sh
-cargo build --release --locked --manifest-path /path/to/formal-coverage/Cargo.toml
+mkdir -p target/coverage-ci
+cargo build --release --locked --manifest-path /path/to/formal-coverage/Cargo.toml \
+  > target/coverage-ci/kit-build.log 2>&1
 # Native tools: HAX_CORE_LIBS=/pinned/hax/proof-libs/fstar
 #               HAX_LIB_PROOFS=/pinned/hax/hax-lib/proofs/fstar/extraction
-python3 scripts/verify-fstar.py
+FSTAR_JOBS=1 python3 scripts/verify-fstar.py > target/coverage-ci/fstar.log 2>&1
 # /path/to/formal-coverage must be the public commit pinned above.
+git fetch origin refs/heads/coverage-data:refs/remotes/origin/coverage-data
 python3 /path/to/formal-coverage/ci/run.py \
   --tool /path/to/formal-coverage/target/release/formal-coverage \
   --workspace "$PWD" --report-args '["--fstar-log","target/ci-logs/fstar/fstar.log"]' \
-  --base "$(git merge-base origin/main HEAD)" --output "$PWD/target/coverage-ci"
-python3 -m unittest discover -s /path/to/formal-coverage/ci/tests -v
+  --config coverage/ci.json \
+  --base "$(git merge-base origin/main HEAD)" --output "$PWD/target/coverage-ci" \
+  > target/coverage-ci/runner.log 2>&1
+python3 -m unittest discover -s /path/to/formal-coverage/ci/tests -v \
+  > target/coverage-ci/kit-tests.log 2>&1
 ```
 
 For the local rebuilt toolchain, prefix verification with
@@ -277,18 +226,41 @@ remain in git as historical artifacts; they are not inputs to this verification.
 
 ## Ratchet and exceptions
 
-The merge-base `coverage/baseline.json` is the floor. A proposed baseline and this
-document must match the recomputed report. Unverified security lines cannot rise;
-proven share cannot fall. A change intersecting security-runtime spans in either
-the old or new report must strictly increase proven share. Docs/CI/test-only diffs
-are exempt from the strict increase, not from the other rules. Pure source renames
-are security changes and do not count as proof improvement. Use `git diff -U0`.
+The floor is `baselines/<merge-base-full-sha>.json` on `coverage-data` (on a main
+push, the base is the push event's `before` commit). The coverage action fetches
+that branch and fails closed if the record is missing or invalid. For adoption only,
+`coverage/ci.json` sets `bootstrap_baseline`: while the data branch holds no
+`baselines/*.json`, the floor is `coverage/baseline.json` read from the merge-base
+commit (not the PR's tree). Once main's first push has recorded a baseline it is
+ignored, and a follow-up PR removes the setting. The local runner requires the data
+branch to have been fetched first; it does not fetch automatically.
 
-CI never commits baselines. The first PR has no merge-base floor until the initial
-baseline has been reviewed and installed; the workflow fails closed in that case.
-A maintainer must resolve the bootstrap before claiming a passing ratchet.
-Andrew must enable the repository's up-to-date-branch requirement before relying
-on concurrent PR checks; no settings have been changed by this work.
+Unverified security lines cannot rise; proven share cannot fall. A change
+intersecting security-runtime spans in either the old or new report must strictly
+increase proven share. Docs/CI/test-only diffs are exempt from the strict increase,
+not from the other rules. Pure source renames are security changes and do not
+count as proof improvement. The pinned kit uses `git diff -U0` and exact rational
+comparisons, unchanged from committed-floor mode.
+
+PRs no longer commit `coverage/baseline.json` or a measured section in this document;
+recorded mode skips both committed-output equality checks. What stays committed:
+`formal-coverage.toml` (measurement scope/settings), `coverage/ci.json` (floor mode
+and data branch), this policy, historical explanations, tool pins and the
+`## Exceptions` table. Change a tool version and its pin together; there is no
+requirement to bundle version changes with measured numbers in one commit.
+
+Every main push publishes the completed measurement append-only as
+`baselines/<sha>.json` and refreshes `COVERAGE-MEASURED.md` on `coverage-data`.
+Publication runs even if the ratchet failed, so the actual measured main state is
+recorded and the failure stays visible. A failed measurement has no record to
+publish and publication fails. The publisher rejects a different existing SHA
+record, never forces and never commits to main. Its job alone has `contents: write`
+for baseline publication; GitHub's token scope is repository-wide, while the
+pinned action restricts its pushes to the configured data branch. Badge publication
+retains its separate write job restricted by its action to `badges`.
+
+Andrew must enable the repository's up-to-date-branch requirement or a merge queue
+before relying on concurrent PR checks. No repository settings are changed here.
 
 Only urgent security fixes may use the table below: name a full commit in the
 checked range, approving maintainer, reason and restoration obligation. Human
@@ -324,8 +296,8 @@ proof-only code stopped being counted as runtime, with the reason in the row.
 ## Badges and proof-cost guidance
 
 The shared kit's default badge set, labels and thresholds match the Badges table
-above exactly; no project JSON config is needed. The measurement settings remain
-in `formal-coverage.toml`. See the pinned kit's `ci/README.md` for its action inputs
+above exactly; no badge overrides are needed in `coverage/ci.json`, which selects
+the recorded floor. The measurement settings remain in `formal-coverage.toml`. See the pinned kit's `ci/README.md` for its action inputs
 and local runner. The kit now owns the generic ratchet, writers and their tests.
 Proof cost is informational: development range 5–15, established range 10–20;
 established modules above 20 require review. The project is alpha, so
