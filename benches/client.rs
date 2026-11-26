@@ -31,7 +31,7 @@ fn mb_per_second(d: Duration) -> f64 {
 
 const ITERATIONS: usize = 1000;
 const NUM_PAYLOAD_BYTES: usize = 0x4000;
-const CIPHERSUITES: [Algorithms; 6] = [
+const CIPHERSUITES: [Algorithms; 3] = [
     SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_P256,
     SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519,
     SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519MlKem768,

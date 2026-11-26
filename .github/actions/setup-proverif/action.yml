@@ -1,0 +1,14 @@
+name: Set up ProVerif
+description: Build checksum-pinned ProVerif 2.05 from its official release archive.
+runs:
+  using: composite
+  steps:
+    - name: Install build prerequisites
+      shell: bash
+      run: sudo apt-get update && sudo apt-get install -y ocaml build-essential
+    - name: Build pinned ProVerif
+      shell: bash
+      run: |
+        mkdir -p target/proverif
+        scripts/install-proverif > target/proverif/install.log 2>&1
+        echo "$GITHUB_WORKSPACE/target/proverif/proverif2.05" >> "$GITHUB_PATH"

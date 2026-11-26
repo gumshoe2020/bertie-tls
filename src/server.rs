@@ -49,6 +49,16 @@ pub struct ServerPubInfo {
     pub session_ticket: Option<Bytes>,
 }
 
+// ProVerif models "no PSK offered"; PSK is disabled, so both outcomes are errors.
+// See TRUSTED.md, "ProVerif model assumptions".
+#[cfg_attr(
+    feature = "hax-pv",
+    hax_lib::proverif::replace_body("false (* PSK disabled: no PSK offered *)")
+)]
+fn psk_offered(tkt: &Option<Bytes>, psk_opt: &Option<(Bytes, Psk)>) -> bool {
+    tkt.is_some() && psk_opt.is_some()
+}
+
 /// Look up a server for the given `ciphersuite`.
 ///
 /// The function returns a server with the first algorithm it finds.
@@ -61,17 +71,17 @@ pub(crate) fn lookup_db(
     if
     //eq(sni, &Bytes::new()) ||
     eq(sni, &db.server_name) {
-        match (ciphersuite.psk_mode(), tkt, &db.psk_opt) {
-            (true, Some(_), Some(_)) => Err(UNSUPPORTED_ALGORITHM),
-            (false, _, _) => {
-                let server = ServerInfo {
-                    cert: db.cert.clone(),
-                    sk: db.sk.clone(),
-                    psk_opt: None,
-                };
-                Ok(server)
-            }
-            _ => Err(PSK_MODE_MISMATCH),
+        if !ciphersuite.psk_mode() {
+            let server = ServerInfo {
+                cert: db.cert.clone(),
+                sk: db.sk.clone(),
+                psk_opt: None,
+            };
+            Ok(server)
+        } else if psk_offered(tkt, &db.psk_opt) {
+            Err(UNSUPPORTED_ALGORITHM)
+        } else {
+            Err(PSK_MODE_MISMATCH)
         }
     } else {
         Err(parse_failed())
@@ -114,6 +124,23 @@ mod psk_tests {
             assert_eq!(server.cert, db.cert);
             assert_eq!(server.sk, db.sk);
             assert!(server.psk_opt.is_none());
+        }
+    }
+
+    #[test]
+    fn lookup_db_reports_mismatch_when_psk_mode_lacks_ticket_or_server_psk() {
+        let mut algorithms = SHA256_Chacha20Poly1305_EcdsaSecp256r1Sha256_X25519;
+        algorithms.psk_mode = true;
+        let with_psk = Some((b"ticket".into(), Bytes::new()));
+        let cases = [
+            (None, with_psk.clone()),
+            (Some(b"t".into()), None),
+            (None, None),
+        ];
+        for (ticket, psk_opt) in cases {
+            let db = ServerDB::new(b"example.com".into(), b"cert".into(), Bytes::new(), psk_opt);
+            let result = lookup_db(algorithms, &db, &db.server_name, &ticket);
+            assert!(matches!(result, Err(PSK_MODE_MISMATCH)));
         }
     }
 }

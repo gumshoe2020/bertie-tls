@@ -4,7 +4,6 @@ use std::collections::HashMap;
 use std::println;
 
 use crate::tls13crypto::hash;
-use crate::tls13handshake::*;
 use crate::tls13keyscheduler::{key_schedule::*, *};
 use crate::tls13utils::*;
 use crate::{
@@ -540,7 +539,7 @@ fn test_key_schedule() {
                     println!("Error: {}", x);
                 }
                 Ok((cht_handle, sht_handle, ms_handle)) => {
-                    let lookup = tagkey_from_handle(&mut ks, &ms_handle);
+                    let lookup = tagkey_from_handle(&ks, &ms_handle);
                     b = lookup.is_ok();
                     match lookup {
                         Err(x) => {
@@ -596,7 +595,7 @@ fn test_key_schedule() {
                                                         &mut ks,
                                                     );
                                                     let lookup =
-                                                        tagkey_from_handle(&mut ks, &ms_handle);
+                                                        tagkey_from_handle(&ks, &ms_handle);
 
                                                     b = lookup.is_ok();
                                                     match lookup {

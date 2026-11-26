@@ -160,3 +160,49 @@ excluded `from_hex` and `random_bytes` helpers remain unproven as described abov
 Every offset and length step is checked against the buffer and returns an error when the input is
 too short or inconsistent. `CertificateKey` writes out `Clone` and `Copy` so hax extracts them as
 code rather than as an assumed instance. Nothing in this module is listed as trusted.
+
+## ProVerif model assumptions
+
+P1 run 4 (Andrew approved, 2026-11-25) replaces only the ProVerif body of
+`tls13handshake::server_signature_input`, via `hax_lib::proverif::replace_body`
+under `cfg_attr(feature = "hax-pv")`. It preserves prefix conversion and
+concatenation with the digest, and omits the `digest.len() > 64` failure branch.
+Both callers supply `Transcript::transcript_hash()` output. The model assumes
+that the abstract hash returns its selected algorithm's output length: SHA-256,
+SHA-384 and SHA-512 produce 32, 48 and 64 bytes, respectively. Thus the omitted
+branch is unreachable for these callers with the real hash implementation.
+Runtime Rust and the strict F* extraction (which does not enable `hax-pv`) retain
+the check. This is a symbolic-model assumption, not a new Rust/F* proof or a
+checked end-to-end refinement from libcrux to HACL*.
+
+Backing upstream specification/proof source: HACL* commit
+`f557259007db9933442dde10aa995c1b00bd3446`,
+[`specs/Spec.Agile.Hash.fsti`](https://github.com/hacl-star/hacl-star/blob/f557259007db9933442dde10aa995c1b00bd3446/specs/Spec.Agile.Hash.fsti)
+(`hash'` returns `lbytes (hash_length' a l)`, `hash` specializes fixed lengths),
+with implementation `specs/Spec.Agile.Hash.fst`. The corresponding
+[`specs/Spec.Hash.Definitions.fst`](https://github.com/hacl-star/hacl-star/blob/f557259007db9933442dde10aa995c1b00bd3446/specs/Spec.Hash.Definitions.fst)
+defines `hash_length`, `hash_length'`, `word_length` and `hash_word_length`, giving
+the lengths above. This run inspects those sources; it does not reverify HACL*.
+The replacement uses the same upstream Bertie `replace_body` mechanism already
+used by `tls13crypto::sign` and `tls13formats::client_hello`.
+
+New handwritten declarations: **0/15** (rename-only edits to existing names are listed in
+`proofs/proverif/renames.txt`).
+
+### PSK acceptance (`server::psk_offered`, 2026-11-25)
+
+`server::psk_offered(tkt, psk_opt)` is a private helper holding the test
+`tkt.is_some() && psk_opt.is_some()` from `lookup_db`. Under `hax-pv` only, its body is replaced
+by `false`: the model says "no PSK offered". Reason: hax would otherwise emit
+`core_models__option__impl__is_some`, which cannot be defined in ProVerif's library load order.
+Effect: in the PSK branch of `lookup_db`, the model returns `PSK_MODE_MISMATCH` instead of
+`UNSUPPORTED_ALGORITHM`. Both are errors and PSK acceptance is disabled in the code (fail
+closed), so the queries, which exercise only the non-PSK path, are unaffected. Runtime Rust and
+the strict F* extraction keep the real test. The replacement string is
+`false (* PSK disabled: no PSK offered *)` because hax rewrites a bare `false` to `r#false`,
+which ProVerif rejects.
+
+### Query results
+
+Results of the model, with these assumptions, are in `proofs/proverif/expected-results.txt`
+and are checked by CI. They are symbolic results about the model, not about the whole library.
