@@ -187,9 +187,14 @@ without enforcing by default), and a change to security code at equal proven sha
 raises the number of proven lines with functional contracts. That rule applies once main has a
 coverage record written by 1.12.0, which the first main run after this change provides.
 
+**formal-coverage v1.12.1 (2026-11-26).** Measurement and ratchet rules are unchanged. The ratchet
+now refuses to run on a checkout with uncommitted changes, including untracked files git doesn't
+ignore, because it compares the base to HEAD while measuring the files on disk. Commit before
+running it locally. CI's hax checkout (`hax-src/`) is git-ignored for this reason.
+
 ## Reproduction and pins
 
-- formal-coverage v1.12.0, public commit `c45ab59e7e8d50760a226d45a23751372d9129bd`.
+- formal-coverage v1.12.1, public commit `9b24a08ca57ec5d3b1d14c31532645cd4cbae050`.
   All three shared CI actions pin this commit, which also pins the measurement tool.
 - ProVerif `2.05`, official source
   `https://bblanche.gitlabpages.inria.fr/proverif/proverif2.05.tar.gz`,
