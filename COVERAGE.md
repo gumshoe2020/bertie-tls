@@ -282,7 +282,7 @@ remain in git as historical artifacts; they are not inputs to this verification.
   `scripts/verify-fstar.py` and the hash of the extraction inputs (`src/**`, `Cargo.toml`, `Cargo.lock`,
   `hax-driver.py`, `proofs/fstar/libcrux-models/**`), and F* re-checks any module whose own digest or
   whose dependencies' digests differ. hax extraction is never cached.
-- `coverage.yml` is never cached. formal-coverage v1.9.1 rejects `--cache_checked_modules`, any `.checked`
+- `coverage.yml` is never cached. formal-coverage v1.11.0 rejects `--cache_checked_modules`, any `.checked`
   file in the receipt scope, and any module without its own fresh `Verified module:` line (F* prints that line
   even when it loads a module from the cache), so cached results cannot be honest evidence.
   `scripts/verify-fstar.py --cache-dir DIR` therefore writes no `fstar.log.evidence.json`.
