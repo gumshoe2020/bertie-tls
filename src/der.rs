@@ -58,6 +58,9 @@
 //! 3. **Spec predicates are executable Rust, but only with `--cfg hax`.** Outside `cfg(hax)`,
 //!    `hax_lib::int::Int` is a one-byte dummy (hax-lib 0.4.2 `dummy.rs`). The spec tests therefore run
 //!    with `RUSTFLAGS='--cfg hax'`; the unit tests are gated on `cfg(all(test, hax))`.
+//!    The predicates themselves are gated on `cfg(hax)` like the lemmas, so ordinary builds
+//!    compile no spec code. The exception is `der_uint_valid`, which the parser also calls at
+//!    runtime.
 //! 4. **Interface opacity.** hax emits the spec predicates as `val ... : Pure bool True (fun _ -> True)`
 //!    in `Bertie.Der.fsti`, so other modules see only the contracts on `encode_`/`decode_`, not
 //!    the bodies. The byte-level round trip is proved in `der_roundtrip`. The `certificate_verify`
@@ -82,12 +85,14 @@ use crate::tls13utils::{TLSError, INVALID_SIGNATURE};
 pub const RAW_SIGNATURE_LEN: usize = 64;
 
 /// 2^256: the bound on `r` and `s` for a signature over a 256-bit curve.
+#[cfg(hax)]
 #[hax_lib::ensures(|bound| bound > 0u8.to_int())]
 pub fn two_pow_256() -> Int {
     256u16.to_int().pow2()
 }
 
 /// The big-endian unsigned value of the first `n` bytes of `c`.
+#[cfg(hax)]
 #[hax_lib::requires(n <= c.len())]
 #[hax_lib::decreases(n.to_int())]
 fn be_value_prefix(c: &[u8], n: usize) -> Int {
@@ -99,6 +104,7 @@ fn be_value_prefix(c: &[u8], n: usize) -> Int {
 }
 
 /// The big-endian unsigned value of `c`.
+#[cfg(hax)]
 pub fn be_value(c: &[u8]) -> Int {
     be_value_prefix(c, c.len())
 }
@@ -129,6 +135,7 @@ pub fn der_uint_valid(c: &[u8]) -> bool {
 /// contents octets that follow it (X.690 §8.1.3.3 and §8.1.3.4, DER §10.1: the shortest form;
 /// every length here is below 128 so only the short form is minimal), no trailing octets,
 /// `R` and `S` minimal non-negative INTEGER contents, and their values equal to `r` and `s`.
+#[cfg(hax)]
 pub fn der_sig_valid(b: &[u8], r: Int, s: Int) -> bool {
     if b.len() < 8 {
         return false;
@@ -159,6 +166,7 @@ pub fn der_sig_valid(b: &[u8], r: Int, s: Int) -> bool {
 }
 
 /// P1 as a predicate on the encoder's result for the raw input `raw` (`r || s`, 32 bytes each).
+#[cfg(hax)]
 #[hax_lib::requires(raw.len() == RAW_SIGNATURE_LEN)]
 pub fn encoder_correct(raw: &[u8], result: &Result<Vec<u8>, TLSError>) -> bool {
     match result {
@@ -168,6 +176,7 @@ pub fn encoder_correct(raw: &[u8], result: &Result<Vec<u8>, TLSError>) -> bool {
 }
 
 /// P2 as a predicate on the parser's result for the DER input `der`.
+#[cfg(hax)]
 pub fn parser_sound(der: &[u8], result: &Result<Vec<u8>, TLSError>) -> bool {
     match result {
         Ok(x) => {
@@ -180,6 +189,7 @@ pub fn parser_sound(der: &[u8], result: &Result<Vec<u8>, TLSError>) -> bool {
 
 /// P3 as a proposition on the parser's result for the DER input `der`: every `(r, s)` for
 /// which `der` is a valid encoding is returned, as 32-byte big-endian halves.
+#[cfg(hax)]
 pub fn parser_complete(der: &[u8], result: &Result<Vec<u8>, TLSError>) -> Prop {
     hax_lib::forall(|r: Int| {
         hax_lib::forall(|s: Int| {
@@ -559,6 +569,7 @@ fn agree_elim(a: &[u8], b: &[u8], n: usize, i: usize) {}
 /// The R and S contents are equal by `uint_unique`; the remaining octets are fixed by the
 /// definition of `der_sig_valid`. The closing `fstar!` only turns pointwise equality into
 /// sequence equality (`FStar.Seq.lemma_eq_elim`); it adds no hypotheses.
+#[cfg(hax)]
 #[hax_lib::fstar::options("--fuel 2 --z3rlimit 100")]
 #[hax_lib::requires(der_sig_valid(b1, r, s) && der_sig_valid(b2, r, s))]
 #[hax_lib::ensures(|_| b1 == b2)]
