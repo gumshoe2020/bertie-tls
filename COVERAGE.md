@@ -198,9 +198,12 @@ measured as runtime. This is a measurement change; bertie-tls's numbers are unch
 record now stores each unit's status, which allows a deletion-only share drop (see AGENTS.md rule 1) once main has
 a record written by 1.12.3. (3) A failing ratchet prints its reason as the last line of the CI output.
 
+**formal-coverage v1.12.4 (2026-11-26).** Test scope follows `#[path]` module files and no longer trusts a
+bare `#[test]` that an import could shadow. These are measurement changes; bertie-tls's numbers are unchanged.
+
 ## Reproduction and pins
 
-- formal-coverage v1.12.3, public commit `d92fceaab9ffb35ddb55c2eb54c0830252bc03d4`.
+- formal-coverage v1.12.4, public commit `04bfae9bdeef910980313061b8c8b425c1efb563`.
   All three shared CI actions pin this commit, which also pins the measurement tool.
 - ProVerif `2.05`, official source
   `https://bblanche.gitlabpages.inria.fr/proverif/proverif2.05.tar.gz`,

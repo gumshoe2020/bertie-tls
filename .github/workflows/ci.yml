@@ -59,7 +59,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: gumshoe2020/formal-coverage
-          ref: d92fceaab9ffb35ddb55c2eb54c0830252bc03d4 # v1.12.3
+          ref: 04bfae9bdeef910980313061b8c8b425c1efb563 # v1.12.4
           path: formal-coverage-src
       - name: Build pinned coverage kit (its receipt tests run the binary)
         run: cargo build --locked --manifest-path formal-coverage-src/Cargo.toml
