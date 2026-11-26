@@ -67,7 +67,7 @@ Run from the repository root. Coverage/proof commands require the pinned tools d
   produces a coverage receipt. `--cache-dir DIR` is an optional incremental gate for local use and the `hax` job, see COVERAGE.md)
 - `python3 -m unittest discover -s scripts/tests -v` (CI scripts)
 - `cargo deny check`
-- `python3 -m unittest discover -s /path/to/formal-coverage/ci/tests -v` (pinned v1.12.1 kit; `cargo build --locked` it first)
+- `python3 -m unittest discover -s /path/to/formal-coverage/ci/tests -v` (pinned v1.12.3 kit; `cargo build --locked` it first)
 - `python3 /path/to/formal-coverage/ci/run.py ...` (recorded-floor ratchet; exact invocation and pin in COVERAGE.md)
 - `cargo fmt --all -- --check`
 - `cargo clippy --locked --all-targets -- -D warnings` (library, tests and benches)

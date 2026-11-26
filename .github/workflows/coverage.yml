@@ -55,7 +55,7 @@ jobs:
 
       - name: Measure and apply recorded-floor ratchet
         id: coverage
-        uses: gumshoe2020/formal-coverage/.github/actions/coverage@9b24a08ca57ec5d3b1d14c31532645cd4cbae050 # v1.12.1
+        uses: gumshoe2020/formal-coverage/.github/actions/coverage@d92fceaab9ffb35ddb55c2eb54c0830252bc03d4 # v1.12.3
         with:
           config: coverage/ci.json
           report-args: '["--fstar-log","target/ci-logs/fstar/fstar.log"]'
@@ -84,7 +84,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Publish to the badges branch
-        uses: gumshoe2020/formal-coverage/.github/actions/publish-badges@9b24a08ca57ec5d3b1d14c31532645cd4cbae050 # v1.12.1
+        uses: gumshoe2020/formal-coverage/.github/actions/publish-badges@d92fceaab9ffb35ddb55c2eb54c0830252bc03d4 # v1.12.3
         with:
           coverage-result: ${{ needs.coverage.result }}
 
@@ -99,6 +99,6 @@ jobs:
       contents: write
     steps:
       - name: Record main measurement on coverage-data
-        uses: gumshoe2020/formal-coverage/.github/actions/publish-baseline@9b24a08ca57ec5d3b1d14c31532645cd4cbae050 # v1.12.1
+        uses: gumshoe2020/formal-coverage/.github/actions/publish-baseline@d92fceaab9ffb35ddb55c2eb54c0830252bc03d4 # v1.12.3
         with:
           artifact-name: coverage-badges
