@@ -181,9 +181,15 @@ those artifacts alone. They remain trust/inventory evidence. Fresh receipts bind
 Rust sources, driver, manifest, lock, all F* siblings and exact strict invocations.
 Any rejected receipt or unmapped function retains zero credit; see the full report.
 
+**formal-coverage v1.12.0 (2026-11-26).** Measurement is unchanged. Two ratchet changes: the
+ratchet is enforced explicitly (`enforce-ratchet: 'true'` in coverage.yml, because 1.12.0 reports
+without enforcing by default), and a change to security code at equal proven share now passes if it
+raises the number of proven lines with functional contracts. That rule applies once main has a
+coverage record written by 1.12.0, which the first main run after this change provides.
+
 ## Reproduction and pins
 
-- formal-coverage v1.11.0, public commit `888fdbf8f0c23973d76c679fd56188636c38e57c`.
+- formal-coverage v1.12.0, public commit `c45ab59e7e8d50760a226d45a23751372d9129bd`.
   All three shared CI actions pin this commit, which also pins the measurement tool.
 - ProVerif `2.05`, official source
   `https://bblanche.gitlabpages.inria.fr/proverif/proverif2.05.tar.gz`,
