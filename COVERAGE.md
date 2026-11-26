@@ -312,13 +312,14 @@ On main, `coverage.yml` writes shields.io endpoint JSON to the `badges` branch
 ## Exceptions
 
 An urgent security fix may skip the ratchet only if a maintainer lists the exact
-40-character commit here, with the approver and what restores the ratchet. The only
-entry so far is not a security fix: it is a one-time exception Andrew approved for a
-tool measurement change, with the reason in the row.
+40-character commit here, with the approver and what restores the ratchet. Neither
+entry so far is a security fix: both are one-time exceptions Andrew approved where
+proof-only code stopped being counted as runtime, with the reason in the row.
 
 | Commit | Approving maintainer | Reason | Restoration obligation |
 | --- | --- | --- | --- |
 | df7732434fc8321d4b688e46379e93da5fdecace | Andrew VanLoo | formal-coverage v1.8.1 moved cfg(hax) lemmas out of the runtime count. The measurement changed, not the code: the DER lemmas in `src/der.rs` only exist for F* checking and were previously counted as proven runtime, so proven share fell from 14.16% to 10.34% on identical source and F* receipt. | None: no code regressed. The v1.8.1 measurement is the new floor. |
+| 9647b63667628d1409c40a90682f9fb4cee42577 | Andrew VanLoo | Eight DER spec items (`two_pow_256`, `be_value_prefix`, `be_value`, `der_sig_valid`, `encoder_correct`, `parser_sound`, `parser_complete`, `der_sig_unique`) are used only by hax contracts, lemmas and proof tests, so they now compile only under cfg(hax). 60 lines moved from proven runtime to proof code with no change to shipped code: proven share fell from 81.01% to 80.78%, while functional proofs rose from 1.92% to 3.57%. Approved 2026-11-25: "We improved the honesty of the tool, which is a worthwhile exception." | None: no code regressed. The post-gating measurement is the new floor. |
 
 ## Badges and proof-cost guidance
 
