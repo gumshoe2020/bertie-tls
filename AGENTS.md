@@ -34,7 +34,9 @@ Coverage of security code is measured with formal-coverage (github.com/gumshoe20
 which sorts every line of security code into proven, tested or unverified. Main records the
 current numbers on `coverage-data` (`COVERAGE-MEASURED.md` and append-only `baselines/<sha>.json`).
 PRs commit policy, proofs and code, not measured numbers; see COVERAGE.md.
-1. No commit may increase the number of unverified security lines, or lower the proven share.
+1. No commit may increase the number of unverified security lines, or lower the proven share. The one
+   exception: a drop that comes entirely from deleting proven code, with tested lines not increasing and no
+   proven unit demoted or moved out of security scope. Such a drop counts as equal share for rule 2.
 2. Every commit that touches security code must increase the proven share, by proving new or
    existing code, or, at equal proven share, increase the number of proven security lines with
    functional contracts (the two functional contract categories combined), by strengthening the
