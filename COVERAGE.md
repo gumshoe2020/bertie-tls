@@ -87,7 +87,6 @@ runs may finish out of order. Exact commit measurements are in
 `baselines/<full-sha>.json` on the same branch. The historical measurements
 in this document explain earlier changes and are not the current floor.
 
-
 The `tls13utils` bodies are now extracted and checked by strict F*, including
 byte conversion, length encoding, bounds and equality helpers. The four affected
 caller roots also verify, using checked length guards for unbounded inputs and
