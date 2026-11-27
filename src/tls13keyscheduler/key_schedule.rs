@@ -81,11 +81,8 @@ pub(crate) fn zero_salt(ks: &mut TLSkeyscheduler, alg: &HashAlgorithm) -> Handle
         alg: *alg,
         level: 0,
     };
-    set_by_handle(
-        ks,
-        &handle,
-        Bytes::zeroes(1), // alg.hash_len()
-    ); // 1 bit-length, multiple introduce redundancy ?
+    // RFC 8446 §7.1 uses Hash.length zero bytes for the absent salt.
+    set_by_handle(ks, &handle, Bytes::zeroes(alg.hash_len()));
     handle
 }
 
