@@ -84,6 +84,7 @@ impl HashAlgorithm {
     }
 
     /// Get the size of the hmac tag.
+    #[hax_lib::ensures(|result| result == self.hash_len())]
     #[cfg_attr(feature = "hax-pv", hax_lib::proverif::replace_body("0"))]
     pub(crate) fn hmac_tag_len(&self) -> usize {
         self.hash_len()
@@ -146,14 +147,24 @@ pub(crate) fn hkdf_extract(
 /// HKDF Expand.
 ///
 /// Returns the result as [`Bytes`] or a [`TLSError`].
+/// On `Ok`, the output is HACL*'s HKDF-Expand of the same bytes, as far as the
+/// approved backend link states it (`backend::hkdf_expand_okm`, TRUSTED.md).
 #[hax_lib::pv_constructor]
+#[hax_lib::ensures(|result| fstar!(r#"match result with
+  | Core_models.Result.Result_Ok okm ->
+    Bertie_tls.Tls13crypto.Backend.hkdf_expand_is_hacl alg
+      prk.Bertie_tls.Tls13utils.Byte_types._0._0 info.Bertie_tls.Tls13utils.Byte_types._0._0 len
+      okm.Bertie_tls.Tls13utils.Byte_types._0._0
+  | _ -> True"#))]
 pub(crate) fn hkdf_expand(
     alg: &HashAlgorithm,
     prk: &Bytes,
     info: &Bytes,
     len: usize,
 ) -> Result<Bytes, TLSError> {
-    Ok(backend::hkdf_expand_okm(alg, &prk.declassify(), &info.declassify(), len)?.into())
+    // from_slice rather than into(): its content postcondition is visible outside tls13utils.
+    let okm = backend::hkdf_expand_okm(alg, &prk.declassify(), &info.declassify(), len)?;
+    Ok(Bytes::from_slice(&okm))
 }
 
 impl AeadAlgorithm {

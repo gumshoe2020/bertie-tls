@@ -255,15 +255,21 @@ impl Bytes {
     }
 
     /// Declassify these bytes and return a copy of [`u8`].
-    #[hax_lib::ensures(|result| result.len() == self.0.len())]
-    // Indexed loop so hax can state the loop invariant behind the length postcondition.
+    #[hax_lib::ensures(|result| (result.len() == self.0.len()).to_prop().and(fstar!(
+        "result._0 == self.Bertie_tls.Tls13utils.Byte_types._0._0"
+    )))]
+    // Indexed loop so hax can state the loop invariant behind the postcondition.
     #[allow(clippy::needless_range_loop)]
     pub fn declassify(&self) -> Vec<u8> {
         let mut out = Vec::with_capacity(self.0.len());
         for i in 0..self.0.len() {
-            hax_lib::loop_invariant!(|i: usize| out.len() == i);
+            hax_lib::loop_invariant!(|i: usize| (out.len() == i).to_prop().and(fstar!(
+                "Seq.equal out._0 (Seq.slice self.Bertie_tls.Tls13utils.Byte_types._0._0 0 (v i))"
+            )));
             out.push(self.0[i].declassify());
         }
+        #[cfg(hax)]
+        hax_lib::fstar!("assert (Seq.equal out._0 self.Bertie_tls.Tls13utils.Byte_types._0._0)");
         out
     }
 
@@ -373,7 +379,9 @@ pub(crate) fn u32_from_be_bytes(val: [U8; 4]) -> U32 {
     U32(val)
 }
 
-#[hax_lib::ensures(|result| result.len() == x.len())]
+#[hax_lib::ensures(|result| (result.len() == x.len()).to_prop().and(fstar!(
+    "result.Bertie_tls.Tls13utils.Byte_types._0._0 == x"
+)))]
 pub(crate) fn bytes(x: &[u8]) -> Bytes {
     x.into()
 }
@@ -821,7 +829,7 @@ pub(crate) fn check_mem(b1: &[U8], b2: &[U8]) -> Result<(), TLSError> {
         .to_prop().and(fstar!(
             "lenb.Bertie_tls.Tls13utils.Byte_types._0._0 == Seq.append (Seq.create 1 (mk_u8 (Seq.length bytes % 256))) bytes"
         )),
-    _ => true.to_prop(),
+    Result::Err(e) => (bytes.len() >= 256 && e == PAYLOAD_TOO_LONG).to_prop(),
 })]
 pub(crate) fn encode_length_u8(bytes: &[U8]) -> Result<Bytes, TLSError> {
     let len = bytes.len();

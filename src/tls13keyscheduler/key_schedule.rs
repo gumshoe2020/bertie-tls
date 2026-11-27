@@ -12,7 +12,14 @@ use std::vec;
 /* TLS 1.3 Key Schedule: See RFC 8446 Section 7 */
 
 /// HKDF expand with a `label`.
+///
+/// Proved (P2 M2): for a non-empty `label` this is the RFC 8446 §7.1
+/// specification's `expand_label`, errors included. The specification rejects an
+/// empty Label (RFC 8446 requires at least 7 bytes with the prefix); this
+/// function accepts it, so nothing is claimed for that case.
 #[cfg_attr(feature = "hax-pv", hax_lib::pv_constructor)]
+#[hax_lib::ensures(|result| fstar!(r#"Seq.length label.Bertie_tls.Tls13utils.Byte_types._0._0 > 0 ==>
+  result == Bertie_tls.Tls13keyscheduler.Rfc8446_spec.expand_label hash_algorithm key label context len"#))]
 pub(crate) fn hkdf_expand_label(
     hash_algorithm: &HashAlgorithm,
     key: &Key,
@@ -28,8 +35,43 @@ pub(crate) fn hkdf_expand_label(
         let info = encode_length_u8(tls13_label.as_raw())?
             .concat(encode_length_u8(context.as_raw())?)
             .prefix(&lenb);
+        #[cfg(hax)]
+        hax_lib::fstar!(
+            r#"match Bertie_tls.Tls13keyscheduler.Rfc8446_spec.hkdf_label label context len with
+  | Core_models.Result.Result_Ok spec_info ->
+    assert (Seq.equal info.Bertie_tls.Tls13utils.Byte_types._0._0
+      spec_info.Bertie_tls.Tls13utils.Byte_types._0._0)
+  | _ -> ()"#
+        );
         hkdf_expand(hash_algorithm, key, &info, len)
     }
+}
+
+/// Corollary (P2, approved HKDF link): for a non-empty label, a successful
+/// `hkdf_expand_label` is RFC 8446 §7.1 HKDF-Expand-Label over HACL*'s
+/// `Spec.Agile.HKDF.expand`: its output is HACL*'s expansion of the
+/// specification's HkdfLabel bytes, whenever HACL*'s preconditions hold
+/// (`Backend.hkdf_expand_is_hacl`). Follows from the M2 equality above and the
+/// single assumed postcondition on `backend::hkdf_expand_okm`.
+#[cfg(hax)]
+#[allow(unused_variables)]
+#[hax_lib::ensures(|_| fstar!(r#"Seq.length label.Bertie_tls.Tls13utils.Byte_types._0._0 > 0 ==>
+  (match hkdf_expand_label hash_algorithm key label context len with
+   | Core_models.Result.Result_Ok okm ->
+     (match Bertie_tls.Tls13keyscheduler.Rfc8446_spec.hkdf_label label context len with
+      | Core_models.Result.Result_Ok info ->
+        Bertie_tls.Tls13crypto.Backend.hkdf_expand_is_hacl hash_algorithm
+          key.Bertie_tls.Tls13utils.Byte_types._0._0 info.Bertie_tls.Tls13utils.Byte_types._0._0 len
+          okm.Bertie_tls.Tls13utils.Byte_types._0._0
+      | _ -> False)
+   | _ -> True)"#))]
+fn hkdf_expand_label_is_rfc8446_over_hacl(
+    hash_algorithm: &HashAlgorithm,
+    key: &Key,
+    label: Bytes,
+    context: &Bytes,
+    len: usize,
+) {
 }
 
 /// Get an empty key of the correct size.

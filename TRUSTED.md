@@ -6,7 +6,8 @@ Updated 2026-11-25.
 
 `src/tls13crypto/backend.rs` is the libcrux trust boundary. hax generates its
 interface from Rust; F* checks signatures only. No backend function carries a
-precondition or postcondition. In particular, F* assumes no digest, ciphertext,
+precondition, and only `hkdf_expand_okm` carries a postcondition: the approved
+HKDF link below. In particular, F* assumes no digest, ciphertext,
 public-key or shared-secret length beyond the signature's fixed-size arrays.
 The Rust wrappers, error translation, allocation, encoding, dependency dispatch
 and correspondence to upstream crypto remain trusted. Upstream verification
@@ -164,29 +165,56 @@ code rather than as an assumed instance. Nothing in this module is listed as tru
 ## Specifications
 
 `src/tls13keyscheduler/rfc8446_spec.rs` is an executable specification, compiled
-only with `cfg(test)` or `cfg(hax)`. It covers RFC 8446 §7.1 (full handshake,
-(EC)DHE, no PSK/0-RTT), §7.3 write keys/IVs and §4.4.4 Finished keys.
+only for the sha256-gated RFC 8448 test or `cfg(hax)`. It covers RFC 8446 §7.1
+(full handshake, (EC)DHE, no PSK/0-RTT), §7.3 write keys/IVs and §4.4.4 Finished keys.
 RFC line citations and per-item miTLS provenance are in the source. Structure
 is ported from miTLS at `9a75fa8c46e50897b1f43002885d25a34dfa929a`:
 `src/parsers/MiTLS.Parsers.HKDF.rfc:1–5`, `src/tls/MiTLS.HKDF.fst:188,216,241`,
 `src/tls/MiTLS.Old.KeySchedule.fst:155,160,234,236,265,458,460,463,549,573`
-and `.fsti:255,267`. The specification is a trusted translation; extraction alone
-is not evidence of RFC conformance. Vector-gate status is recorded in project
-PROGRESS.md. No implementation functional contract is claimed yet.
+and `.fsti:255,267`. The specification is a trusted translation, checked against
+RFC 8448 §3 (all 21 printed key-schedule values, `test_rfc8448_vectors.rs`).
+hax extracts it with full definitions (no `.fsti`, `hax-driver.py`) so that
+implementation proofs can unfold it; it is an additional strict F* root.
 
-The intended mathematical meaning of the existing HKDF backend boundary is
-HACL*'s RFC 5869 specification, commit
-`f557259007db9933442dde10aa995c1b00bd3446`,
-`specs/Spec.Agile.HKDF.fst:17` (extract), `:37–72` (expand).
-Its `.fsti:12,27` exposes opaque functions with size/precondition contracts.
-The Rust specification and implementation call the same bertie crypto functions;
-no equality between these backend calls and HACL* is assumed or proved.
-M0 pinned-tool probe (2026-11-25): HACL* extract can be called and its
-32-byte SHA-256 length checked, but the generated backend cannot prove even
-success with that length (F* Error 19, could not prove post-condition). Thus
-there is no checked link for replacing the shared opaque operations by HACL*.
-Probe sources, commands and exits are in `target/rfc-p2/M0.*` locally. No
-HACL*/miTLS F* module is imported into the production proof build.
+Functional (RFC) contracts proved against it (P2 M2): `hkdf_expand_label`
+(non-empty labels, errors included), `derive_finished_key` and
+`derive_aead_key_iv` (for the secret stored under the given handle). The secret
+chain and the handle store (`derive_hk_handles` … `derive_rms`) are not proved:
+hax's `HashMap` model gives no relation between `insert` and `get`.
+
+The spec and the implementation call the same bertie `hkdf_extract`/`hkdf_expand`.
+Their meaning in terms of HACL* is stated only by the assumption below.
+
+## HKDF link to HACL* (assumed, approved by Andrew 2026-11-26)
+
+The only cryptographic postcondition in the backend:
+`src/tls13crypto/backend.rs:88` (the `ensures` of `hkdf_expand_okm`). It says: on
+`Ok okm`, `hkdf_expand_is_hacl alg prk info len okm`, i.e. `len <= 255 * HashLen`
+and, whenever HACL*'s own preconditions hold (`hash_length a <= |prk|`,
+`keysized a |prk|`, `expand_info_length_pred a |info|`), the bytes of `okm` equal
+`Spec.Agile.HKDF.expand a prk info len` (RFC 5869), with `a` SHA2_256/384/512 for
+bertie's SHA256/384/512. Nothing is said about errors. `hacl_hash`, `hacl_bytes`
+and `hkdf_expand_is_hacl` (same file, emitted before it) are definitions, not
+assumptions. It is a declared interface postcondition on an interface-only
+function, the same mechanism as the other backend signatures; no `assume`,
+`admit`, axiom, `--lax` or option change.
+
+Why it cannot be proved here: libcrux-hkdf 0.0.3 is Rust generated from HACL*
+(registry `src/impl_hacl.rs`), but libcrux ships no F* contracts, so no checked
+statement connects its `expand` to `Spec.Agile.HKDF`. The 255 * HashLen bound
+is libcrux's own check (`expand_vec`, `OkmTooLarge`); libcrux does not check
+the PRK length, hence the conditional.
+
+HACL* files: commit `f557259007db9933442dde10aa995c1b00bd3446`,
+`specs/Spec.Agile.HKDF.fsti:27` (`expand`; definition `specs/Spec.Agile.HKDF.fst:37–72`),
+vendored unedited with their 12-file interface closure in `proofs/fstar/hacl-specs/`
+(list, SHA-256s, the one KaRaMeL file: its README). HKDF-Extract is not linked:
+nothing proved here needs it (minimum-claim rule).
+
+Payoff, proved from this link and the M2 equality:
+`key_schedule.rs::hkdf_expand_label_is_rfc8446_over_hacl` — for a non-empty label,
+a successful `hkdf_expand_label` is HACL*'s `expand` of the specification's
+HkdfLabel bytes (RFC 8446 §7.1 HKDF-Expand-Label over `Spec.Agile.HKDF`).
 
 ## ProVerif model assumptions
 

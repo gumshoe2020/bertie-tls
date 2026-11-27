@@ -57,6 +57,21 @@ pub fn derive_binder_key(
        )"
     )
 )]
+/// Proved (P2 M2): the RFC 8446 §7.3 specification's `write_key_iv` of the
+/// secret stored under `handle`, wrapped as an [`AeadKeyIV`].
+#[hax_lib::ensures(|result| fstar!(r#"match Bertie_tls.Tls13keyscheduler.Key_schedule.tagkey_from_handle ks handle with
+  | Core_models.Result.Result_Ok k ->
+    result ==
+    (match Bertie_tls.Tls13keyscheduler.Rfc8446_spec.write_key_iv hash_algorithm
+        k.Bertie_tls.Tls13keyscheduler.Key_schedule.f_val
+        (Bertie_tls.Tls13crypto.impl_2__key_len aead_algorithm)
+        (Bertie_tls.Tls13crypto.impl_2__iv_len aead_algorithm) with
+     | Core_models.Result.Result_Ok (key, iv) ->
+       Core_models.Result.Result_Ok
+         (Bertie_tls.Tls13crypto.impl_AeadKeyIV__new
+           (Bertie_tls.Tls13crypto.impl_AeadKey__new key aead_algorithm) iv)
+     | Core_models.Result.Result_Err e -> Core_models.Result.Result_Err e)
+  | Core_models.Result.Result_Err e -> result == Core_models.Result.Result_Err e"#))]
 pub(crate) fn derive_aead_key_iv(
     hash_algorithm: &HashAlgorithm,
     aead_algorithm: &AeadAlgorithm,
@@ -146,6 +161,13 @@ pub(crate) fn derive_0rtt_keys(
        )"
     )
 )]
+/// Proved (P2 M2): the RFC 8446 §4.4.4 specification's `finished_key` of the
+/// secret stored under `handle`.
+#[hax_lib::ensures(|result| fstar!(r#"match Bertie_tls.Tls13keyscheduler.Key_schedule.tagkey_from_handle ks handle with
+  | Core_models.Result.Result_Ok k ->
+    result == Bertie_tls.Tls13keyscheduler.Rfc8446_spec.finished_key ha
+      k.Bertie_tls.Tls13keyscheduler.Key_schedule.f_val
+  | Core_models.Result.Result_Err e -> result == Core_models.Result.Result_Err e"#))]
 pub fn derive_finished_key(
     ha: &HashAlgorithm,
     handle: &Handle,
