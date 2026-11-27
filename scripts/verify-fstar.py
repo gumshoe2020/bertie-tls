@@ -27,7 +27,7 @@ HAX_COMMIT = '5ccf89dd2e996c9f88f2267eaa2a64739c4ca41a'
 MODULES = ['Der.fst', 'Server.Server_db.fst', 'Server.fst', 'Tls13api.fst', 'Tls13cert.fst', 'Tls13crypto.Algorithm_types.fst', 'Tls13crypto.fst',
            'Tls13formats.Wire_types.fst', 'Tls13formats.Handshake_data.fst', 'Tls13formats.Handshake_type.fst', 'Tls13formats.fst',
            'Tls13handshake.fst', 'Tls13keyscheduler.Key_names.fst',
-           'Tls13keyscheduler.Key_schedule.fst', 'Tls13keyscheduler.fst', 'Tls13record.fst',
+           'Tls13keyscheduler.Key_schedule.fst', 'Tls13keyscheduler.Rfc8446_spec.fst', 'Tls13keyscheduler.fst', 'Tls13record.fst',
            'Tls13utils.Byte_types.fst', 'Tls13utils.fst']
 
 
@@ -148,6 +148,8 @@ def main(cache_dir=None):
         shutil.copytree(source / 'rust_primitives', libs / 'rust_primitives')
         shutil.copytree(Path(os.environ['HAX_LIB_PROOFS']), libs / 'hax-lib')
     shutil.copytree(ws / 'proofs/fstar/libcrux-models', libs / 'libcrux-models')
+    # Unedited HACL*/KaRaMeL interfaces for the one approved HKDF link (TRUSTED.md).
+    shutil.copytree(ws / 'proofs/fstar/hacl-specs', libs / 'hacl-specs')
     # Pinned sources may be read-only (e.g. a Nix store path); copytree keeps
     # those modes, so make the copies owner-writable before pruning them.
     for p in [libs, *libs.rglob('*')]:
@@ -155,7 +157,7 @@ def main(cache_dir=None):
     for p in libs.rglob('*'):
         if p.is_file() and p.suffix not in ('.fst', '.fsti'):
             p.unlink()
-    includes = [str(p.relative_to(OUT)) for p in [libs / 'rust_primitives', libs / 'core', libs / 'hax-lib', libs / 'libcrux-models', fresh]]
+    includes = [str(p.relative_to(OUT)) for p in [libs / 'rust_primitives', libs / 'core', libs / 'hax-lib', libs / 'libcrux-models', libs / 'hacl-specs', fresh]]
     modules = []
     def launch(args, log):
         if not tools:

@@ -4,11 +4,12 @@
 use super::{
     derive_app_handles, derive_app_keys, derive_hk_handles, derive_hk_ms, derive_rms,
     key_schedule::{get_by_handle, set_by_handle, Handle, TLSkeyscheduler, TLSnames},
+    rfc8446_spec as spec,
 };
 use crate::tls13crypto::{AeadAlgorithm, Digest, HashAlgorithm};
 use crate::tls13utils::Bytes;
 use std::collections::HashMap;
-use std::{vec, vec::Vec};
+use std::{println, vec, vec::Vec};
 
 fn inputs() -> (Bytes, Digest, Digest, Digest) {
     (
@@ -108,6 +109,29 @@ fn expected() -> Vec<(&'static str, Bytes)> {
     ]
 }
 
+fn specification() -> Vec<Bytes> {
+    let ha = HashAlgorithm::SHA256;
+    let (dhe, sh, sf, cf) = inputs();
+    let early = spec::early_secret(&ha).unwrap();
+    let ed = spec::derived(&ha, &early).unwrap();
+    let hs = spec::handshake_secret(&ha, &dhe).unwrap();
+    let (cht, sht) = spec::handshake_traffic(&ha, &hs, &sh).unwrap();
+    let hd = spec::derived(&ha, &hs).unwrap();
+    let ms = spec::master_secret(&ha, &hs).unwrap();
+    let cfk = spec::finished_key(&ha, &cht).unwrap();
+    let sfk = spec::finished_key(&ha, &sht).unwrap();
+    let (chk, chi) = spec::write_key_iv(&ha, &cht, 16, 12).unwrap();
+    let (shk, shi) = spec::write_key_iv(&ha, &sht, 16, 12).unwrap();
+    let (cat, sat, exp) = spec::application_traffic(&ha, &ms, &sf).unwrap();
+    let (cak, cai) = spec::write_key_iv(&ha, &cat, 16, 12).unwrap();
+    let (sak, sai) = spec::write_key_iv(&ha, &sat, 16, 12).unwrap();
+    let rms = spec::resumption_master(&ha, &ms, &cf).unwrap();
+    vec![
+        early, ed, hs, cht, sht, hd, ms, cfk, sfk, chk, chi, shk, shi, cat, sat, exp, cak, cai,
+        sak, sai, rms,
+    ]
+}
+
 fn implementation() -> Vec<Bytes> {
     let ha = HashAlgorithm::SHA256;
     let ae = AeadAlgorithm::Aes128Gcm;
@@ -162,17 +186,40 @@ fn implementation() -> Vec<Bytes> {
     ]
 }
 
+fn checked_specification() -> Vec<Bytes> {
+    let values = specification();
+    let expected = expected();
+    assert_eq!(values.len(), expected.len());
+    for ((name, want), actual) in expected.iter().zip(&values) {
+        assert_eq!(actual, want, "specification: {name}");
+    }
+    values
+}
+
+#[test]
+fn rfc8448_section3_specification() {
+    checked_specification();
+}
+
 #[test]
 fn rfc8448_section3_implementation() {
+    // Establish the spec gate before comparing any implementation output.
+    let spec = checked_specification();
     let actual = implementation();
     let expected = expected();
     assert_eq!(actual.len(), expected.len());
-    let mismatches: Vec<&str> = expected
-        .iter()
-        .zip(&actual)
-        .filter(|((_, want), actual)| actual != &want)
-        .map(|((name, _), _)| *name)
-        .collect();
+    let mut mismatches = Vec::new();
+    for (((name, want), spec), actual) in expected.iter().zip(&spec).zip(&actual) {
+        println!(
+            "VECTOR {name}: expected={} spec={} implementation={}",
+            hex::encode(want.declassify()),
+            hex::encode(spec.declassify()),
+            hex::encode(actual.declassify())
+        );
+        if actual != want {
+            mismatches.push(*name);
+        }
+    }
     assert!(
         mismatches.is_empty(),
         "RFC 8448 implementation mismatches: {mismatches:?}"

@@ -3,7 +3,8 @@
 //! Every call into a libcrux crate made by `tls13crypto` lives here, one small
 //! function per operation. Signatures use only std and Bertie types. This
 //! module is extracted interface-only for F*: its signatures carry no
-//! contracts, so nothing is assumed about libcrux beyond the types.
+//! contracts, so nothing is assumed about libcrux beyond the types, except the
+//! one approved HKDF link on `hkdf_expand_okm` (TRUSTED.md).
 
 #[cfg(feature = "chacha20poly1305")]
 use libcrux_chacha20poly1305::{decrypt_detached, encrypt_detached, TAG_LEN};
@@ -53,6 +54,40 @@ pub(super) fn hkdf_extract_prk(
 }
 
 /// HKDF-Expand to `len` bytes.
+///
+/// The `ensures` below is the one approved HKDF link (TRUSTED.md, "HKDF link to
+/// HACL*"): an unproved, declared postcondition, since this module is extracted
+/// interface-only. On `Ok`, libcrux's expansion is HACL*'s RFC 5869
+/// `Spec.Agile.HKDF.expand` whenever HACL*'s own preconditions hold, and the
+/// requested length is within RFC 5869's 255 * HashLen bound.
+#[cfg_attr(hax, hax_lib::fstar::before(interface, r#"
+/// HACL* algorithm for a bertie hash algorithm (definition, not an assumption).
+let hacl_hash (alg: Bertie_tls.Tls13crypto.Algorithm_types.t_HashAlgorithm)
+    : Spec.Hash.Definitions.fixed_len_alg =
+  match alg with
+  | Bertie_tls.Tls13crypto.Algorithm_types.HashAlgorithm_SHA256 -> Spec.Hash.Definitions.SHA2_256
+  | Bertie_tls.Tls13crypto.Algorithm_types.HashAlgorithm_SHA384 -> Spec.Hash.Definitions.SHA2_384
+  | Bertie_tls.Tls13crypto.Algorithm_types.HashAlgorithm_SHA512 -> Spec.Hash.Definitions.SHA2_512
+
+/// HACL* byte sequence with the same byte values (definition, not an assumption).
+let hacl_bytes (s: Seq.seq u8) : Spec.Hash.Definitions.bytes =
+  FStar.Seq.init (FStar.Seq.length s)
+    (fun i -> Lib.IntTypes.u8 (Rust_primitives.Integers.v (FStar.Seq.index s i)))
+
+/// `okm` is HACL*'s HKDF-Expand output for these inputs (definition, not an assumption).
+let hkdf_expand_is_hacl
+      (alg: Bertie_tls.Tls13crypto.Algorithm_types.t_HashAlgorithm)
+      (prk info: Seq.seq u8) (len: usize) (okm: Seq.seq u8) : Type0 =
+  let a = hacl_hash alg in
+  Rust_primitives.Integers.v len <= 255 * Spec.Hash.Definitions.hash_length a /\
+  ((Spec.Hash.Definitions.hash_length a <= FStar.Seq.length prk /\
+    Spec.Agile.HMAC.keysized a (FStar.Seq.length prk) /\
+    Spec.Agile.HKDF.expand_info_length_pred a (FStar.Seq.length info)) ==>
+   hacl_bytes okm == Spec.Agile.HKDF.expand a (hacl_bytes prk) (hacl_bytes info) (Rust_primitives.Integers.v len))
+"#))]
+#[hax_lib::ensures(|result| fstar!(r#"match result with
+  | Core_models.Result.Result_Ok okm -> hkdf_expand_is_hacl alg prk info len okm._0
+  | _ -> True"#))]
 pub(super) fn hkdf_expand_okm(
     alg: &HashAlgorithm,
     prk: &[u8],

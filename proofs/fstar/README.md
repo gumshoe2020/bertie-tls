@@ -7,7 +7,9 @@ CI checks the F* proofs from scratch on every run (`scripts/verify-fstar.py`):
 3. The per-module receipt goes to `target/ci-logs/fstar/` and feeds the coverage report.
 
 `Tls13crypto.Backend` is a generated, interface-only boundary for all libcrux
-calls. Its signatures use Bertie/std types and have no handwritten contracts.
+calls. Its signatures use Bertie/std types and have no handwritten contracts,
+except the approved HKDF link on `hkdf_expand_okm` (TRUSTED.md), stated over the
+unedited HACL* interfaces in `hacl-specs/` (on the F* include path).
 Strict F* checks the remaining crypto bodies and the algorithm declarations as
 separate roots; the declaration module retains the inherited derived instances.
 
