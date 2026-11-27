@@ -114,10 +114,24 @@ Proven moves from 3,332 to 3,635 lines (62.89% to 67.29%); the proof-to-code rat
 
 ## RFC 8446 key-schedule specification (P2)
 
-`tls13keyscheduler::rfc8446_spec` is compiled only for tests and hax and is
-checked as an additional strict F* root. M0 adds no functional (RFC) contracts
-to implementation units: the existing key-schedule proofs remain safety-only.
-The vector gate must pass before implementation/spec equality proofs begin.
+`tls13keyscheduler::rfc8446_spec` is compiled only for the sha256 test and hax,
+is checked as an additional strict F* root, and is reported as not shipped. It
+matches all 21 RFC 8448 §3 values. Units with functional (RFC) contracts, not
+just safety ones (P2 M2, 2026-11-26): `key_schedule::hkdf_expand_label` (equal
+to the specification's HKDF-Expand-Label for non-empty labels, errors included),
+`derive_finished_key` and `derive_aead_key_iv` (equal to the specification for
+the secret stored under the handle). Supporting content contracts:
+`Bytes::declassify`, `bytes`, `encode_length_u8` (error case),
+`HashAlgorithm::hmac_tag_len`, and `tls13crypto::hkdf_expand`, which carries the
+approved HKDF link to HACL* (TRUSTED.md). `backend::hkdf_expand_okm` stays
+trusted: the link is an assumption and gets no proof credit. The secret chain
+and handle store (`derive_hk_handles` to `derive_rms`) remain safety-only.
+
+Measured with formal-coverage v1.12.4 against main's record at 380c23f: proven
+4,063 of 5,030 (80.78%) to 4,064 of 5,029 (80.81%), trusted 161 to 159
+(`hkdf_expand_okm`'s attribute lines now count as proof text), unverified 553
+unchanged; proof depth "functional" 214 to 239 lines, "functional, checked only
+against own code" 167 to 186; ratchet PASS.
 
 ## Meaning and limits
 
