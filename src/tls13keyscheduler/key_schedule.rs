@@ -120,25 +120,130 @@ pub trait KeySchedule<N> {
     fn hash(d: &Bytes) -> Bytes;
 }
 
-#[derive(Default)]
+#[cfg_attr(
+    hax,
+    hax_lib::fstar::before(
+        interface,
+        r#"
+module Names = Bertie_tls.Tls13keyscheduler.Key_names
+module Algorithms = Bertie_tls.Tls13crypto.Algorithm_types
+type slot = Names.t_TLSnames & Algorithms.t_HashAlgorithm & u8
+type entry = slot & Bertie_tls.Tls13utils.Byte_types.t_Bytes
+
+let distinct_slots (s:Seq.seq entry) : Type0 =
+  forall (i j:nat). i < j /\ j < Seq.length s ==> (Seq.index s i)._1 =!= (Seq.index s j)._1
+
+let name_index (n:Names.t_TLSnames) : FStar.Fin.under 19 =
+  let open Names in match n with
+  | TLSnames_ES -> 0
+  | TLSnames_EEM -> 1
+  | TLSnames_CET -> 2
+  | TLSnames_Bind -> 3
+  | TLSnames_Binder -> 4
+  | TLSnames_HS -> 5
+  | TLSnames_SHT -> 6
+  | TLSnames_CHT -> 7
+  | TLSnames_HSalt -> 8
+  | TLSnames_AS -> 9
+  | TLSnames_RM -> 10
+  | TLSnames_CAT -> 11
+  | TLSnames_SAT -> 12
+  | TLSnames_EAM -> 13
+  | TLSnames_PSK -> 14
+  | TLSnames_ZeroSalt -> 15
+  | TLSnames_ESalt -> 16
+  | TLSnames_KEM -> 17
+  | TLSnames_ZeroIKM -> 18
+
+let hash_index (a:Algorithms.t_HashAlgorithm) : FStar.Fin.under 3 =
+  let open Algorithms in match a with
+  | HashAlgorithm_SHA256 -> 0
+  | HashAlgorithm_SHA384 -> 1
+  | HashAlgorithm_SHA512 -> 2
+
+let slot_index ((n,a,l):slot) : FStar.Fin.under 14592 =
+  (name_index n * 3 + hash_index a) * 256 + v l
+
+let index_injective (x y:slot) : Lemma (requires slot_index x == slot_index y) (ensures x == y) =
+  assert (v x._3 == v y._3);
+  assert (hash_index x._2 == hash_index y._2);
+  assert (name_index x._1 == name_index y._1);
+  ()
+
+// A new handle can always be appended. There are 19 * 3 * 256 possible slots.
+let store_capacity (s:Seq.seq entry{distinct_slots s}) : Lemma (Seq.length s <= 14592) =
+  if Seq.length s > 14592 then (
+    let at (i:FStar.Fin.under 14593) = slot_index (Seq.index s i)._1 in
+    let indices = Seq.init 14593 at in
+    let i,j = FStar.Fin.pigeonhole #14592 indices in
+    index_injective (Seq.index s i)._1 (Seq.index s j)._1)
+"#
+    )
+)]
+#[hax_lib::attributes]
 pub struct TLSkeyscheduler {
+    #[hax_lib::refine(hax_lib::fstar::prop!("distinct_slots f_keys._0"))]
     keys: Vec<((TLSnames, HashAlgorithm, u8), Key)>,
 }
 
+impl Default for TLSkeyscheduler {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+#[hax_lib::attributes]
 impl TLSkeyscheduler {
     pub fn new() -> Self {
         Self { keys: Vec::new() }
     }
 
-    fn position(&self, h: (TLSnames, HashAlgorithm, u8)) -> Option<usize> {
+    #[hax_lib::ensures(|result| fstar!(r#"let s = self.f_keys._0 in
+      v result <= Seq.length s /\
+      (forall (j:nat). j < v result ==> (Seq.index s j)._1 =!= h) /\
+      (v result < Seq.length s ==> (Seq.index s (v result))._1 == h)"#))]
+    fn position(&self, h: (TLSnames, HashAlgorithm, u8)) -> usize {
         let mut i = 0;
-        while i < self.keys.len() {
-            if self.keys[i].0 == h {
-                return Some(i);
-            }
+        while i < self.keys.len() && self.keys[i].0 != h {
+            hax_lib::loop_invariant!(fstar!(
+                r#"v i <= Seq.length self.f_keys._0 /\
+                (forall (j:nat). j < v i ==> (Seq.index self.f_keys._0 j)._1 =!= h)"#
+            ));
+            hax_lib::loop_decreases!(self.keys.len() - i);
             i += 1;
         }
-        None
+        i
+    }
+
+    #[hax_lib::ensures(|result| fstar!(r#"let s = self.f_keys._0 in
+      (forall j. j < Seq.length s /\ (Seq.index s j)._1 == h ==>
+        result == Core_models.Option.Option_Some (Seq.index s j)._2) /\
+      (match result with
+       | Core_models.Option.Option_Some k ->
+         exists j. j < Seq.length s /\ Seq.index s j == (h,k)
+       | _ -> True)"#))]
+    fn lookup(&self, h: (TLSnames, HashAlgorithm, u8)) -> Option<Key> {
+        let i = self.position(h);
+        if i < self.keys.len() {
+            Some(self.keys[i].1.clone())
+        } else {
+            None
+        }
+    }
+
+    #[hax_lib::ensures(|_| fstar!(r#"
+      impl_TLSkeyscheduler__lookup self_e_future h == Core_models.Option.Option_Some k /\
+      (forall q. q =!= h ==>
+        impl_TLSkeyscheduler__lookup self_e_future q == impl_TLSkeyscheduler__lookup self q)"#))]
+    fn put(&mut self, h: (TLSnames, HashAlgorithm, u8), k: Key) {
+        let i = self.position(h);
+        if i < self.keys.len() {
+            self.keys[i] = (h, k);
+        } else {
+            #[cfg(hax)]
+            hax_lib::fstar!("store_capacity self.f_keys._0");
+            self.keys.push((h, k));
+        }
     }
 }
 
@@ -185,17 +290,11 @@ impl KeySchedule<TLSnames> for TLSkeyscheduler {
     }
 
     fn get(&self, name: TLSnames, level: u8, h: (TLSnames, HashAlgorithm, u8)) -> Option<Key> {
-        self.position(h)
-            .and_then(|i| self.keys.get(i))
-            .map(|entry| entry.1.clone())
+        self.lookup(h)
     }
 
     fn set(&mut self, name: TLSnames, level: u8, h: (TLSnames, HashAlgorithm, u8), k: Key) {
-        if let Some(i) = self.position(h) {
-            self.keys[i].1 = k;
-        } else {
-            self.keys.push((h, k));
-        }
+        self.put(h, k);
     }
 
     // TODO:
@@ -337,6 +436,9 @@ pub fn tagkey_from_handle(ks: &TLSkeyscheduler, handle: &Handle) -> Result<TagKe
 }
 
 #[cfg_attr(feature = "hax-pv", hax_lib::pv_constructor)]
+#[hax_lib::ensures(|_| fstar!(r#"let h = (handle.f_name, handle.f_alg, handle.f_level) in
+  impl_TLSkeyscheduler__lookup ks_future h == Core_models.Option.Option_Some key /\
+  (forall q. q =!= h ==> impl_TLSkeyscheduler__lookup ks_future q == impl_TLSkeyscheduler__lookup ks q)"#))]
 pub fn set_by_handle(ks: &mut TLSkeyscheduler, handle: &Handle, key: Key) {
     ks.set(
         handle.name,
@@ -347,6 +449,10 @@ pub fn set_by_handle(ks: &mut TLSkeyscheduler, handle: &Handle, key: Key) {
 }
 
 #[cfg_attr(feature = "hax-pv", hax_lib::pv_constructor)]
+#[hax_lib::ensures(|result| fstar!(r#"result == (match impl_TLSkeyscheduler__lookup ks
+    (handle.f_name, handle.f_alg, handle.f_level) with
+  | Core_models.Option.Option_Some k -> Core_models.Result.Result_Ok k
+  | _ -> Core_models.Result.Result_Err Bertie_tls.Tls13utils.v_INCORRECT_STATE)"#))]
 pub fn get_by_handle(ks: &TLSkeyscheduler, handle: &Handle) -> Result<Key, TLSError> {
     ks.get(
         handle.name,
