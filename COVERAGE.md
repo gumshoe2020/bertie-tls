@@ -68,62 +68,24 @@ proven, although a canary showed F* rejects a broken body there. `aead_encrypt`,
 `aead_decrypt` and `tlserr` have feature-flag twins and stay unmapped, because the F* receipt
 does not record the extraction's feature set. 15 units changed and none lost a tier: proven
 4,027 to 4,111 of 5,078 (79.30% to 80.96%), trusted 118 to 161, unverified 652 to 553; the
-table below counts trusted with unverified (770 to 714). Full comparison: formal-coverage
+rendered table counts trusted with unverified (770 to 714). Full comparison: formal-coverage
 `dev/v191/compare.md` at tag v1.9.1.
 
-<!-- measured coverage: begin -->
+**Re-measured with formal-coverage v1.11.0 (2026-11-25).** The tool changed, not the code.
+v1.11.0 reports what each proof establishes. A postcondition that only states lengths or
+integer ranges now counts as safety-only, and a functional contract that is checked only
+against first-party runtime code is labelled as such. No unit changed tier, status or size:
+proven stays 4,125 of 5,092 (81.01%) and the proof ratio stays 0.14. The v1.11.0 Proof depth table
+splits the proven lines: 92.39% safety-only, 5.70% functional but checked only against
+own code, 1.92% functional. Full comparison: formal-coverage `dev/v1110/compare.md` at tag
+v1.11.0.
 
-| Security runtime | Lines | Share |
-| --- | ---: | ---: |
-| proven | 4112 | 80.96% |
-| tested | 253 | 4.98% |
-| unverified | 714 | 14.06% |
-
-Total: **5079** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (4112 lines); Verus proven: 0 lines.
-
-Proof-to-code ratio: **0.14** (587 proof SLoC / 4112 proven + proven-extracted runtime SLoC); informational, never blocking.
-
-Proof components: 322 hax annotation SLoC, 217 standalone `cfg(hax)` proof-code SLoC, and 61 inline `cfg(hax)` SLoC (overlaps count once). F* models: 1 SLoC of trusted assumptions, excluded from the ratio.
-
-| Module | Proven runtime | Proof SLoC | Proof / proven runtime |
-| --- | ---: | ---: | ---: |
-| bertie_tls::der | 150 | 296 | 1.97 |
-| bertie_tls::server | 24 | 0 | 0.00 |
-| bertie_tls::server::ServerDB | 13 | 0 | 0.00 |
-| bertie_tls::tls13api | 16 | 0 | 0.00 |
-| bertie_tls::tls13api::Client | 68 | 0 | 0.00 |
-| bertie_tls::tls13api::Server | 63 | 0 | 0.00 |
-| bertie_tls::tls13cert | 306 | 45 | 0.15 |
-| bertie_tls::tls13cert::CloneforCertificateKey | 3 | 0 | 0.00 |
-| bertie_tls::tls13crypto | 297 | 0 | 0.00 |
-| bertie_tls::tls13crypto::AeadAlgorithm | 16 | 0 | 0.00 |
-| bertie_tls::tls13crypto::AeadKey | 3 | 0 | 0.00 |
-| bertie_tls::tls13crypto::AeadKeyIV | 3 | 0 | 0.00 |
-| bertie_tls::tls13crypto::Algorithms | 115 | 13 | 0.11 |
-| bertie_tls::tls13crypto::HashAlgorithm | 12 | 1 | 0.08 |
-| bertie_tls::tls13formats | 834 | 71 | 0.09 |
-| bertie_tls::tls13formats::ContentType | 9 | 0 | 0.00 |
-| bertie_tls::tls13formats::Extensions | 8 | 0 | 0.00 |
-| bertie_tls::tls13formats::Transcript | 53 | 1 | 0.02 |
-| bertie_tls::tls13formats::handshake_data | 94 | 4 | 0.04 |
-| bertie_tls::tls13formats::handshake_data::HandshakeData | 76 | 13 | 0.17 |
-| bertie_tls::tls13handshake | 708 | 1 | 0.00 |
-| bertie_tls::tls13keyscheduler | 219 | 0 | 0.00 |
-| bertie_tls::tls13keyscheduler::key_schedule | 307 | 0 | 0.00 |
-| bertie_tls::tls13keyscheduler::key_schedule::KeySchedule<TLSnames>forTLSkeyscheduler | 45 | 0 | 0.00 |
-| bertie_tls::tls13record | 252 | 6 | 0.02 |
-| bertie_tls::tls13record::DuplexCipherStateH | 13 | 0 | 0.00 |
-| bertie_tls::tls13utils | 303 | 106 | 0.35 |
-| bertie_tls::tls13utils::<constC:usize>From<&[u8 ; C]>forBytes | 0 | 1 | n/a |
-| bertie_tls::tls13utils::<constC:usize>From<[u8 ; C]>forBytes | 0 | 1 | n/a |
-| bertie_tls::tls13utils::AppData | 9 | 0 | 0.00 |
-| bertie_tls::tls13utils::Bytes | 90 | 26 | 0.29 |
-| bertie_tls::tls13utils::From<&[u8]>forBytes | 0 | 1 | n/a |
-| bertie_tls::tls13utils::From<Bytes>forAppData | 3 | 0 | 0.00 |
-| bertie_tls::tls13utils::core::ops::Index<Range<usize>>forBytes | 0 | 1 | n/a |
-
-<!-- measured coverage: end -->
+Current measured tables (including module ratios and proof depth) live in
+[COVERAGE-MEASURED.md on coverage-data](https://github.com/gumshoe2020/bertie-tls/blob/coverage-data/COVERAGE-MEASURED.md).
+That page describes the most recently published measurement; overlapping main
+runs may finish out of order. Exact commit measurements are in
+`baselines/<full-sha>.json` on the same branch. The historical measurements
+in this document explain earlier changes and are not the current floor.
 
 The `tls13utils` bodies are now extracted and checked by strict F*, including
 byte conversion, length encoding, bounds and equality helpers. The four affected
@@ -160,7 +122,7 @@ The vector gate must pass before implementation/spec equality proofs begin.
 ## Meaning and limits
 
 “Proven” here sums the tool's `proven` and `proven-extracted` runtime categories;
-they remain separate in baseline.json. Extracted credit trusts hax and only the
+they remain separate in each recorded baseline. Extracted credit trusts hax and only the
 accepted F* contracts. Safety-only contracts establish no panics/overflows under
 the abstract interfaces, not TLS correctness, crypto implementation correctness
 or RFC conformance. Functional contracts carry the tool's self-consistency
@@ -216,7 +178,7 @@ the remaining file provides only an empty namespace required by hax. These proof
 establish safety and the stated length contracts, not cryptographic correctness.
 
 Proof-to-code ratio: formal-coverage v1.8 measures hax/F* proof (annotations,
-`cfg(hax)` proof code), so the ratio above is measured, not estimated. About 200 of
+`cfg(hax)` proof code), so the reported ratio is measured, not estimated. About 200 of
 the 509 proof lines are annotations on functions F* does not yet verify, so the
 ratio flatters the verified code somewhat.
 
@@ -226,10 +188,34 @@ those artifacts alone. They remain trust/inventory evidence. Fresh receipts bind
 Rust sources, driver, manifest, lock, all F* siblings and exact strict invocations.
 Any rejected receipt or unmapped function retains zero credit; see the full report.
 
+**formal-coverage v1.12.0 (2026-11-26).** Measurement is unchanged. Two ratchet changes: the
+ratchet is enforced explicitly (`enforce-ratchet: 'true'` in coverage.yml, because 1.12.0 reports
+without enforcing by default), and a change to security code at equal proven share now passes if it
+raises the number of proven lines with functional contracts. That rule applies once main has a
+coverage record written by 1.12.0, which the first main run after this change provides.
+
+**formal-coverage v1.12.1 (2026-11-26).** Measurement and ratchet rules are unchanged. The ratchet
+now refuses to run on a checkout with uncommitted changes, including untracked files git doesn't
+ignore, because it compares the base to HEAD while measuring the files on disk. Commit before
+running it locally. CI's hax checkout (`hax-src/`) is git-ignored for this reason.
+
+**formal-coverage v1.12.3 (2026-11-26).** Three changes. (1) Test code is identified only by structural
+evidence (built-in `#[test]`/`#[bench]`, `#[cfg(test)]`, or a test target); other attributes named `test` are
+measured as runtime. This is a measurement change; bertie-tls's numbers are unchanged by it. (2) Main's coverage
+record now stores each unit's status, which allows a deletion-only share drop (see AGENTS.md rule 1) once main has
+a record written by 1.12.3. (3) A failing ratchet prints its reason as the last line of the CI output.
+
+**formal-coverage v1.12.4 (2026-11-26).** Test scope follows `#[path]` module files and no longer trusts a
+bare `#[test]` that an import could shadow. These are measurement changes; bertie-tls's numbers are unchanged.
+
 ## Reproduction and pins
 
-- formal-coverage v1.9.1, public commit `b7379121068c3d5db257e10a5013c2a85d0c9fe4`.
-  Both shared CI actions pin this commit, which also pins the measurement tool.
+- formal-coverage v1.12.4, public commit `04bfae9bdeef910980313061b8c8b425c1efb563`.
+  All three shared CI actions pin this commit, which also pins the measurement tool.
+- ProVerif `2.05`, official source
+  `https://bblanche.gitlabpages.inria.fr/proverif/proverif2.05.tar.gz`,
+  SHA-256 `4871f53c32ab4a04669a060c4886ba5d9080496963fb980a9a62d2c429ceabc4`.
+  Built by `scripts/install-proverif` and `.github/actions/setup-proverif`.
 - hax `0.4.2`, source `5ccf89dd2e996c9f88f2267eaa2a64739c4ca41a`.
 - Rust extraction toolchain `nightly-2025-11-08`; F* `2025.10.06`, Z3 `4.13.3`.
 - Local container images: `fc-verify-hax:v17` (aarch64) and
@@ -240,16 +226,22 @@ Any rejected receipt or unmapped function retains zero credit; see the full repo
   and every audit remain explicit, never suppressed for proof credit.
 
 ```sh
-cargo build --release --locked --manifest-path /path/to/formal-coverage/Cargo.toml
+mkdir -p target/coverage-ci
+cargo build --release --locked --manifest-path /path/to/formal-coverage/Cargo.toml \
+  > target/coverage-ci/kit-build.log 2>&1
 # Native tools: HAX_CORE_LIBS=/pinned/hax/proof-libs/fstar
 #               HAX_LIB_PROOFS=/pinned/hax/hax-lib/proofs/fstar/extraction
-python3 scripts/verify-fstar.py
+FSTAR_JOBS=1 python3 scripts/verify-fstar.py > target/coverage-ci/fstar.log 2>&1
 # /path/to/formal-coverage must be the public commit pinned above.
+git fetch origin refs/heads/coverage-data:refs/remotes/origin/coverage-data
 python3 /path/to/formal-coverage/ci/run.py \
   --tool /path/to/formal-coverage/target/release/formal-coverage \
   --workspace "$PWD" --report-args '["--fstar-log","target/ci-logs/fstar/fstar.log"]' \
-  --base "$(git merge-base origin/main HEAD)" --output "$PWD/target/coverage-ci"
-python3 -m unittest discover -s /path/to/formal-coverage/ci/tests -v
+  --config coverage/ci.json \
+  --base "$(git merge-base origin/main HEAD)" --output "$PWD/target/coverage-ci" \
+  > target/coverage-ci/runner.log 2>&1
+python3 -m unittest discover -s /path/to/formal-coverage/ci/tests -v \
+  > target/coverage-ci/kit-tests.log 2>&1
 ```
 
 For the local rebuilt toolchain, prefix verification with
@@ -259,20 +251,65 @@ cache, extracts frozen sources and checks nineteen strict F* roots. No proof pat
 admission, lax check or checked cache is used. The original upstream snapshots
 remain in git as historical artifacts; they are not inputs to this verification.
 
+### What CI caches
+
+- `hax.yml` (pass/fail gate) caches F*'s per-module `.checked` files. Pull requests may read the cache; only a
+  push to `main` writes it. The key binds the hax commit, F* and Z3 versions, the hash of
+  `scripts/verify-fstar.py` and the hash of the extraction inputs (`src/**`, `Cargo.toml`, `Cargo.lock`,
+  `hax-driver.py`, `proofs/fstar/libcrux-models/**`), and F* re-checks any module whose own digest or
+  whose dependencies' digests differ. hax extraction is never cached.
+- `coverage.yml` is never cached. formal-coverage v1.11.0 rejects `--cache_checked_modules`, any `.checked`
+  file in the receipt scope, and any module without its own fresh `Verified module:` line (F* prints that line
+  even when it loads a module from the cache), so cached results cannot be honest evidence.
+  `scripts/verify-fstar.py --cache-dir DIR` therefore writes no `fstar.log.evidence.json`.
+- `proverif.yml` also succeeds quickly on unrelated PRs. Its separate input policy covers Rust/workspace
+  manifests, Cargo configuration/toolchain/build scripts, `hax-driver.py`, `proofs/proverif/**` (including
+  handwritten libraries, extraction and expected results), `scripts/{install,check}-proverif`, both setup
+  actions, its workflow and the detector/tests. F*-only inputs are unrelated; unknown paths run the job.
+  Pushes to main and dispatch always run ProVerif.
+- `hax.yml` succeeds quickly, with a log line, on a pull request that changes nothing F* reads
+  (`scripts/ci-changes.py`: docs and unrelated workflows only; every other path counts). Pushes, the nightly
+  schedule and manual dispatch always run. Coverage is never skipped.
+- To force an uncached run: start `hax` from the Actions tab (`workflow_dispatch`) with `no_cache` ticked. The
+  nightly schedule is always uncached. Locally, omit `--cache-dir` (the default).
+
 ## Ratchet and exceptions
 
-The merge-base `coverage/baseline.json` is the floor. A proposed baseline and this
-document must match the recomputed report. Unverified security lines cannot rise;
-proven share cannot fall. A change intersecting security-runtime spans in either
-the old or new report must strictly increase proven share. Docs/CI/test-only diffs
-are exempt from the strict increase, not from the other rules. Pure source renames
-are security changes and do not count as proof improvement. Use `git diff -U0`.
+The floor is `baselines/<merge-base-full-sha>.json` on `coverage-data` (on a main
+push, the base is the push event's `before` commit). The coverage action fetches
+that branch and fails closed if the record is missing or invalid. For adoption only,
+`coverage/ci.json` sets `bootstrap_baseline`: while the data branch holds no
+`baselines/*.json`, the floor is `coverage/baseline.json` read from the merge-base
+commit (not the PR's tree). Once main's first push has recorded a baseline it is
+ignored, and a follow-up PR removes the setting. The local runner requires the data
+branch to have been fetched first; it does not fetch automatically.
 
-CI never commits baselines. The first PR has no merge-base floor until the initial
-baseline has been reviewed and installed; the workflow fails closed in that case.
-A maintainer must resolve the bootstrap before claiming a passing ratchet.
-Andrew must enable the repository's up-to-date-branch requirement before relying
-on concurrent PR checks; no settings have been changed by this work.
+Unverified security lines cannot rise; proven share cannot fall. A change
+intersecting security-runtime spans in either the old or new report must strictly
+increase proven share. Docs/CI/test-only diffs are exempt from the strict increase,
+not from the other rules. Pure source renames are security changes and do not
+count as proof improvement. The pinned kit uses `git diff -U0` and exact rational
+comparisons, unchanged from committed-floor mode.
+
+PRs no longer commit `coverage/baseline.json` or a measured section in this document;
+recorded mode skips both committed-output equality checks. What stays committed:
+`formal-coverage.toml` (measurement scope/settings), `coverage/ci.json` (floor mode
+and data branch), this policy, historical explanations, tool pins and the
+`## Exceptions` table. Change a tool version and its pin together; there is no
+requirement to bundle version changes with measured numbers in one commit.
+
+Every main push publishes the completed measurement append-only as
+`baselines/<sha>.json` and refreshes `COVERAGE-MEASURED.md` on `coverage-data`.
+Publication runs even if the ratchet failed, so the actual measured main state is
+recorded and the failure stays visible. A failed measurement has no record to
+publish and publication fails. The publisher rejects a different existing SHA
+record, never forces and never commits to main. Its job alone has `contents: write`
+for baseline publication; GitHub's token scope is repository-wide, while the
+pinned action restricts its pushes to the configured data branch. Badge publication
+retains its separate write job restricted by its action to `badges`.
+
+Andrew must enable the repository's up-to-date-branch requirement or a merge queue
+before relying on concurrent PR checks. No repository settings are changed here.
 
 Only urgent security fixes may use the table below: name a full commit in the
 checked range, approving maintainer, reason and restoration obligation. Human
@@ -296,19 +333,20 @@ On main, `coverage.yml` writes shields.io endpoint JSON to the `badges` branch
 ## Exceptions
 
 An urgent security fix may skip the ratchet only if a maintainer lists the exact
-40-character commit here, with the approver and what restores the ratchet. The only
-entry so far is not a security fix: it is a one-time exception Andrew approved for a
-tool measurement change, with the reason in the row.
+40-character commit here, with the approver and what restores the ratchet. Neither
+entry so far is a security fix: both are one-time exceptions Andrew approved where
+proof-only code stopped being counted as runtime, with the reason in the row.
 
 | Commit | Approving maintainer | Reason | Restoration obligation |
 | --- | --- | --- | --- |
 | df7732434fc8321d4b688e46379e93da5fdecace | Andrew VanLoo | formal-coverage v1.8.1 moved cfg(hax) lemmas out of the runtime count. The measurement changed, not the code: the DER lemmas in `src/der.rs` only exist for F* checking and were previously counted as proven runtime, so proven share fell from 14.16% to 10.34% on identical source and F* receipt. | None: no code regressed. The v1.8.1 measurement is the new floor. |
+| 9647b63667628d1409c40a90682f9fb4cee42577 | Andrew VanLoo | Eight DER spec items (`two_pow_256`, `be_value_prefix`, `be_value`, `der_sig_valid`, `encoder_correct`, `parser_sound`, `parser_complete`, `der_sig_unique`) are used only by hax contracts, lemmas and proof tests, so they now compile only under cfg(hax). 60 lines moved from proven runtime to proof code with no change to shipped code: proven share fell from 81.01% to 80.78%, while functional proofs rose from 1.92% to 3.57%. Approved 2026-11-25: "We improved the honesty of the tool, which is a worthwhile exception." | None: no code regressed. The post-gating measurement is the new floor. |
 
 ## Badges and proof-cost guidance
 
 The shared kit's default badge set, labels and thresholds match the Badges table
-above exactly; no project JSON config is needed. The measurement settings remain
-in `formal-coverage.toml`. See the pinned kit's `ci/README.md` for its action inputs
+above exactly; no badge overrides are needed in `coverage/ci.json`, which selects
+the recorded floor. The measurement settings remain in `formal-coverage.toml`. See the pinned kit's `ci/README.md` for its action inputs
 and local runner. The kit now owns the generic ratchet, writers and their tests.
 Proof cost is informational: development range 5–15, established range 10–20;
 established modules above 20 require review. The project is alpha, so

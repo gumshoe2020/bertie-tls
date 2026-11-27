@@ -6,3 +6,6 @@
 .DS_Store
 .vscode
 __pycache__/
+
+# hax source checked out by CI for F* proof libraries (formal-coverage 1.12.1 refuses untracked files)
+/hax-src/

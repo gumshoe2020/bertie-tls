@@ -1,7 +1,11 @@
 name: hax
 
-# Fresh hax extraction plus strict F* on every module, never cached or patched.
-# Only the hax tool build is cached, keyed on the pinned commit.
+# Fresh hax extraction plus strict F* on every module, never patched. The extraction is never cached.
+# F*'s per-module .checked files are cached (key: hax commit, F*/Z3 versions, verify-fstar.py hash, extraction inputs hash): PR runs may read the cache, only
+# pushes to main write it, and F* itself re-checks any module whose digest or whose dependencies' digests
+# differ. The nightly schedule and a dispatch with no_cache=true skip the cache and check everything fresh.
+# This job is a pass/fail gate; coverage.yml stays uncached because formal-coverage only credits
+# modules with a "Verified module" line from a real, uncached F* run.
 # coverage.yml runs the same script and then measures; this workflow is the
 # proofs-only signal and the nightly check.
 on:
@@ -12,6 +16,11 @@ on:
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
+    inputs:
+      no_cache:
+        description: Ignore the F* cache and check every module fresh
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -30,24 +39,55 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+      - name: Detect whether this change touches anything F* reads
+        id: changes
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          python3 scripts/ci-changes.py ${BASE_SHA:+"$BASE_SHA"}
+      - name: Skipped, nothing F* reads changed
+        if: steps.changes.outputs.relevant != 'true'
+        run: echo "No extraction or F* input changed in this pull request; skipping hax and F* (push, schedule and dispatch always run them)."
+      - if: steps.changes.outputs.relevant == 'true'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: cryspen/hax
           ref: ${{ env.HAX_COMMIT }}
           path: hax-src
-      - uses: ./.github/actions/setup-hax
+      - if: steps.changes.outputs.relevant == 'true'
+        uses: ./.github/actions/setup-hax
         with:
           fstar: v2025.10.06
           hax_commit: ${{ env.HAX_COMMIT }}
+      - name: Restore F* per-module cache
+        id: fstar-cache
+        if: steps.changes.outputs.relevant == 'true' && github.event_name != 'schedule' && !inputs.no_cache
+        uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ${{ runner.temp }}/fstar-cache
+          key: fstar-${{ env.HAX_COMMIT }}-fstar2025.10.06-z3-4.13.3-${{ hashFiles('scripts/verify-fstar.py') }}-${{ hashFiles('src/**', 'Cargo.toml', 'Cargo.lock', 'hax-driver.py', 'proofs/fstar/libcrux-models/**') }}
+          restore-keys: |
+            fstar-${{ env.HAX_COMMIT }}-fstar2025.10.06-z3-4.13.3-${{ hashFiles('scripts/verify-fstar.py') }}-
       - name: Extract and verify every module
+        if: steps.changes.outputs.relevant == 'true'
         env:
+          CACHE_ARGS: ${{ steps.fstar-cache.conclusion == 'success' && format('--cache-dir {0}/fstar-cache', runner.temp) || '' }}
           HAX_CORE_LIBS: ${{ github.workspace }}/hax-src/proof-libs/fstar
           HAX_LIB_PROOFS: ${{ github.workspace }}/hax-src/hax-lib/proofs/fstar/extraction
         run: |
           eval "$(opam env 2>/dev/null || true)"
-          FSTAR_JOBS="$(nproc)" python3 scripts/verify-fstar.py
+          # shellcheck disable=SC2086
+          FSTAR_JOBS="$(nproc)" python3 scripts/verify-fstar.py $CACHE_ARGS
+      - name: Save F* per-module cache (main only)
+        if: steps.fstar-cache.outputs.cache-hit != 'true' && steps.fstar-cache.conclusion == 'success' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/cache/save@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ${{ runner.temp }}/fstar-cache
+          key: ${{ steps.fstar-cache.outputs.cache-primary-key }}
       - name: Keep logs
-        if: always()
+        if: always() && steps.changes.outputs.relevant == 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: fstar-logs

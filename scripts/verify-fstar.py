@@ -4,7 +4,14 @@
 Native CI: set HAX_CORE_LIBS and HAX_LIB_PROOFS to the pinned hax source dirs.
 Local reproduction: BERTIE_DOCKER_TOOLS=/Users/gumshoe/src/bertie-toolchain.
 All build products and logs stay under target/ci-logs/fstar.
+
+--cache-dir DIR (default: off) lets F* reuse and write its own `.checked` files in DIR, so
+unchanged modules are not re-checked. F* validates each file against the digests of the module and
+its dependencies and re-checks on any mismatch. A cached run is a pass/fail gate only: formal-coverage
+rejects cached F* artifacts and needs a "Verified module" line for every module, so no
+receipt (fstar.log.evidence.json) is written. Coverage runs never use --cache-dir.
 """
+import argparse
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
@@ -38,7 +45,54 @@ def inventory(base):
             if p.suffix in ('.fst', '.fsti')}
 
 
-def main():
+def dependency_levels(dep_output, cache_dir):
+    """Group cacheable F* files into levels; every file only depends on earlier levels."""
+    prefix = str(cache_dir) + '/'
+    needs, source = {}, {}
+    for rule in dep_output.replace('\\\n', ' ').splitlines():
+        target, _, deps = rule.partition(': ')
+        if not target.startswith(prefix) or not target.endswith('.checked'):
+            continue
+        parts = deps.split()
+        source[target] = parts[0]
+        needs[target] = [d for d in parts[1:] if d.startswith(prefix)]
+    levels, done = [], set()
+    while len(done) < len(needs):
+        level = sorted(t for t in needs if t not in done and all(d in done for d in needs[t]))
+        if not level:
+            raise RuntimeError('cyclic F* dependencies')
+        levels.append([source[t] for t in level])
+        done.update(level)
+    return levels
+
+
+def warm_cache(launch, includes, cache_dir):
+    """Check every library and project module once, in dependency order, writing .checked files.
+
+    F* only writes a module's .checked file when all its dependencies' files exist, so the cache
+    has to be built bottom-up. Each file is still verified by F* (or accepted by its digest check).
+    """
+    flags = ['--cache_checked_modules', '--cache_dir', str(cache_dir)]
+    inc = [x for i in includes for x in ('--include', i)]
+    roots = [f'fresh/Bertie_tls.{m}' for m in MODULES]
+    dep_log = OUT / 'fstar-dep.txt'
+    if launch(['fstar.exe', '--dep', 'full', *flags, *inc, *roots], dep_log):
+        raise RuntimeError(f'F* dependency analysis failed; see {dep_log}')
+    (OUT / 'warm').mkdir()
+    jobs = int(os.environ.get('FSTAR_JOBS', '2'))
+    for number, level in enumerate(dependency_levels(dep_log.read_text(), cache_dir)):
+        def check(file):
+            log = OUT / 'warm' / (Path(file).name + '.log')
+            return file, launch(['fstar.exe', *flags, *inc, file], log)
+        with ThreadPoolExecutor(max_workers=jobs) as pool:
+            failed = [f for f, rc in pool.map(check, level) if rc]
+        print(f'cache level {number}: {len(level)} files, {len(failed)} failed', flush=True)
+        if failed:
+            print(f'cache warm-up failed for {failed}; roots are re-checked below', file=sys.stderr)
+            return
+
+
+def main(cache_dir=None):
     if OUT.exists():
         shutil.rmtree(OUT)
     OUT.mkdir(parents=True)
@@ -103,6 +157,16 @@ def main():
             p.unlink()
     includes = [str(p.relative_to(OUT)) for p in [libs / 'rust_primitives', libs / 'core', libs / 'hax-lib', libs / 'libcrux-models', fresh]]
     modules = []
+    def launch(args, log):
+        if not tools:
+            return run(args, log, cwd=OUT)
+        mounts = ['-v', f'{cache_dir}:{cache_dir}'] if cache_dir else []
+        executable = common[:-2] + mounts + ['-w', str(OUT), '--platform', 'linux/amd64', '--network', 'none',
+                      'fc-verify-fstar-amd64:v17', 'bash', '-ec',
+                      'export PATH=/tools/fstar-bin-2025.10.06/fstar/bin:/tools/fstar-bin-2025.10.06/fstar/lib/fstar/z3-4.13.3/bin:$PATH; exec "$@"', 'proof'] + args
+        return run(executable, log, cwd=OUT)
+    if cache_dir:
+        warm_cache(launch, includes, cache_dir)
     def verify(suffix):
         file = f'fresh/Bertie_tls.{suffix}'
         command = ['fstar.exe']
@@ -110,13 +174,16 @@ def main():
             command += ['--include', inc]
         command += [file]
         name = Path(file).name
-        if tools:
-            executable = common[:-2] + ['-w', str(OUT), '--platform', 'linux/amd64', '--network', 'none',
-                          'fc-verify-fstar-amd64:v17', 'bash', '-ec',
-                          'export PATH=/tools/fstar-bin-2025.10.06/fstar/bin:/tools/fstar-bin-2025.10.06/fstar/lib/fstar/z3-4.13.3/bin:$PATH; exec "$@"', 'proof'] + command
+        log = OUT / f'{name}.log'
+        if not cache_dir:
+            rc = launch(command, log)
         else:
-            executable = command
-        rc = run(executable, OUT / f'{name}.log', cwd=OUT)
+            cached = command[:1] + ['--cache_checked_modules', '--cache_dir', str(cache_dir)] + command[1:]
+            rc = launch(cached, log)
+            if rc != 0:
+                # A bad cache entry must never fail open or hide a result: re-check from scratch.
+                log.rename(OUT / f'{name}.cached-attempt.log')
+                rc = launch(command, log)
         result = dict(file=file, command=command, exit_code=rc,
                       outcome='success' if rc == 0 else 'failed')
         print(f'{name}: exit {rc}', flush=True)
@@ -130,6 +197,9 @@ def main():
         modules = list(pool.map(verify, MODULES))
     combined = OUT / 'fstar.log'
     combined.write_bytes(b'\n'.join((OUT / f'Bertie_tls.{m}.log').read_bytes() for m in MODULES))
+    if cache_dir:
+        print(f'cached run ({cache_dir}): pass/fail gate only, no coverage receipt written', file=sys.stderr)
+        return int(any(m['exit_code'] != 0 for m in modules))
     bound = {name: digest(ws / name) for name in files if (ROOT / name).is_file()
              and (name.endswith('.rs') or name in ('Cargo.toml', 'Cargo.lock', 'hax-driver.py'))}
     if any(digest(ROOT / name) != sha for name, sha in bound.items()):
@@ -148,5 +218,16 @@ def main():
     return int(any(m['exit_code'] != 0 for m in modules))
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument('--cache-dir', type=Path, default=None,
+                        help='reuse and write F* .checked files here (gate only; writes no receipt)')
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
-    sys.exit(main())
+    args = parse_args()
+    cache = args.cache_dir.resolve() if args.cache_dir else None
+    if cache:
+        cache.mkdir(parents=True, exist_ok=True)
+    sys.exit(main(cache))

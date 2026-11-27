@@ -1,0 +1,429 @@
+# ProVerif P1
+
+2026-11-25: M1 pins the official ProVerif 2.05 source archive, SHA-256
+4871f53c32ab4a04669a060c4886ba5d9080496963fb980a9a62d2c429ceabc4.
+`scripts/install-proverif` built successfully inside fc-verify-hax:v17; install
+output is in target/proverif/install.log. The setup action uses this same script.
+No Rust, queries, replacement attributes or handwritten library edits.
+
+`hax-driver.py typecheck-proverif` invokes the complete ProVerif analysis without
+`-parse-only`. Existing analysis.pv describes queries 1, 2, 3 and 5 as expected
+failures (reachability and compromised-key controls). The task explicitly says
+stop on any false, so no exceptions will be inferred for these controls.
+Memory search/diary tools are unavailable in this session.
+
+M2 blocked: `cargo build --locked --features hax-pv` and pinned hax extraction
+both exited 0. The regenerated lib.pvl was committed separately as 647ad41
+(3263 insertions, 4578 deletions); analysis.pv was unchanged. No extracted file
+was hand-edited. Full analysis via `typecheck-proverif` then failed before any
+query ran, with this exact diagnostic:
+
+```text
+File "proofs/proverif/extraction/lib.pvl", line 499, characters 7-134:
+Error: type std__collections__hash__map__t_HashMap_of_bitstring_bertie_tls__tls13utils__byte_types__t_Bytes_std__hash__random__t_RandomState not declared.
+```
+
+ProVerif exit 2, driver exit 1. Wall time 0.0403965 seconds; peak RSS 11272 KiB
+(Linux resource.getrusage(RUSAGE_CHILDREN), including the Python driver).
+Logs and runner: target/proverif/{extract.log,analysis.log,metrics.json,
+analyze-local.py,extract-local.sh}. Source installation: install.log.
+All seven queries have NO RESULT (input rejected), not `cannot be proved`:
+1. Client handshake completion reachability.
+2. Server handshake completion reachability.
+3. Server authentication without a compromise exception.
+4. Server authentication or certificate signing-key compromise.
+5. Session-key disclosure after client completion, without a compromise exception.
+6. Session-key disclosure implies earlier certificate signing-key compromise.
+7. Phase-1 session-key disclosure implies earlier signing-key compromise.
+
+Stopped under AGENTS.md's failing-check rule. No expected-results.txt, analysis
+workflow or badge was added: input rejection is not a query result to baseline.
+M3 and M4 remain unimplemented. Resolving the generated model incompatibility
+requires a separately authorized scope; the protected model, attributes, Rust,
+queries and handwritten library were not changed to work around it.
+No attack trace was produced. No F* or formal-coverage run was performed: Rust,
+F* proofs, measurement configuration and coverage baseline are untouched.
+
+## 2026-11-25T15:45:13-05:00 — ProVerif P1 blocker
+
+Authoritative P1 requires running the unchanged model and stopping on failed
+checks. ProVerif 2.05 was selected from the official release site and built from
+https://bblanche.gitlabpages.inria.fr/proverif/proverif2.05.tar.gz;
+SHA-256 4871f53c32ab4a04669a060c4886ba5d9080496963fb980a9a62d2c429ceabc4.
+Worktree /Users/gumshoe/src/bertie-proverif; branch proofs/proverif-ci.
+M1 676da96 adds the checked-source installer and setup action, and COVERAGE pins.
+Pinned hax 0.4.2 / 5ccf89dd2e996c9f88f2267eaa2a64739c4ca41a with Rust
+nightly-2025-11-08 built hax-pv and extracted successfully. Generated lib.pvl
+committed as 647ad41 (3263 insertions, 4578 deletions); analysis.pv unchanged.
+
+`typecheck-proverif` runs full analysis, not parse-only. Both analysis attempts
+failed before evaluating any query. Exact diagnostic:
+
+```text
+File "proofs/proverif/extraction/lib.pvl", line 499, characters 7-134:
+Error: type std__collections__hash__map__t_HashMap_of_bitstring_bertie_tls__tls13utils__byte_types__t_Bytes_std__hash__random__t_RandomState not declared.
+```
+
+First run wall 0.0403965 s, peak RSS 11272 KiB. Final rerun wall
+0.0745970 s, peak RSS 11208 KiB (Linux RUSAGE_CHILDREN,
+including driver). ProVerif exit 2 / driver exit 1. No attack trace or true/false/
+cannot-be-proved result was produced; every query is unexecuted. No expected
+results invented. No model, query, handwritten library, attribute or Rust fix
+attempted: that needs a separate approved scope. M3/M4 not attempted after the
+failed model check. Four existing queries are labelled "Should fail"; even once
+the input works, the literal stop-on-any-false requirement must be reconciled
+by the maintainer with those intentional controls.
+
+All requested final-tree non-ProVerif checks passed: cargo test --locked
+--workspace, scripts/test-features, cargo fmt --all -- --check, cargo clippy
+--locked -- -D warnings, cargo deny check, actionlint. F*/formal-coverage kit
+checks were not rerun; no Rust or proof annotations or coverage measurements
+changed. Reviewer acceptance remains outstanding. No push, gh, hook bypass,
+new Cargo dependencies or forbidden files changed. Memory tools unavailable.
+Evidence: target/proverif/analysis{,-initial}.log, metrics{,-initial}.json,
+extract.log, install.log, final-checks.txt and *-final.log.
+
+## 2026-11-25T15:47:59-05:00 — ProVerif P1 run 2: declaration rename and new blocker
+
+Applied only the declaration rename authorized by Dudley/Andrew on 2026-11-25:
+- Old: `std__collections__hash__map__t_HashMap_of_bitstring_bertie__tls13utils__t_Bytes_std__hash__random__t_RandomState`
+- New: `std__collections__hash__map__t_HashMap_of_bitstring_bertie_tls__tls13utils__byte_types__t_Bytes_std__hash__random__t_RandomState`
+- Causes: 321475845a26c79ef01578d551676bb33819a7ae renamed the crate to
+  bertie-tls; ad6f6db37bd603db7843a1263cb335b49290a0c6 moved Bytes to
+  tls13utils::byte_types. The abstract `type X.` declaration has no definition
+  to change. All other handwritten library bytes are unchanged.
+
+The pinned ProVerif 2.05 full analysis now passes the original HashMap error
+but fails before queries with:
+
+```text
+File "proofs/proverif/extraction/lib.pvl", line 2764, characters 8-30:
+Error: alloc__vec__impl_1__len not defined.
+```
+
+The undefined function is called by generated
+`bertie_tls__tls13utils__impl_17__len`. No existing handwritten declaration
+corresponds to Vec::len: the handwritten file contains only the two type
+declarations, RNG fill, repeat, boolean not and numeric ge. This cannot be
+fixed by renaming an existing declaration. Stopped under run 2's explicit
+rename-only boundary; no new declaration, letfun change, extracted-file edit,
+Rust/attribute edit or query change attempted. Additional stale `bertie__`
+references remain visible in analysis.pv; analysis has not reached them, and
+no claim is made that fixing Vec::len alone would complete the model.
+
+First run: ProVerif exit 2 / driver exit 1, wall 0.073621083 s, peak RSS
+11784 KiB (Linux RUSAGE_CHILDREN, includes driver). Evidence:
+`target/proverif/run2-analysis.log`, `run2-metrics.json`. No query result or
+attack trace exists. All seven queries remain NO RESULT (input rejected).
+M2 blocked; M3/M4 not attempted. No fabricated expected-results baseline or
+CI readiness claim. Memory tools unavailable; no diary filed.
+
+Final-source verification: cargo test --locked --workspace, all ten
+scripts/test-features configurations, fmt, clippy -D warnings, cargo deny,
+actionlint and git diff --check all pass. Fresh pinned-nightly hax-pv build
+passes (four existing warnings). Fresh extraction could not be completed:
+the run-1 wrapper requires a read-only /tools mount not present in the bare
+fc-verify-hax:v17 image or configured by BERTIE_DOCKER_TOOLS in this session.
+Initial wrapper failed copying /tools/cargo-home/registry; a build retry
+succeeded but extraction failed with `no such command: hax`. No generated
+files changed. This is an additional reproduction limitation, separate from
+the reproduced ProVerif input rejection on the run-1 regenerated model.
+Logs: target/proverif/run2-extract.log, run2-extract-final.log and
+run2-final-checks.txt plus run2-*-final.log.
+
+Final full-analysis rerun reproduces exactly the undefined Vec::len error:
+ProVerif exit 2 / driver exit 1, wall 0.066769584 s, peak RSS 11768 KiB.
+Evidence: target/proverif/analysis.log and metrics.json. None of the seven
+queries ran; no false result or attack trace. F*/formal-coverage kit checks
+not rerun; source/proof annotations and coverage measurements unchanged.
+Independent reviewer acceptance remains outstanding.
+PROVERIF-BLOCKED
+
+## 2026-11-25T15:51:54-05:00 — ProVerif P1 run 3: length abstraction affects handshake reachability
+
+Worktree `/Users/gumshoe/src/bertie-proverif`, branch `proofs/proverif-ci`, start
+`da9e5b2`. Read both P1 prompts, prior P1 reports and the RFC plan. Run 3 permits
+at most 15 new declarations / two hours, only for data functions whose exact
+value does not affect any security query; crypto/authentication modelling,
+reductions/equations, analysis.pv and Rust/attribute changes remain prohibited.
+
+Fresh extraction now PASSES with
+`BERTIE_DOCKER_TOOLS=/Users/gumshoe/src/bertie-toolchain`, mounted read-only at
+`/tools`, using the same pinned image, tool environment and disposable Cargo
+cache pattern as `scripts/verify-fstar.py`. `cargo build --locked --features
+hax-pv` and `hax-driver.py extract-proverif` both exit 0. hax explicitly reports
+lib.pvl unchanged; no generated-file diff or regeneration commit is needed.
+
+Full analysis (not parse-only) still fails:
+
+```text
+File "proofs/proverif/extraction/lib.pvl", line 2764, characters 8-30:
+Error: alloc__vec__impl_1__len not defined.
+```
+
+Handwritten additions: **0 of 15**. No declaration or rename was applied.
+The proposed symbol would have signature `fun alloc__vec__impl_1__len(bitstring):
+nat.` and originates from `Bytes::len`, `self.0.len()` in
+`src/tls13utils.rs:492–493`. Its only generated caller outside its wrapper is
+`server_signature_input` at lib.pvl:3799. That function checks the digest length
+against 64 and returns failure when it is too large. Rust calls this helper
+before both CertificateVerify verification (`tls13handshake.rs:344`) and signing
+(`tls13handshake.rs:742`); the generated signing call is at lib.pvl:4279.
+Consequently the length predicate controls whether a handshake can finish.
+Treating it as an uninterpreted value is not established harmless to the
+reachability queries (or to non-vacuity of the authentication/secrecy queries).
+The symbolic hash is an abstract constructor without a length relation, so the
+real-world fact that supported transcript hashes fit in 64 bytes is not present
+in this model. A comparison declaration alone would not supply that fact.
+
+Decision: stop under run 3's query-independence restriction rather than assert
+an unsupported harmlessness claim. This is a conservative modelling assessment,
+not an observed false query or a Rust defect. A continuation needs an explicitly
+approved treatment of this guard and symbolic digest lengths. No crypto fact,
+length equation, fixed return value, or removed guard was introduced. The two-hour
+and declaration limits were not exhausted; the semantic boundary was reached
+first. Remaining observed error list: the undefined Vec::len above. Further
+errors are unknown because ProVerif stops at its first error. Prior noted stale
+`bertie__` references in the protected analysis.pv remain untouched.
+
+ProVerif 2.05 official source:
+https://bblanche.gitlabpages.inria.fr/proverif/proverif2.05.tar.gz
+SHA-256: 4871f53c32ab4a04669a060c4886ba5d9080496963fb980a9a62d2c429ceabc4.
+ProVerif exit 2 / driver exit 1; wall 0.040426417 s,
+peak RSS 11784 KiB (Linux RUSAGE_CHILDREN, includes driver).
+No query result or attack trace. M2 remains blocked; M3/M4 were not implemented
+and no expected-results baseline was invented.
+
+Final-source checks PASS: cargo test --locked --workspace, all ten
+scripts/test-features configurations, cargo fmt --all -- --check,
+cargo clippy --locked -- -D warnings, cargo deny check, actionlint,
+and git diff --check. F*/formal-coverage kit checks were not rerun; no Rust,
+F* proof, coverage configuration or baseline changed. Independent reviewer
+acceptance remains outstanding. No push, gh, external message, branch creation
+or hook bypass. Memory tools unavailable, so no palace diary filed.
+Evidence: target/proverif/run3-extract.log, run3-analysis.log,
+run3-metrics.json, run3-final-checks.txt and run3-*-final.log.
+PROVERIF-BLOCKED
+
+## 2026-11-25T15:55:52-05:00 — ProVerif P1 run 4: approved hash-length abstraction
+
+Start 757caa8, branch proofs/proverif-ci. Andrew approved the hash-length
+model fix and requires completion queries 1 and 2 to return true before M3.
+Replaced only server_signature_input's ProVerif body, using the existing
+hax_lib::proverif::replace_body mechanism. The replacement retains Bytes::from_slice
+of PREFIX_SERVER_SIGNATURE and Bytes::concat with digest; it removes only the
+length-guard failure branch in the symbolic body. Both callers pass transcript
+hash output, whose SHA-256/384/512 lengths are 32/48/64. Runtime Rust is unchanged.
+HACL* backing sources and the unverified libcrux refinement boundary are listed
+by file/commit in TRUSTED.md (Spec.Agile.Hash.fsti/.fst and Spec.Hash.Definitions.fst,
+f557259007db9933442dde10aa995c1b00bd3446). Sources retained under target/proverif.
+No handwritten declaration added yet. Fresh extraction, strict F* and pinned
+formal-coverage v1.9.1 checks started. Results will be appended.
+
+The final replacement uses `${Bytes::concat}(${Bytes::from_slice}(${PREFIX_SERVER_SIGNATURE}), digest)`.
+These are expression antiquotations, matching the existing `Bytes::prefix`
+replacement in src/tls13utils.rs. An initial use of type antiquotation `$:{...}`
+failed extraction with E0223/E0747; corrected without changing model semantics.
+That failed attempt is retained as run4-extract.log, successful extraction as
+run4-extract-fixed.log. lib.pvl is generated only by pinned hax, never hand-edited;
+diffstat: 4 insertions / 26 deletions. It drops the length wrapper/dependency and
+failure branch, preserves prefix/concat, and reorders the bytes helper.
+
+Full analysis now fails at extraction/lib.pvl:3097:
+`Error: type bertie__tls13formats__handshake_data__t_HandshakeData not declared.`
+ProVerif exit 2 / driver exit 1; wall 0.071852625 s, peak RSS 11656 KiB
+(Linux RUSAGE_CHILDREN including driver). The stale declaration is generated from
+src/tls13record.rs:212–224's existing encrypt_handshake replacement, which still
+hardcodes old crate/type names, alongside interpolated current names in its peer.
+Other stale hardcoded names occur in tls13formats replacements (server_hello,
+encrypted_extensions, server_certificate, certificate_verify, finished) and in
+analysis.pv. These are not new missing standard-library data functions. Adding an
+unrelated abstract old HandshakeData type would not establish identity with the
+current type and would model message/authentication logic outside run 3's limits.
+Repair requires reviewed rename/interpolation fixes outside the digest helper;
+no such repair was attempted in run 4. No query/analysis.pv changes or declarations.
+
+Queries 1–7: all NO RESULT (input rejected). Thus queries 1 and 2 do not meet the
+mandatory true guard. No false security result or attack trace was produced.
+M2 blocked, M3/M4 not implemented, no expected-results file or ProVerif CI job.
+Final source checks PASS: workspace tests, all ten feature configurations, fmt,
+clippy -D warnings, cargo deny, actionlint. Exact logs under target/proverif/run4-*.
+The initial concurrent F* run was deliberately discarded after correcting the
+attribute syntax (its frozen source binding would be stale); a fresh final-source
+strict F* run was started. Coverage/ratchet results will be appended.
+
+### Run 4 coverage result (recorded by Claude Code continuation, 2026-11-25)
+formal-coverage v1.9.1 (pinned commit b737912) run per COVERAGE.md on the final tree,
+after a fresh strict F* run (all roots exit 0, run4-fstar.log). Measured first-party
+security SLoC: 5084 (baseline 5078). proven-extracted 4117 (baseline 4111, +6: the new
+comment and attribute lines, credited), tested 253 (unchanged), unverified 714
+(unchanged, trusted 161 included). Proven share 80.96% -> 80.98%. No unit lost credit.
+`write-coverage.py --check` fails only because coverage/baseline.json and COVERAGE.md
+still hold the old totals (5078/4111); run4-coverage.log. Not updated here: the run
+prompt forbids touching the baseline while blocked. If the replace_body is kept, the
+maintainer refreshes baseline.json and COVERAGE.md from target/coverage-ci/report.json.
+Blocker (unchanged): stale hardcoded `bertie__...` names in existing proverif::replace
+strings (tls13record.rs encrypt_handshake, tls13formats.rs, analysis.pv). Needs a
+decision to permit reviewed rename-only edits to those strings and analysis.pv.
+Queries 1-7 not evaluated; vacuity guard unmet; no expected-results file or CI job.
+
+## ProVerif P1 run 8 (Codex limit at start; Claude Code): handwritten_post.pvl cannot supply `is_some`
+
+Start 2c2c788. Tried the approved design: `proofs/proverif/handwritten_post.pvl` containing
+`letfun core_models__option__impl__is_some(o: Option) = if o = None() then false else true.`,
+loaded after `extraction/lib` via a one-line addition to `typecheck-proverif`'s `-lib` list.
+Result (target/proverif/run8-analysis.log, ProVerif 2.05 in fc-verify-hax:v17, exit 2, wall ~0.04 s):
+`lib.pvl:4136: Error: core_models__option__impl__is_some not defined.` Unchanged from run 7.
+
+Cause: ProVerif reads `-lib` files strictly in order, and `is_some` is *called inside* lib.pvl
+(`lookup_db`, line 4136). It must therefore be defined before lib.pvl line 4136 but after lib.pvl
+line 10 (`type Option.`). A file loaded after lib.pvl is too late, a file loaded before it has no
+`Option`. The approved placement cannot work; this is an ordering constraint, not a typo.
+Reverted both the driver edit and the new file (tree clean). Handwritten additions 0/15.
+
+Options needing a decision (none attempted): (a) split lib.pvl is not possible (generated);
+(b) declare `type Option.` in handwritten_lib.pvl and have the generated duplicate removed, which
+needs a hax/extraction change; (c) rewrite `lookup_db`'s PSK condition without `Option::is_some`
+(e.g. `matches!`/nested match avoiding the hax nested-wildcard bug); (d) a `proverif::replace_body`
+on `lookup_db`'s PSK branch (both branches return `Err`, only the error code differs).
+Queries 1-7 not evaluated; vacuity guard unmet; no expected-results file or CI job; M2-M4 not done.
+
+## ProVerif P1 run 9 (Codex limit at start; Claude Code): `psk_offered` helper, model reaches the queries
+
+Start 6fd584c. Approved option 3: `src/server.rs` gains private `fn psk_offered(tkt, psk_opt) -> bool`
+(`tkt.is_some() && psk_opt.is_some()`), called from `lookup_db`; under `hax-pv` its body is replaced by `false`.
+Behaviour unchanged; `psk_tests` and the run-7 branch test pass unchanged. In the model the PSK branch
+returns `PSK_MODE_MISMATCH` instead of `UNSUPPORTED_ALGORITHM` (both errors, PSK disabled); recorded in
+TRUSTED.md "ProVerif model assumptions".
+
+hax quirk (for upstream): `replace_body("false")` is emitted as `r#false` (Rust raw identifier) and ProVerif
+fails with a syntax error at lib.pvl:4100. Any other string works, so the replacement is
+`"false (* PSK disabled: no PSK offered *)"`, which prints `false (* ... *)`. Same meaning; this is the only
+deviation from the text of the decision. `core_models__option__impl__is_some` no longer appears in lib.pvl.
+
+Extraction: pinned hax 0.4.2 in fc-verify-hax:v17 with BERTIE_DOCKER_TOOLS (target/proverif/run9-extract.log).
+lib.pvl +5/-1 (new `letfun bertie_tls__server__psk_offered`, one call changed). Rename guard: empty diff on
+analysis.pv, tls13record.rs, tls13formats.rs. Handwritten additions 0/15. No new renames.
+
+ProVerif 2.05 (target/proverif/run9-analysis.log), wall 13.4 s. Results, analysis.pv order:
+1 client completes (reachability): `not event(...) is false` = reachable (guard passes)
+2 server completes (reachability): `is false` = reachable (guard passes)
+3 server auth without compromise assumption: false (marked "Should fail" in analysis.pv; attack via compromised cert key)
+4 server auth unless cert key compromised: true
+5 session-key secrecy without compromise assumption: false (marked "Should fail")
+6 session-key secrecy unless cert key compromised: true
+7 harvest-now-decrypt-later: true
+Queries 3 and 5 are the upstream "should fail" queries (they show the compromise assumption is needed); the
+attack traces are in the log (RESULT lines 14046 and 14918). They are not security regressions, so I did not stop.
+Interpretation of the guard: "queries 1 and 2 must be true" means the completion events are reachable.
+
+Gap estimate (requested by the decision): symbols `core_models__*`/`alloc__*` used in lib.pvl and defined
+neither there nor in handwritten_lib.pvl: none remain (ProVerif reaches the queries; its "not defined" error
+is the exact check).
+
+## 2026-11-25 — CI speed run 2
+
+Merged origin/main 110802a with merge commit 02cf61b, without conflicts. Preserved
+main's coverage v1.11.0 actions and all-target lint; fixed the stale reproduction
+pin left by the automatic documentation merge. Coverage stays uncached (choice b).
+
+ProVerif's separate skip policy follows its workflow, setup-hax/setup-proverif,
+hax-driver.py extract-proverif, install-proverif and check-proverif: Rust sources,
+Cargo manifests/lock/config/toolchain/build scripts, driver, proofs/proverif/**
+(including handwritten libraries, extraction, analysis and expected results),
+installer/checker, both setup actions, workflow and detector/tests. Explicit
+inputs override generic documentation ignores; unknown paths run. F*-only inputs
+can skip ProVerif. Push/dispatch always run. PR comparison uses merge-base and
+--no-renames so removed inputs remain visible. The job itself always starts and
+logs a successful skip before any tool installation.
+
+Native workspace tests, feature matrix, fmt, all-target clippy -D warnings,
+cargo deny, actionlint and 19 Python tests passed. Final acceptance results are
+recorded below and in the project workspace's PROGRESS.md under "CI speed run 2".
+Memory tools are unavailable. No push, GitHub API use or dependency changes.
+
+
+### 2026-11-25T23:49:54-05:00 — CI speed run 2 final acceptance
+
+origin/main advanced from 110802a to e261c81 (#91) during the first verification.
+Merged it without conflicts as c09ea5c, preserving main's DER cfg(hax) change,
+measurement and maintainer-approved exception. Re-ran all project checks on
+this updated tree. Our diff against e261c81 touches no Rust/security code,
+coverage baseline/configuration or coverage.yml floor logic.
+
+Final checks: cargo test --locked --workspace (4s); scripts/test-features (13s);
+fmt (<1s); cargo clippy --locked --all-targets -- -D warnings (1s); cargo deny
+check (1s); actionlint on all workflows (<1s); 19 skip/cache Python tests (<1s);
+git diff --check. All passed. Existing ignored workspace tests were not changed.
+The kit is archived from main's exact v1.11.0 commit
+888fdbf8f0c23973d76c679fd56188636c38e57c, built locally; its 80 tests passed.
+
+Local proof command: BERTIE_DOCKER_TOOLS=/Users/gumshoe/src/bertie-toolchain
+FSTAR_JOBS=1 python3 scripts/verify-fstar.py [--cache-dir "$PWD/target/m2/cache"].
+Uncached: 1602s; restored cache: 161s; exact-tree warm repeat: 173s (9.3x vs
+uncached). All 18 roots exit 0 in all three runs; all 19 dependency levels pass
+for cached runs, 94 checked artifacts. Only the uncached run wrote a receipt.
+No cached-report equality claim: choice (b) deliberately produces no receipt
+from cached runs. v1.11.0 coverage kit ran against merge-base e261c81: 75s,
+"coverage baseline and document match measurement", "ratchet PASS". Measurement:
+4065/5032 proven (80.78%), tested 253, unverified 714, proof ratio 0.16;
+the ratio warning is informational. All current source hashes still match the
+fresh receipt. Fresh proof artifacts are preserved in
+target/run2/latest/uncached; kit outputs in target/run2/latest/coverage-ci.
+
+Earlier 110802a results remain in target/run2: uncached 1580s, restored 418s,
+warm 177s; baseline/document equality and ratchet passed (58s). Latest native
+summaries: target/run2/latest/checks.txt; proof timings: latest/fstar.txt.
+Commits: 02cf61b initial merge, 3cc1d5d ProVerif skip/tests, c09ea5c updated merge;
+final documentation commit follows. No pushes or GitHub API calls. Real GitHub
+workflow/cache restore-save and required-check behavior were not exercised;
+independent reviewer reruns are still required. No full ProVerif analysis was
+requested or run in this CI-skip task.
+CI-SPEED-2-READY
+
+## 2026-11-25T23:52:32-05:00 — Bytes content contracts: scope and baseline
+
+- Written acceptance criteria: Andrew's 2026-11-25 M1–M4 task. Worktree starts at 110802a, branch proofs/bytes-content-contracts. No pushes, gh, GitHub APIs, branch creation or tool/model edits. Each completed milestone will be committed with Assisted-by: Codex (GPT-6).
+- Read AGENTS.md, PROOFS.md, TRUSTED.md, COVERAGE.md, scripts/verify-fstar.py, external NOTES.md “RFC 8446 P2 run 2”, and PLAN-RFC8446.md “Rule: reuse order”. External project files are read-only; decisions and progress live in this worktree. Memory search/diary tools are unavailable.
+- Direct HkdfLabel call chain: Bytes::from_slice(&LABEL_TLS13).concat(label), as_raw, encode_length_u8, concat, prefix. Minimum content contracts planned on those helpers and concat_inner. Its existing body calls extend_from_slice, so that helper needs a supporting content guarantee. From<&[u8]> is from_slice's implementation dependency and also needs a supporting guarantee.
+- slice, slice_range, AppData::as_raw (the second as_raw), and u32 sibling encoders are outside that call chain. Leave their contracts/implementations unchanged unless a downstream repair demonstrably needs content. No speculative slice lemmas.
+- Reuse: pinned hax Alloc.Vec.fst already implements extend_from_slice with Rust_primitives.Sequence.seq_extend = Seq.append; its slice/vector model is identity-preserving. Reuse these existing definitions; add no model assumptions.
+- Coverage baseline recorded in COVERAGE.md: 4125/5092 proven (81.01%), tested 253, unverified 714; depth safety-only 3811 (92.39%), functional own-code-only 235 (5.70%), functional 79 (1.92%). Fresh baseline verification/measurement in progress, not yet claimed.
+- Kit exported read-only from local formal-coverage repository commit 888fdbf8f0c23973d76c679fd56188636c38e57c under target/bytes-contracts/kit. v1.11.0 tag and workflow pin trees both 4e9f20bb42b77941e59a6a38d34f8a63b0175014. COVERAGE.md has a stale v1.9.1 reproduction pin; workflow pin and user instruction select v1.11.0.
+
+Supporting interfaces discovered while reading bodies: From<&[u8]> calls From<Vec<u8>>, and encode_length_u8 calls Bytes::push and U8. Content guarantees must cross each of those interfaces as well. U16's alias constructor needs an identity postcondition for P2 to connect len to u16_as_be_bytes. These contracts state only representation preservation or append. No speculative contracts on other conversions.
+
+The local origin/main ref advanced externally to e261c81; this branch was not fetched, merged or rebased. Its merge-base against origin/main remains 110802aae37cb2e4adce165a1410bdea4be01644, the task's starting floor. Use that merge-base for the ratchet, avoiding an unrelated DER classification change being counted as this task's improvement.
+
+Proof reuse detail: F* 2025.10.06 ulib/FStar.Seq.Base.fsti exposes lemma_empty and append_empty_l without automatic SMT patterns. The planned cfg(hax) proof calls normalize empty prefixes in From<&[u8]>, Bytes::prefix, and encode_length_u8. encode_length_u8 uses mk_u8(length % 256) in its model contract so the refined u8 constructor is total even before assuming the retained success length bound; on success length < 256, so this is exactly the length byte. No new lemmas/axioms/models, extraction edits, fuel or rlimit changes planned.
+
+### 2026-11-26T00:20:14-05:00 — Baseline accepted; M1 applied for verification
+
+- All baseline acceptance checks passed: cargo test --locked --workspace; scripts/test-features; cargo fmt --all -- --check; cargo clippy --locked --all-targets -- -D warnings; cargo deny check; actionlint; 80 pinned kit unit tests. Fresh strict F*, FSTAR_JOBS=1: 18/18 roots exit 0, verifier exit 0.
+- Pinned kit run.py against merge-base 110802aae37cb2e4adce165a1410bdea4be01644: committed baseline and document match measurement; ratchet PASS. Exact totals: 4125/5092 proven (81.00942655%), tested 253, unverified 714; proof SLoC 587, ratio 0.1423030303030303. Proof depth: safety-only 3811, own-code-only functional 235, functional 79. Evidence preserved in target/bytes-contracts/baseline-fstar/ and baseline-coverage/.
+- M1 draft now applied: content postconditions on concat_inner, Bytes::concat, prefix, from_slice, Bytes::as_raw, encode_length_u8. Existing lengths retained. Supporting guarantees on default U8/U16 identity constructors, default From<Vec<u8>>, From<&[u8]>, Bytes::push and extend_from_slice. Reused Seq empty lemmas in three cfg(hax) blocks. No runtime behavior change.
+- AppData::as_raw has no existing postcondition and is unused by HkdfLabel; it stays unchanged, as do slice/slice_range and u32 helpers.
+- Corrected only the stale reproduction version/pin in COVERAGE.md to the already-pinned workflow v1.11.0 commit. No measurement policy changes.
+- Verification and remeasurement pending; no milestone commit yet. A failing ratchet will prevent committing this security change.
+
+### 2026-11-26T00:52-05:00 — M1 verified, ratchet FAIL on rule 2: stopped (Claude Code, Codex limit)
+
+Filed by Claude Code (bertie-bytes-contracts). Took over Codex's uncommitted M1; no code changed by me.
+- Fresh extraction + strict F*, FSTAR_JOBS=1: 18/18 roots exit 0, verifier exit 0 (target/bytes-contracts/logs/m1-fstar.log). No downstream repair was needed: every module depending on Tls13utils verifies with the stronger contracts. No fuel/rlimit change, no new lemma, axiom or model; three `cfg(hax)` calls to existing F* ulib lemmas (append_empty_l, lemma_empty).
+- Measured with the v1.11.0 kit (pin tree 4e9f20bb…): proven 4125/5092 (81.0094%), tested 253, unverified 714, all unchanged from the floor 110802a. Proof SLoC 587 → 617, ratio 0.14 → 0.15. Proof depth: safety-only 3811 (92.39%) → 3754 (91.01%); functional own-code-only 235 → 235; functional 79 (1.92%) → 136 (3.30%).
+- Ratchet: the kit's `coverage_lib.check` on the working-tree diff against 110802a gives `touched=True` and FAILS only on "security code changed without increasing proven share" (unverified not increased, share not decreased). Contract-only deepening of already-proven lines cannot raise the share, as the task anticipated. Per the task's non-negotiable, I stopped: no padding, no reclassification, no exception entry, no commit. M2 (u16_as_be_bytes shift form) also rewrites already-proven code (currently `proven-extracted`, safety-only) and would hit the same rule, so it was not started.
+- Kit gap (report upstream): `ci/run.py` diffs `base..HEAD`, so on uncommitted work with HEAD == base it sees an empty diff and prints `ratchet PASS`. That PASS (and Codex's baseline PASS) says nothing about the working tree. I evaluated with the same `check()` on `git diff -U0 <base>` (target/bytes-contracts/dev/wtratchet.py, dev-only, untracked).
+- Decision needed from Andrew: AGENTS.md coverage rule 2 vs. contract-deepening work. Options I see (none taken): (a) a maintainer-approved reading/amendment of rule 2 that counts proof-depth gains (e.g. functional lines up, safety-only down, share unchanged) for commits that only strengthen contracts; (b) an Exceptions entry (today reserved for urgent security fixes); (c) pair each contract commit with proving currently unverified security code so the share rises honestly (bigger PR, mixes concerns).
+- Uncommitted M1 left in the tree and saved as target/bytes-contracts/m1-uncommitted.patch (includes regenerated coverage/baseline.json and COVERAGE.md measured section). u32 sibling encoders, slice/slice_range and AppData::as_raw stay length-only per minimum-known-true (not needed by HkdfLabel or any repair). Memory diary tools are not available in this session; no palace entry filed.
+
+## 2026-11-26T12:45-05:00 — Bytes content contracts, run 2: decisions (Claude Code, continuing Codex)
+
+Filed by Claude Code (bertie-bytes-contracts). Codex did M0 (0a48686) and left the run-1 contracts re-applied uncommitted plus an M2 draft (target/bytes-contracts/dev/run2-m2.rs); I verified and committed both unchanged.
+- M1 content contracts unchanged from run 1 (see the 00:52 entry): concat_inner, Bytes::concat, prefix, from_slice, Bytes::as_raw, encode_length_u8, with supporting U8/U16 identity, From<Vec<u8>>, From<&[u8]>, push, extend_from_slice. Still length-only by minimum-known-true: slice, slice_range, AppData::as_raw, u32 encoders.
+- M2: the postcondition is gated with `cfg_attr(not(feature = "secret_integers"))` because the `>>`/`as` expressions only typecheck on the plain-integer U16; hax extracts the plain-integer build. The body uses the shift form in both builds so they cannot diverge; the byte-identity test runs in both.
+- u32_as_be_bytes keeps `to_be_bytes`: it is not on the HkdfLabel path and no repair needs it.
+- M3: no downstream repair needed; nothing weakened, no fuel/rlimit, no new lemma/axiom/model.
+- Kit: target/bytes-contracts/kit-112 is byte-identical to formal-coverage c45ab59 (v1.12.0, the main pin). Its ci/tests require the debug binary (`cargo build --locked`); Codex's first test run failed only because that binary was missing. With it: 92 OK.
+
+### Proposal for Andrew (M4, commit d2ccfb8): AGENTS.md coverage rule 2
+Current text: "Every commit that touches security code must increase the proven share, by proving new or existing code." The pinned kit (v1.12.0, `coverage_lib.check`) also passes touched security code at equal proven share when proven functional-contract lines (both functional categories combined) increase, and never lets unverified lines increase. Proposed text adds: "or, at equal proven share, increase the number of proven security lines with functional contracts (the two functional contract categories combined), by strengthening the contracts of proven code. Unverified security lines may never increase." Nothing else in AGENTS.md changes. Andrew approves or rejects it at merge; if rejected, drop d2ccfb8 and this PR depends on an exception instead.

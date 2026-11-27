@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+"""Run the ProVerif model and compare each query result with expected-results.txt.
+
+Usage: scripts/check-proverif [--proverif PATH] [--log FILE] [--timeout SECONDS]
+
+Fails on a timeout, a missing or extra query, or any result that differs from
+proofs/proverif/expected-results.txt. A query that gets better must update that
+file in the same change. Queries 1 and 2 are reachability queries: their
+expected result is `false`, which means the handshake-completion event is
+reachable (so the security queries are not vacuous).
+"""
+import argparse
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+MODEL = ROOT / "proofs/proverif"
+EXPECTED = MODEL / "expected-results.txt"
+RESULT = re.compile(r"^Query (.*?) (is true|is false|cannot be proved)\.$")
+
+
+def run_proverif(binary, log, timeout):
+    command = [binary, "-lib", "proofs/proverif/handwritten_lib",
+               "-lib", "proofs/proverif/extraction/lib",
+               "proofs/proverif/extraction/analysis.pv"]
+    try:
+        done = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        sys.exit(f"ProVerif timed out after {timeout} s")
+    Path(log).parent.mkdir(parents=True, exist_ok=True)
+    Path(log).write_text(done.stdout + done.stderr)
+    if done.returncode:
+        sys.exit(f"ProVerif exited {done.returncode}; see {log}")
+    return done.stdout
+
+
+def parse_results(output):
+    summary = output.split("Verification summary:", 1)
+    if len(summary) < 2:
+        sys.exit("no verification summary in ProVerif output")
+    found = (RESULT.match(line.strip()) for line in summary[1].splitlines())
+    return [m.group(2).removeprefix("is ") for m in found if m]
+
+
+def parse_expected():
+    rows = [line.split(maxsplit=2) for line in EXPECTED.read_text().splitlines()
+            if line.strip() and not line.startswith("#")]
+    return [row[1] for row in rows]
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--proverif", default="proverif")
+    parser.add_argument("--log", default=str(ROOT / "target/proverif/analysis.log"))
+    parser.add_argument("--timeout", type=int, default=3600)
+    args = parser.parse_args()
+    actual = parse_results(run_proverif(args.proverif, args.log, args.timeout))
+    expected = parse_expected()
+    if actual != expected:
+        sys.exit(f"ProVerif results differ from expected-results.txt\n  expected: {expected}\n  actual:   {actual}")
+    print(f"ProVerif: {len(actual)} queries match expected-results.txt")
+
+
+main()
