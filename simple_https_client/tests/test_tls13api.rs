@@ -3,8 +3,6 @@
 
 // These are the sample TLS 1.3 traces taken from RFC 8448
 
-use std::collections::HashMap;
-
 use bertie_tls::{
     server::ServerDB,
     test_utils::TestRng,
@@ -121,13 +119,9 @@ fn test_full_round_trip() {
     let mut b = true;
     const ciphersuite: Algorithms = TLS_CHACHA20_POLY1305_SHA256_X25519;
 
-    let mut client_ks: TLSkeyscheduler = TLSkeyscheduler {
-        keys: HashMap::new(),
-    };
+    let mut client_ks: TLSkeyscheduler = TLSkeyscheduler::new();
 
-    let mut server_ks: TLSkeyscheduler = TLSkeyscheduler {
-        keys: HashMap::new(),
-    };
+    let mut server_ks: TLSkeyscheduler = TLSkeyscheduler::new();
 
     match Client::connect(
         ciphersuite,

@@ -1,5 +1,4 @@
 use std::{
-    collections::HashMap,
     eprintln,
     fs::File,
     io::{BufReader, Read, Write},
@@ -191,9 +190,7 @@ impl BertieStream<ServerState<TcpStream>> {
     pub fn connect(&mut self, rng: &mut impl CryptoRng) -> Result<(), BertieError> {
         let client_hello = read_record(&mut self.state.read_buffer, &mut self.state.stream)?;
 
-        let mut ks: TLSkeyscheduler = TLSkeyscheduler {
-            keys: HashMap::new(),
-        };
+        let mut ks: TLSkeyscheduler = TLSkeyscheduler::new();
 
         match Server::accept(
             self.ciphersuite,

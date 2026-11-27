@@ -4,7 +4,6 @@
 
 use rand::CryptoRng;
 use std::{
-    collections::HashMap,
     eprintln,
     io::{Read, Write},
     net::TcpStream,
@@ -130,9 +129,7 @@ impl BertieStream<ClientState<TcpStream>> {
             return Err(BertieError::InvalidState);
         }
 
-        let mut ks: TLSkeyscheduler = TLSkeyscheduler {
-            keys: HashMap::new(),
-        };
+        let mut ks: TLSkeyscheduler = TLSkeyscheduler::new();
 
         // Client Hello
         let (client_hello, cstate) = {

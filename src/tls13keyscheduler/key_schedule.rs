@@ -6,8 +6,8 @@ use crate::{
     tls13formats::*,
     tls13utils::*,
 };
-use std::collections::HashMap;
 use std::vec;
+use std::vec::Vec;
 
 /* TLS 1.3 Key Schedule: See RFC 8446 Section 7 */
 
@@ -123,8 +123,26 @@ pub trait KeySchedule<N> {
     fn hash(d: &Bytes) -> Bytes;
 }
 
+#[derive(Default)]
 pub struct TLSkeyscheduler {
-    pub keys: HashMap<(TLSnames, HashAlgorithm, u8), Key>,
+    keys: Vec<((TLSnames, HashAlgorithm, u8), Key)>,
+}
+
+impl TLSkeyscheduler {
+    pub fn new() -> Self {
+        Self { keys: Vec::new() }
+    }
+
+    fn position(&self, h: (TLSnames, HashAlgorithm, u8)) -> Option<usize> {
+        let mut i = 0;
+        while i < self.keys.len() {
+            if self.keys[i].0 == h {
+                return Some(i);
+            }
+            i += 1;
+        }
+        None
+    }
 }
 
 use TLSnames::*;
@@ -170,11 +188,17 @@ impl KeySchedule<TLSnames> for TLSkeyscheduler {
     }
 
     fn get(&self, name: TLSnames, level: u8, h: (TLSnames, HashAlgorithm, u8)) -> Option<Key> {
-        self.keys.get(&h).cloned()
+        self.position(h)
+            .and_then(|i| self.keys.get(i))
+            .map(|entry| entry.1.clone())
     }
 
     fn set(&mut self, name: TLSnames, level: u8, h: (TLSnames, HashAlgorithm, u8), k: Key) {
-        self.keys.insert(h, k);
+        if let Some(i) = self.position(h) {
+            self.keys[i].1 = k;
+        } else {
+            self.keys.push((h, k));
+        }
     }
 
     // TODO:

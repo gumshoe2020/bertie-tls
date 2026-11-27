@@ -8,7 +8,6 @@ use super::{
 };
 use crate::tls13crypto::{AeadAlgorithm, Digest, HashAlgorithm};
 use crate::tls13utils::Bytes;
-use std::collections::HashMap;
 use std::{println, vec, vec::Vec};
 
 fn inputs() -> (Bytes, Digest, Digest, Digest) {
@@ -136,9 +135,7 @@ fn implementation() -> Vec<Bytes> {
     let ha = HashAlgorithm::SHA256;
     let ae = AeadAlgorithm::Aes128Gcm;
     let (dhe, sh, sf, cf) = inputs();
-    let mut ks = TLSkeyscheduler {
-        keys: HashMap::new(),
-    };
+    let mut ks = TLSkeyscheduler::new();
     let dhe_handle = Handle {
         name: TLSnames::KEM,
         alg: ha,
