@@ -6,7 +6,6 @@ use crate::{
     tls13formats::*,
     tls13utils::*,
 };
-use std::vec;
 use std::vec::Vec;
 
 /* TLS 1.3 Key Schedule: See RFC 8446 Section 7 */
@@ -75,6 +74,7 @@ fn hkdf_expand_label_is_rfc8446_over_hacl(
 }
 
 /// Get an empty key of the correct size.
+#[hax_lib::ensures(|result| fstar!(r#"result == {f_name=Names.TLSnames_ZeroSalt; f_alg=alg; f_level=mk_u8 0} /\ written ks ks_future result (Bytes.impl_17__zeroes (Bertie_tls.Tls13crypto.impl_4__hash_len alg))"#))]
 pub(crate) fn zero_salt(ks: &mut TLSkeyscheduler, alg: &HashAlgorithm) -> Handle {
     let handle = Handle {
         name: ZeroSalt,
@@ -87,6 +87,7 @@ pub(crate) fn zero_salt(ks: &mut TLSkeyscheduler, alg: &HashAlgorithm) -> Handle
 }
 
 /// Get an empty key of the correct size.
+#[hax_lib::ensures(|result| fstar!(r#"result == {f_name=Names.TLSnames_PSK; f_alg=alg; f_level=mk_u8 0} /\ written ks ks_future result (Bytes.impl_17__zeroes (Bertie_tls.Tls13crypto.impl_4__hash_len alg))"#))]
 pub(crate) fn no_psk(ks: &mut TLSkeyscheduler, alg: &HashAlgorithm) -> Handle // TagKey
 {
     let handle = Handle {
@@ -99,6 +100,7 @@ pub(crate) fn no_psk(ks: &mut TLSkeyscheduler, alg: &HashAlgorithm) -> Handle //
 }
 
 /// Get an empty key of the correct size.
+#[hax_lib::ensures(|result| fstar!(r#"result == {f_name=Names.TLSnames_ZeroIKM; f_alg=alg; f_level=mk_u8 0} /\ written ks ks_future result (Bytes.impl_17__zeroes (Bertie_tls.Tls13crypto.impl_4__hash_len alg))"#))]
 pub(crate) fn zero_ikm(ks: &mut TLSkeyscheduler, alg: &HashAlgorithm) -> Handle {
     let handle = Handle {
         name: ZeroIKM,
@@ -235,6 +237,7 @@ impl TLSkeyscheduler {
       impl_TLSkeyscheduler__lookup self_e_future h == Core_models.Option.Option_Some k /\
       (forall q. q =!= h ==>
         impl_TLSkeyscheduler__lookup self_e_future q == impl_TLSkeyscheduler__lookup self q)"#))]
+    #[hax_lib::fstar::options("--split_queries always")]
     fn put(&mut self, h: (TLSnames, HashAlgorithm, u8), k: Key) {
         let i = self.position(h);
         if i < self.keys.len() {
@@ -305,6 +308,7 @@ impl KeySchedule<TLSnames> for TLSkeyscheduler {
 
 use Label::*;
 
+#[hax_lib::ensures(|result| fstar!(r#"Seq.length label.Bertie_tls.Tls13utils.Byte_types._0._0 > 0 ==> result =!= Core_models.Option.Option_Some Bertie_tls.Tls13keyscheduler.Key_names.Label_e__e__e__e__e__e__"#))]
 fn convert_label(label: Bytes) -> Option<Label> {
     let l = &label.declassify()[..];
     if l == [101, 120, 116, 032, 098, 105, 110, 100, 101, 114] {
@@ -342,19 +346,19 @@ fn convert_label(label: Bytes) -> Option<Label> {
 #[cfg_attr(feature = "hax-pv", hax_lib::pv_constructor)]
 fn label_to_bytes(label: Label) -> Bytes {
     match label {
-        EXT_BINDER__ => vec![101, 120, 116, 032, 098, 105, 110, 100, 101, 114].into(),
-        RES_BINDER__ => vec![114, 101, 115, 032, 098, 105, 110, 100, 101, 114].into(),
-        C_E_TRAFFIC_ => vec![099, 032, 101, 032, 116, 114, 097, 102, 102, 105, 099].into(),
-        E_EXP_MASTER => vec![101, 032, 101, 120, 112, 032, 109, 097, 115, 116, 101, 114].into(),
-        C_AP_TRAFFIC => vec![099, 032, 097, 112, 032, 116, 114, 097, 102, 102, 105, 099].into(),
-        S_AP_TRAFFIC => vec![115, 032, 097, 112, 032, 116, 114, 097, 102, 102, 105, 099].into(),
-        EXP_MASTER__ => vec![101, 120, 112, 032, 109, 097, 115, 116, 101, 114].into(),
-        RES_MASTER__ => vec![114, 101, 115, 032, 109, 097, 115, 116, 101, 114].into(),
-        DERIVED_____ => vec![100, 101, 114, 105, 118, 101, 100].into(),
-        C_HS_TRAFFIC => vec![099, 032, 104, 115, 032, 116, 114, 097, 102, 102, 105, 099].into(),
-        S_HS_TRAFFIC => vec![115, 032, 104, 115, 032, 116, 114, 097, 102, 102, 105, 099].into(),
-        RESUMPTION__ => vec![82, 69, 83, 85, 77, 80, 84, 73, 79, 78].into(),
-        ____________ => vec::Vec::<u8>::new().into(),
+        EXT_BINDER__ => Bytes::from_slice(b"ext binder"),
+        RES_BINDER__ => Bytes::from_slice(b"res binder"),
+        C_E_TRAFFIC_ => Bytes::from_slice(b"c e traffic"),
+        E_EXP_MASTER => Bytes::from_slice(b"e exp master"),
+        C_AP_TRAFFIC => Bytes::from_slice(b"c ap traffic"),
+        S_AP_TRAFFIC => Bytes::from_slice(b"s ap traffic"),
+        EXP_MASTER__ => Bytes::from_slice(b"exp master"),
+        RES_MASTER__ => Bytes::from_slice(b"res master"),
+        DERIVED_____ => Bytes::from_slice(b"derived"),
+        C_HS_TRAFFIC => Bytes::from_slice(b"c hs traffic"),
+        S_HS_TRAFFIC => Bytes::from_slice(b"s hs traffic"),
+        RESUMPTION__ => Bytes::from_slice(b"RESUMPTION"),
+        ____________ => Bytes::new(),
     }
 }
 
@@ -369,6 +373,9 @@ pub(crate) fn xtr_alg(alg: &HashAlgorithm, k1: &Key, k2: &Key) -> Result<Bytes, 
     hkdf_extract(alg, k1, k2)
 }
 
+#[hax_lib::ensures(|result| fstar!(r#"Seq.length label.Bertie_tls.Tls13utils.Byte_types._0._0 > 0 ==>
+  result == Bertie_tls.Tls13keyscheduler.Rfc8446_spec.expand_label alg k1 label d
+    (Bertie_tls.Tls13crypto.impl_4__hash_len alg)"#))]
 pub(crate) fn xpd_alg(
     alg: &HashAlgorithm,
     k1: &Key,
@@ -393,6 +400,9 @@ pub(crate) fn xtr(k1: &TagKey, k2: &TagKey) -> Result<TagKey, TLSError> {
     })
 }
 
+#[hax_lib::ensures(|result| fstar!(r#"match xpd_alg k1.f_alg k1.f_val label d with
+  | Core_models.Result.Result_Ok v -> result == Core_models.Result.Result_Ok {f_tag=k1.f_tag; f_alg=k1.f_alg; f_val=v}
+  | Core_models.Result.Result_Err e -> result == Core_models.Result.Result_Err e"#))]
 pub(crate) fn xpd(k1: &TagKey, label: Bytes, d: &Digest) -> Result<TagKey, TLSError> {
     let alg = k1.clone().alg;
     let v = k1.clone().val;
@@ -407,6 +417,38 @@ pub(crate) fn xpd(k1: &TagKey, label: Bytes, d: &Digest) -> Result<TagKey, TLSEr
 
 #[derive(Clone)]
 #[cfg_attr(not(hax), derive(Debug))]
+#[cfg_attr(hax, hax_lib::fstar::after(interface, r#"
+module Rfc = Bertie_tls.Tls13keyscheduler.Rfc8446_spec
+module Bytes = Bertie_tls.Tls13utils
+module Opt = Core_models.Option
+module Res = Core_models.Result
+
+let slot_of (h:t_Handle) : slot = (h.f_name, h.f_alg, h.f_level)
+let at_handle s h = impl_TLSkeyscheduler__lookup s (slot_of h)
+// Every slot other than h's reads the same in new_s as in old_s.
+let unchanged_except old_s new_s h : Type0 =
+  forall q. q =!= slot_of h ==> impl_TLSkeyscheduler__lookup new_s q == impl_TLSkeyscheduler__lookup old_s q
+let written old_s new_s h k : Type0 =
+  at_handle new_s h == Opt.Option_Some k /\ unchanged_except old_s new_s h
+
+let derived_step old_s new_s result h expected : Type0 =
+  match expected with
+  | Res.Result_Ok v -> result == Res.Result_Ok h /\ written old_s new_s h v
+  | Res.Result_Err e -> result == Res.Result_Err e
+
+let rfc_label (n:Names.t_TLSnames) : option Bertie_tls.Tls13utils.Byte_types.t_Bytes =
+  let open Names in match n with
+  | TLSnames_ESalt | TLSnames_HSalt -> Some (Bytes.impl_17__from_slice Rfc.v_LABEL_DERIVED)
+  | TLSnames_CHT -> Some (Bytes.impl_17__from_slice Rfc.v_LABEL_CHT)
+  | TLSnames_SHT -> Some (Bytes.impl_17__from_slice Rfc.v_LABEL_SHT)
+  | TLSnames_CAT -> Some (Bytes.impl_17__from_slice Rfc.v_LABEL_CAT)
+  | TLSnames_SAT -> Some (Bytes.impl_17__from_slice Rfc.v_LABEL_SAT)
+  | TLSnames_EAM -> Some (Bytes.impl_17__from_slice Rfc.v_LABEL_EAM)
+  | TLSnames_RM -> Some (Bytes.impl_17__from_slice Rfc.v_LABEL_RM)
+  | TLSnames_CET -> Some (Bytes.impl_17__from_slice Rfc.v_LABEL_CET)
+  | TLSnames_EEM -> Some (Bytes.impl_17__from_slice Rfc.v_LABEL_EEM)
+  | _ -> None
+"#))]
 pub struct Handle {
     pub name: TLSnames,
     pub alg: HashAlgorithm,
@@ -427,6 +469,7 @@ pub(crate) fn xpd_angle(
 }
 
 #[cfg_attr(feature = "hax-pv", hax_lib::pv_constructor)]
+#[hax_lib::ensures(|result| fstar!(r#"match at_handle ks handle with | Opt.Option_Some v -> result == Res.Result_Ok {f_tag=handle.f_name; f_val=v; f_alg=handle.f_alg} | _ -> True"#))]
 pub fn tagkey_from_handle(ks: &TLSkeyscheduler, handle: &Handle) -> Result<TagKey, TLSError> {
     Ok(TagKey {
         alg: handle.alg,
@@ -490,6 +533,63 @@ pub fn get_by_handle(ks: &TLSkeyscheduler, handle: &Handle) -> Result<Key, TLSEr
        )"
     )
 )]
+#[cfg_attr(
+    hax,
+    hax_lib::fstar::before(
+        r#"
+// For each name derived by Derive-Secret: bertie's label bytes are the RFC 8446
+// label of the specification, the name has a parent, and it is not PSK.
+let labels_are_rfc (n:Names.t_TLSnames) (r:bool) : Lemma
+  (match rfc_label n with
+   | Some l ->
+     f_labels #t_TLSkeyscheduler #Names.t_TLSnames n r == Res.Result_Ok l /\
+     Opt.Option_Some? (f_prnt_n #t_TLSkeyscheduler #Names.t_TLSnames n)._1 /\
+     n =!= Names.TLSnames_PSK
+   | None -> True) =
+  match n with
+  | Names.TLSnames_ESalt ->
+    assert_norm (f_labels #t_TLSkeyscheduler #Names.t_TLSnames Names.TLSnames_ESalt r ==
+      Res.Result_Ok (Bytes.impl_17__from_slice Rfc.v_LABEL_DERIVED))
+  | Names.TLSnames_HSalt ->
+    assert_norm (f_labels #t_TLSkeyscheduler #Names.t_TLSnames Names.TLSnames_HSalt r ==
+      Res.Result_Ok (Bytes.impl_17__from_slice Rfc.v_LABEL_DERIVED))
+  | Names.TLSnames_CHT ->
+    assert_norm (f_labels #t_TLSkeyscheduler #Names.t_TLSnames Names.TLSnames_CHT r ==
+      Res.Result_Ok (Bytes.impl_17__from_slice Rfc.v_LABEL_CHT))
+  | Names.TLSnames_SHT ->
+    assert_norm (f_labels #t_TLSkeyscheduler #Names.t_TLSnames Names.TLSnames_SHT r ==
+      Res.Result_Ok (Bytes.impl_17__from_slice Rfc.v_LABEL_SHT))
+  | Names.TLSnames_CAT ->
+    assert_norm (f_labels #t_TLSkeyscheduler #Names.t_TLSnames Names.TLSnames_CAT r ==
+      Res.Result_Ok (Bytes.impl_17__from_slice Rfc.v_LABEL_CAT))
+  | Names.TLSnames_SAT ->
+    assert_norm (f_labels #t_TLSkeyscheduler #Names.t_TLSnames Names.TLSnames_SAT r ==
+      Res.Result_Ok (Bytes.impl_17__from_slice Rfc.v_LABEL_SAT))
+  | Names.TLSnames_EAM ->
+    assert_norm (f_labels #t_TLSkeyscheduler #Names.t_TLSnames Names.TLSnames_EAM r ==
+      Res.Result_Ok (Bytes.impl_17__from_slice Rfc.v_LABEL_EAM))
+  | Names.TLSnames_RM ->
+    assert_norm (f_labels #t_TLSkeyscheduler #Names.t_TLSnames Names.TLSnames_RM r ==
+      Res.Result_Ok (Bytes.impl_17__from_slice Rfc.v_LABEL_RM))
+  | Names.TLSnames_CET ->
+    assert_norm (f_labels #t_TLSkeyscheduler #Names.t_TLSnames Names.TLSnames_CET r ==
+      Res.Result_Ok (Bytes.impl_17__from_slice Rfc.v_LABEL_CET))
+  | Names.TLSnames_EEM ->
+    assert_norm (f_labels #t_TLSkeyscheduler #Names.t_TLSnames Names.TLSnames_EEM r ==
+      Res.Result_Ok (Bytes.impl_17__from_slice Rfc.v_LABEL_EEM))
+  | _ -> ()
+"#
+    )
+)]
+#[hax_lib::ensures(|result| fstar!(r#"(match rfc_label n with
+  | Some label ->
+    (match at_handle ks h1 with
+     | Opt.Option_Some key ->
+       derived_step ks ks_future result {h1 with f_name=n}
+         (Rfc.derive_secret_hash h1.f_alg key label args)
+     | _ -> True)
+  | _ -> True)"#))]
+#[hax_lib::fstar::options("--z3rlimit 400 --split_queries always")]
 pub fn XPD(
     ks: &mut TLSkeyscheduler,
     n: TLSnames,
@@ -498,6 +598,8 @@ pub fn XPD(
     r: bool,
     args: &Bytes,
 ) -> Result<Handle, TLSError> {
+    #[cfg(hax)]
+    hax_lib::fstar!("labels_are_rfc n r");
     let (n1, _) = TLSkeyscheduler::prnt_n(n);
     let label = TLSkeyscheduler::labels(n, r)?;
 
@@ -520,7 +622,7 @@ pub fn XPD(
         )?
     } else {
         let d = TLSkeyscheduler::hash(args);
-        xpd(
+        let k = xpd(
             &TagKey {
                 alg: h1.alg,
                 tag: h1.name,
@@ -528,7 +630,21 @@ pub fn XPD(
             },
             label,
             &d,
-        )?
+        )?;
+        #[cfg(hax)]
+        hax_lib::fstar!(
+            r#"assert (match rfc_label n with
+  | Some l0 -> label == l0 /\ Seq.length l0.Bertie_tls.Tls13utils.Byte_types._0._0 > 0
+  | None -> True);
+assert (d == args);
+assert (at_handle ks h1 == Opt.Option_Some k1);
+assert (h == {h1 with f_name = n});
+assert (Some? (rfc_label n) ==> Res.Result_Ok k ==
+  (match Rfc.derive_secret_hash h1.f_alg k1 label args with
+   | Res.Result_Ok v -> Res.Result_Ok ({f_tag=h1.f_name; f_alg=h1.f_alg; f_val=v} <: t_TagKey)
+   | Res.Result_Err e -> Res.Result_Err e))"#
+        );
+        k
     };
     ks.set(n, l, (h.name, h.alg, h.level), k.val);
 
@@ -568,6 +684,15 @@ pub(crate) fn xtr_angle(name: TLSnames, left: Handle, right: Handle) -> Result<H
        )"
     )
 )]
+#[hax_lib::ensures(|result| fstar!(r#"((name == Names.TLSnames_ES \/ name == Names.TLSnames_HS \/ name == Names.TLSnames_AS) ==>
+  (match at_handle ks h1 with
+   | Opt.Option_Some ikm ->
+     (match at_handle ks h2 with
+      | Opt.Option_Some salt ->
+        derived_step ks ks_future result {h1 with f_name=name}
+          (Bertie_tls.Tls13crypto.hkdf_extract h1.f_alg ikm salt)
+      | _ -> True)
+   | _ -> True))"#))]
 pub(crate) fn XTR(
     ks: &mut TLSkeyscheduler,
     level: u8,
