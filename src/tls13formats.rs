@@ -740,6 +740,12 @@ pub(super) fn parse_client_hello(
     check(ch.len() >= next)?;
     let extensions = ch.slice_range(next..ch.len());
     let exts = check_extensions(ciphersuite, &extensions)?;
+    // RFC 8446 §4.2.1: without supported_versions the client offers TLS 1.2
+    // at most, which bertie never supports.
+    (match check_extension_present(extensions.as_raw(), 0x2b) {
+        Ok(_) => Ok(()),
+        Err(_) => protocol_version_alert(),
+    })?;
     // RFC 8446 §9.2: supported_groups always (bertie requires key_share),
     // signature_algorithms unless the hello offers a PSK.
     check_extension_present(extensions.as_raw(), 0x0a)?;
