@@ -7,7 +7,7 @@ use std::{format, vec, vec::Vec};
 
 use crate::tls13crypto::{AeadAlgorithm, Algorithms, HashAlgorithm, KemScheme, SignatureScheme};
 use crate::tls13formats::{handshake_data::HandshakeData, parse_client_hello, parse_server_hello};
-use crate::tls13utils::Bytes;
+use crate::tls13utils::{Bytes, PROTOCOL_VERSION_ALERT};
 
 const ALGORITHMS: Algorithms = Algorithms {
     hash: HashAlgorithm::SHA256,
@@ -261,6 +261,15 @@ rejects!(
 // ---- supported_versions (case 15), RFC 8446:2176–2187 ----
 
 rejects!(case15_sh_missing_supported_versions, server().without(43));
+
+/// RFC 8446:1660–1663: without supported_versions the ClientHello offers
+/// TLS 1.2 at most, which bertie never supports.
+#[test]
+fn client_hello_without_supported_versions_rejected() {
+    let message = handshake(&client().without(43).encode());
+    let result = parse_client_hello(&ALGORITHMS, &message);
+    assert_eq!(result.err(), Some(PROTOCOL_VERSION_ALERT));
+}
 
 // ---- Sender side of case 3 ----
 
