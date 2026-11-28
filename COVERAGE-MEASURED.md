@@ -2,16 +2,16 @@
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 4064 | 80.81% |
-| tested | 253 | 5.03% |
-| unverified | 712 | 14.16% |
+| proven | 4107 | 81.04% |
+| tested | 251 | 4.95% |
+| unverified | 710 | 14.01% |
 
-Total: **5029** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (4064 lines); Verus proven: 0 lines.
+Total: **5068** first-party security runtime SLoC. Proven includes explicitly labelled
+`proven-extracted` hax credit (4107 lines); Verus proven: 0 lines.
 
-Proof-to-code ratio: **0.19** (780 proof SLoC / 4064 proven + proven-extracted runtime SLoC); informational, never blocking.
+Proof-to-code ratio: **0.33** (1372 proof SLoC / 4107 proven + proven-extracted runtime SLoC); informational, never blocking.
 
-Proof components: 387 hax annotation SLoC, 353 standalone `cfg(hax)` proof-code SLoC, and 54 inline `cfg(hax)` SLoC (overlaps count once). F* models: 1 SLoC of trusted assumptions, excluded from the ratio.
+Proof components: 948 hax annotation SLoC, 353 standalone `cfg(hax)` proof-code SLoC, and 353 inline `cfg(hax)` SLoC (overlaps count once). F* models: 1 SLoC of trusted assumptions, excluded from the ratio.
 
 | Module | Proven runtime | Proof SLoC | Proof / proven runtime |
 | --- | ---: | ---: | ---: |
@@ -37,9 +37,10 @@ Proof components: 387 hax annotation SLoC, 353 standalone `cfg(hax)` proof-code 
 | bertie_tls::tls13formats::handshake_data | 94 | 4 | 0.04 |
 | bertie_tls::tls13formats::handshake_data::HandshakeData | 76 | 13 | 0.17 |
 | bertie_tls::tls13handshake | 714 | 1 | 0.00 |
-| bertie_tls::tls13keyscheduler | 219 | 18 | 0.08 |
-| bertie_tls::tls13keyscheduler::key_schedule | 307 | 30 | 0.10 |
+| bertie_tls::tls13keyscheduler | 237 | 489 | 2.06 |
+| bertie_tls::tls13keyscheduler::key_schedule | 304 | 129 | 0.42 |
 | bertie_tls::tls13keyscheduler::key_schedule::KeySchedule<TLSnames>forTLSkeyscheduler | 45 | 0 | 0.00 |
+| bertie_tls::tls13keyscheduler::key_schedule::TLSkeyscheduler | 28 | 22 | 0.79 |
 | bertie_tls::tls13record | 252 | 6 | 0.02 |
 | bertie_tls::tls13record::DuplexCipherStateH | 13 | 0 | 0.00 |
 | bertie_tls::tls13utils | 301 | 125 | 0.42 |
@@ -56,9 +57,9 @@ Proof components: 387 hax annotation SLoC, 353 standalone `cfg(hax)` proof-code 
 
 | Contract depth | Lines | Share of proven lines |
 | --- | ---: | ---: |
-| safety-only | 3639 | 89.54% |
-| functional, checked only against own code | 186 | 4.58% |
-| functional | 239 | 5.88% |
+| safety-only | 3628 | 88.34% |
+| functional, checked only against own code | 209 | 5.09% |
+| functional | 270 | 6.57% |
 
 Safety-only means proven free of panics, overflows and out-of-bounds access, including length and range facts; it says nothing about what the code computes.
 
