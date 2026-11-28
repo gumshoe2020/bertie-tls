@@ -188,14 +188,9 @@ pub struct TLSkeyscheduler {
     keys: Vec<((TLSnames, HashAlgorithm, u8), Key)>,
 }
 
-impl Default for TLSkeyscheduler {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 #[hax_lib::attributes]
 impl TLSkeyscheduler {
+    #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self { keys: Vec::new() }
     }
