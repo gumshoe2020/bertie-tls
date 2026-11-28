@@ -124,14 +124,25 @@ the secret stored under the handle). Supporting content contracts:
 `Bytes::declassify`, `bytes`, `encode_length_u8` (error case),
 `HashAlgorithm::hmac_tag_len`, and `tls13crypto::hkdf_expand`, which carries the
 approved HKDF link to HACL* (TRUSTED.md). `backend::hkdf_expand_okm` stays
-trusted: the link is an assumption and gets no proof credit. The secret chain
-and handle store (`derive_hk_handles` to `derive_rms`) remain safety-only.
+trusted: the link is an assumption and gets no proof credit.
 
-Measured with formal-coverage v1.12.4 against main's record at 380c23f: proven
-4,063 of 5,030 (80.78%) to 4,064 of 5,029 (80.81%), trusted 161 to 159
-(`hkdf_expand_okm`'s attribute lines now count as proof text), unverified 553
-unchanged; proof depth "functional" 214 to 239 lines, "functional, checked only
-against own code" 167 to 186; ratchet PASS.
+P2 M3 (2026-11-27) proves that after `TLSkeyscheduler::put(h, k)`, a lookup
+of `h` returns `Some(k)` and every other handle retains its previous value.
+The RFC contracts cover `derive_hk_handles` on the no-PSK path, its helpers
+`derive_early_salt` and `derive_handshake_secrets`, and `derive_hk_ms`,
+`derive_app_handles`, `derive_app_keys`, `derive_rms` and `next_keys_c_2`.
+Given the handles and stored inputs required by each contract, the results
+agree with the specification, including errors and the contents of the
+specified output slots on success. Supporting contracts cover `XTR`, `XPD`,
+`xpd`, `xpd_alg`, `convert_label`, `zero_salt`, `no_psk`, `zero_ikm` and
+`tagkey_from_handle`. Binder and 0-RTT derivation remain outside P2.
+
+Formal-coverage v1.12.4 passed the recorded-floor ratchet from `380c23f` to
+`e7ff946`. Proven runtime grew from 4,063/5,030 (80.78%) to 4,106/5,070
+(80.99%). Functional lines rose from 214 to 270 and functional lines checked
+only against own code rose from 167 to 209. Tested lines fell from 253 to 251.
+The ratchet's unverified count fell from 714 to 713, comprising trusted lines
+(161 to 159) and lines classified as unverified (553 to 554).
 
 ## Meaning and limits
 

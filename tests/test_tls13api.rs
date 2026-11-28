@@ -3,8 +3,6 @@
 
 // These are the sample TLS 1.3 traces taken from RFC 8448
 
-use std::collections::HashMap;
-
 use bertie_tls::{
     server::ServerDB,
     test_utils::TestRng,
@@ -119,9 +117,7 @@ fn test_full_round_trip() {
         feature = "x25519"
     )) {
         let mut rng = rand::rng();
-        let mut ks = TLSkeyscheduler {
-            keys: HashMap::new(),
-        };
+        let mut ks = TLSkeyscheduler::new();
         assert!(Client::connect(
             TLS_CHACHA20_POLY1305_SHA256_X25519,
             &Bytes::from(b"localhost"),
@@ -152,13 +148,9 @@ fn test_full_round_trip() {
     let mut b = true;
     const ciphersuite: Algorithms = TLS_CHACHA20_POLY1305_SHA256_X25519;
 
-    let mut client_ks: TLSkeyscheduler = TLSkeyscheduler {
-        keys: HashMap::new(),
-    };
+    let mut client_ks: TLSkeyscheduler = TLSkeyscheduler::new();
 
-    let mut server_ks: TLSkeyscheduler = TLSkeyscheduler {
-        keys: HashMap::new(),
-    };
+    let mut server_ks: TLSkeyscheduler = TLSkeyscheduler::new();
 
     match Client::connect(
         ciphersuite,
@@ -260,9 +252,7 @@ fn test_full_round_trip() {
 fn test_full_round_trip_with_psk() {
     // Resumption is deliberately unsupported by our maintained server.
     let mut rng = rand::rng();
-    let mut ks = TLSkeyscheduler {
-        keys: HashMap::new(),
-    };
+    let mut ks = TLSkeyscheduler::new();
     assert!(Client::connect(
         TLS_WITH_PSK_CHACHA20_POLY1305_SHA256_X25519,
         &Bytes::from(b"localhost"),
@@ -316,9 +306,7 @@ fn removed_configurations_fail_cleanly() {
         TLS_WITH_PSK_CHACHA20_POLY1305_SHA256_X25519,
     ] {
         let mut rng = rand::rng();
-        let mut ks = TLSkeyscheduler {
-            keys: HashMap::new(),
-        };
+        let mut ks = TLSkeyscheduler::new();
         assert!(Client::connect(
             algs,
             &Bytes::from(b"localhost"),
@@ -349,9 +337,7 @@ fn removed_wire_offers_fail_cleanly() {
         feature = "x25519"
     )) {
         let mut rng = rand::rng();
-        let mut ks = TLSkeyscheduler {
-            keys: HashMap::new(),
-        };
+        let mut ks = TLSkeyscheduler::new();
         assert!(Client::connect(
             TLS_CHACHA20_POLY1305_SHA256_X25519,
             &Bytes::from(b"localhost"),
@@ -365,9 +351,7 @@ fn removed_wire_offers_fail_cleanly() {
     }
     let algs = TLS_CHACHA20_POLY1305_SHA256_X25519;
     let mut rng = rand::rng();
-    let mut ks = TLSkeyscheduler {
-        keys: HashMap::new(),
-    };
+    let mut ks = TLSkeyscheduler::new();
     let (hello, _) = Client::connect(
         algs,
         &Bytes::from(b"localhost"),
@@ -419,9 +403,7 @@ fn removed_wire_offers_fail_cleanly() {
             SignatureKey::from(&ECDSA_P256_SHA256_Key),
             None,
         );
-        let mut server_ks = TLSkeyscheduler {
-            keys: HashMap::new(),
-        };
+        let mut server_ks = TLSkeyscheduler::new();
         assert!(Server::accept(algs, db, &wire.into(), &mut rng, &mut server_ks).is_err());
     }
 }

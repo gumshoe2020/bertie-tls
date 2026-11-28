@@ -178,9 +178,10 @@ implementation proofs can unfold it; it is an additional strict F* root.
 
 Functional (RFC) contracts proved against it (P2 M2): `hkdf_expand_label`
 (non-empty labels, errors included), `derive_finished_key` and
-`derive_aead_key_iv` (for the secret stored under the given handle). The secret
-chain and the handle store (`derive_hk_handles` … `derive_rms`) are not proved:
-hax's `HashMap` model gives no relation between `insert` and `get`.
+`derive_aead_key_iv` (for the secret stored under the given handle). P2 M3
+replaces the HashMap with a private list. F* proves that a stored value can be
+read back and that other handles retain their values. The secret-chain proofs
+use this store contract (see COVERAGE.md) and add no trusted assumption.
 
 The spec and the implementation call the same bertie `hkdf_extract`/`hkdf_expand`.
 Their meaning in terms of HACL* is stated only by the assumption below.

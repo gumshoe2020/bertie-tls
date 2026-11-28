@@ -199,6 +199,8 @@ elif options.sub == "extract-proverif":
                     "+~**::tls13keyscheduler::derive_hk_ms",
                     "+~**::tls13keyscheduler::derive_finished_key",
                     "+~**::tls13keyscheduler::derive_hk_handles",
+                    "+~**::tls13keyscheduler::derive_early_salt",
+                    "+~**::tls13keyscheduler::derive_handshake_secrets",
                     "+~**::tls13keyscheduler::derive_aead_key_iv",
                     "+~**::tls13keyscheduler::key_schedule::no_psk",
                     "+~**::tls13keyscheduler::key_schedule::tagkey_from_handle",

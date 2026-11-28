@@ -1,6 +1,5 @@
 #![allow(dead_code)]
 
-use std::collections::HashMap;
 use std::println;
 
 use crate::tls13crypto::hash;
@@ -514,9 +513,7 @@ fn test_key_schedule() {
     let transcript = client_hello_bytes.concat(server_hello_bytes);
     let tx_hash = hash(&ha, &transcript);
 
-    let mut ks = TLSkeyscheduler {
-        keys: HashMap::new(),
-    };
+    let mut ks = TLSkeyscheduler::new();
 
     // KEM
     let shared_secret_handle = Handle {

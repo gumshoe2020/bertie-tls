@@ -16,6 +16,18 @@ use crate::{
     tls13utils::{Bytes, TLSError, PAYLOAD_TOO_LONG},
 };
 
+pub(super) const LABEL_DERIVED: &[u8; 7] = b"derived";
+pub(super) const LABEL_CHT: &[u8; 12] = b"c hs traffic";
+pub(super) const LABEL_SHT: &[u8; 12] = b"s hs traffic";
+pub(super) const LABEL_CAT: &[u8; 12] = b"c ap traffic";
+pub(super) const LABEL_SAT: &[u8; 12] = b"s ap traffic";
+pub(super) const LABEL_EAM: &[u8; 10] = b"exp master";
+pub(super) const LABEL_RM: &[u8; 10] = b"res master";
+#[cfg(hax)]
+pub(super) const LABEL_CET: &[u8; 11] = b"c e traffic";
+#[cfg(hax)]
+pub(super) const LABEL_EEM: &[u8; 12] = b"e exp master";
+
 /// miTLS src/parsers/MiTLS.Parsers.HKDF.rfc:1–5 and src/tls/MiTLS.HKDF.fst:188,216.
 /// RFC 8446:5053–5066. Correct final minimum 7 and lowercase six-byte prefix;
 /// reject an empty Label instead of importing miTLS's assumed minimum bound.
@@ -74,7 +86,7 @@ pub(super) fn early_secret(ha: &HashAlgorithm) -> Result<Key, TLSError> {
 
 /// RFC 8446:5165,5181; miTLS Old.KeySchedule.fst:160,265.
 pub(super) fn derived(ha: &HashAlgorithm, secret: &Key) -> Result<Key, TLSError> {
-    derive_secret(ha, secret, &Bytes::from_slice(b"derived"), &Bytes::new())
+    derive_secret(ha, secret, &Bytes::from_slice(LABEL_DERIVED), &Bytes::new())
 }
 
 /// RFC 8446:5165–5169; miTLS Old.KeySchedule.fst:160,168,172 (DHE branch).
@@ -97,13 +109,13 @@ pub(super) fn handshake_traffic(
         derive_secret_hash(
             ha,
             handshake,
-            &Bytes::from_slice(b"c hs traffic"),
+            &Bytes::from_slice(LABEL_CHT),
             through_server_hello,
         )?,
         derive_secret_hash(
             ha,
             handshake,
-            &Bytes::from_slice(b"s hs traffic"),
+            &Bytes::from_slice(LABEL_SHT),
             through_server_hello,
         )?,
     ))
@@ -120,19 +132,19 @@ pub(super) fn application_traffic(
         derive_secret_hash(
             ha,
             master,
-            &Bytes::from_slice(b"c ap traffic"),
+            &Bytes::from_slice(LABEL_CAT),
             through_server_finished,
         )?,
         derive_secret_hash(
             ha,
             master,
-            &Bytes::from_slice(b"s ap traffic"),
+            &Bytes::from_slice(LABEL_SAT),
             through_server_finished,
         )?,
         derive_secret_hash(
             ha,
             master,
-            &Bytes::from_slice(b"exp master"),
+            &Bytes::from_slice(LABEL_EAM),
             through_server_finished,
         )?,
     ))
@@ -147,7 +159,7 @@ pub(super) fn resumption_master(
     derive_secret_hash(
         ha,
         master,
-        &Bytes::from_slice(b"res master"),
+        &Bytes::from_slice(LABEL_RM),
         through_client_finished,
     )
 }
@@ -164,6 +176,67 @@ pub(super) fn finished_key(ha: &HashAlgorithm, traffic: &Key) -> Result<Key, TLS
 }
 
 /// RFC 8446:5285–5286 (§7.3); miTLS Old.KeySchedule.fsti:255–261, TLS branch only.
+#[cfg_attr(hax, hax_lib::fstar::after(r#"
+// Proof support (F* only, nothing executable): the composition of §7.1 that
+// derive_hk_handles computes, and the same composition in its step order.
+let rbind (r:Core_models.Result.t_Result 'a u8) (f:'a -> Core_models.Result.t_Result 'b u8) : Core_models.Result.t_Result 'b u8 =
+  match r with | Core_models.Result.Result_Ok v -> f v | Core_models.Result.Result_Err e -> Core_models.Result.Result_Err e
+
+let hk_expected (ha:Bertie_tls.Tls13crypto.Algorithm_types.t_HashAlgorithm) (dhe th:Bertie_tls.Tls13utils.Byte_types.t_Bytes) =
+  rbind (handshake_secret ha dhe) (fun hs ->
+  rbind (handshake_traffic ha hs th) (fun cs ->
+  rbind (master_secret ha hs) (fun ms -> Core_models.Result.Result_Ok (cs._1, cs._2, ms))))
+
+let hk_steps (ha:Bertie_tls.Tls13crypto.Algorithm_types.t_HashAlgorithm) (dhe th:Bertie_tls.Tls13utils.Byte_types.t_Bytes) =
+  let zeros = Bertie_tls.Tls13utils.impl_17__zeroes (Bertie_tls.Tls13crypto.impl_4__hash_len ha) in
+  let derived_label = Bertie_tls.Tls13utils.impl_17__from_slice v_LABEL_DERIVED in
+  rbind (Bertie_tls.Tls13crypto.hkdf_extract ha zeros zeros) (fun es ->
+  rbind (Bertie_tls.Tls13crypto.hash ha (Bertie_tls.Tls13utils.impl_17__new ())) (fun d ->
+  rbind (derive_secret_hash ha es derived_label d) (fun salt ->
+  rbind (Bertie_tls.Tls13crypto.hkdf_extract ha dhe salt) (fun hs ->
+  rbind (derive_secret_hash ha hs (Bertie_tls.Tls13utils.impl_17__from_slice v_LABEL_CHT) th) (fun c ->
+  rbind (derive_secret_hash ha hs (Bertie_tls.Tls13utils.impl_17__from_slice v_LABEL_SHT) th) (fun s ->
+  rbind (derive_secret_hash ha hs derived_label d) (fun salt2 ->
+  rbind (Bertie_tls.Tls13crypto.hkdf_extract ha zeros salt2) (fun ms ->
+  Core_models.Result.Result_Ok (c, s, ms)))))))))
+
+#push-options "--z3rlimit 100"
+let hk_steps_is_rfc (ha:Bertie_tls.Tls13crypto.Algorithm_types.t_HashAlgorithm) (dhe th:Bertie_tls.Tls13utils.Byte_types.t_Bytes) :
+  Lemma (hk_expected ha dhe th == hk_steps ha dhe th) [SMTPat (hk_expected ha dhe th)] =
+  let zeros = Bertie_tls.Tls13utils.impl_17__zeroes (Bertie_tls.Tls13crypto.impl_4__hash_len ha) in
+  let derived_label = Bertie_tls.Tls13utils.impl_17__from_slice v_LABEL_DERIVED in
+  assert (early_secret ha == Bertie_tls.Tls13crypto.hkdf_extract ha zeros zeros);
+  assert (forall sec. derived ha sec == derive_secret ha sec derived_label (Bertie_tls.Tls13utils.impl_17__new ()));
+  match Bertie_tls.Tls13crypto.hkdf_extract ha zeros zeros with
+  | Core_models.Result.Result_Err e -> assert (handshake_secret ha dhe == Core_models.Result.Result_Err e)
+  | Core_models.Result.Result_Ok es ->
+  match Bertie_tls.Tls13crypto.hash ha (Bertie_tls.Tls13utils.impl_17__new ()) with
+  | Core_models.Result.Result_Err e ->
+    assert (derived ha es == Core_models.Result.Result_Err e);
+    assert (handshake_secret ha dhe == Core_models.Result.Result_Err e)
+  | Core_models.Result.Result_Ok d ->
+  assert (forall sec. derived ha sec == derive_secret_hash ha sec derived_label d);
+  match derive_secret_hash ha es derived_label d with
+  | Core_models.Result.Result_Err e -> assert (handshake_secret ha dhe == Core_models.Result.Result_Err e)
+  | Core_models.Result.Result_Ok salt ->
+  assert (handshake_secret ha dhe == Bertie_tls.Tls13crypto.hkdf_extract ha dhe salt);
+  match Bertie_tls.Tls13crypto.hkdf_extract ha dhe salt with
+  | Core_models.Result.Result_Err e -> ()
+  | Core_models.Result.Result_Ok hs ->
+  match derive_secret_hash ha hs (Bertie_tls.Tls13utils.impl_17__from_slice v_LABEL_CHT) th with
+  | Core_models.Result.Result_Err e -> assert (handshake_traffic ha hs th == Core_models.Result.Result_Err e)
+  | Core_models.Result.Result_Ok c ->
+  match derive_secret_hash ha hs (Bertie_tls.Tls13utils.impl_17__from_slice v_LABEL_SHT) th with
+  | Core_models.Result.Result_Err e -> assert (handshake_traffic ha hs th == Core_models.Result.Result_Err e)
+  | Core_models.Result.Result_Ok s ->
+    assert (handshake_traffic ha hs th == Core_models.Result.Result_Ok (c, s));
+    assert (derived ha hs == derive_secret ha hs derived_label (Bertie_tls.Tls13utils.impl_17__new ()));
+    assert (derive_secret ha hs derived_label (Bertie_tls.Tls13utils.impl_17__new ()) == derive_secret_hash ha hs derived_label d);
+    match derive_secret_hash ha hs derived_label d with
+    | Core_models.Result.Result_Err e -> assert (master_secret ha hs == Core_models.Result.Result_Err e)
+    | Core_models.Result.Result_Ok salt2 -> assert (master_secret ha hs == Bertie_tls.Tls13crypto.hkdf_extract ha zeros salt2)
+#pop-options
+"#))]
 pub(super) fn write_key_iv(
     ha: &HashAlgorithm,
     traffic: &Key,

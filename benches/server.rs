@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::time::{Duration, Instant};
 
 use bertie_tls::{
@@ -76,12 +75,8 @@ fn protocol() {
 
     for ciphersuite in CIPHERSUITES {
         let mut rng = rand::rng();
-        let mut client_ks: TLSkeyscheduler = TLSkeyscheduler {
-            keys: HashMap::new(),
-        };
-        let mut server_ks: TLSkeyscheduler = TLSkeyscheduler {
-            keys: HashMap::new(),
-        };
+        let mut client_ks: TLSkeyscheduler = TLSkeyscheduler::new();
+        let mut server_ks: TLSkeyscheduler = TLSkeyscheduler::new();
 
         // Server
         let server_name_str = "localhost";
