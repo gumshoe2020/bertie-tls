@@ -346,6 +346,9 @@ fn check_server_extension(algs: &Algorithms, b: &[U8]) -> Result<(usize, Option<
                 out = Some(gx)
             }
             (0, 41) => check_server_psk_shared_key(algs, &b[4..4 + len])?,
+            // RFC 8446 §4.2: server_name, supported_groups, signature_algorithms
+            // and psk_key_exchange_modes never appear in a ServerHello.
+            (0, 0) | (0, 0x0a) | (0, 0x0d) | (0, 0x2d) => illegal_server_extension()?,
             _ => (),
         }
         Ok((4 + len, out))
@@ -363,6 +366,10 @@ fn check_extension_present(b: &[U8], kind: u8) -> Result<(), TLSError> {
         let len = length_u16_encoded_slice(&b[2..b.len()])?;
         check_extension_present(&b[4 + len..b.len()], kind)
     }
+}
+
+fn illegal_server_extension() -> Result<(), TLSError> {
+    Err(UNSUPPORTED)
 }
 
 #[inline(always)]
@@ -869,6 +876,51 @@ fn invalid_compression_method_alert() -> Result<(), TLSError> {
     Err(DECODE_ERROR)
 }
 
+/// The ServerHello random that marks a HelloRetryRequest (RFC 8446 §4.1.3).
+const HELLO_RETRY_REQUEST_RANDOM: [U8; 32] = [
+    U8(0xcf),
+    U8(0x21),
+    U8(0xad),
+    U8(0x74),
+    U8(0xe5),
+    U8(0x9a),
+    U8(0x61),
+    U8(0x11),
+    U8(0xbe),
+    U8(0x1d),
+    U8(0x8c),
+    U8(0x02),
+    U8(0x1e),
+    U8(0x65),
+    U8(0xb8),
+    U8(0x91),
+    U8(0xc2),
+    U8(0xa2),
+    U8(0x11),
+    U8(0x16),
+    U8(0x7a),
+    U8(0xbb),
+    U8(0x8c),
+    U8(0x5e),
+    U8(0x07),
+    U8(0x9e),
+    U8(0x09),
+    U8(0xe2),
+    U8(0xc8),
+    U8(0xa8),
+    U8(0x33),
+    U8(0x9c),
+];
+
+/// Bertie does not support HelloRetryRequest.
+fn check_not_hello_retry_request(server_random: &Random) -> Result<(), TLSError> {
+    if eq_slice(&HELLO_RETRY_REQUEST_RANDOM, server_random.as_raw()) {
+        Err(UNSUPPORTED)
+    } else {
+        Ok(())
+    }
+}
+
 #[cfg(bench)]
 pub fn bench_parse_server_hello(
     algs: &Algorithms,
@@ -921,6 +973,7 @@ pub(crate) fn parse_server_hello(
     next += 2;
     check(server_hello.len() >= next + 32)?;
     let srand = server_hello.slice_range(next..next + 32);
+    check_not_hello_retry_request(&srand)?;
     next += 32;
     let sidlen = length_u8_encoded(&server_hello[next..server_hello.len()])?;
     check(sidlen <= 32)?;
