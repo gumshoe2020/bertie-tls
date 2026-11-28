@@ -352,6 +352,19 @@ fn check_server_extension(algs: &Algorithms, b: &[U8]) -> Result<(usize, Option<
     }
 }
 
+/// Check that the extension list `b` contains an extension of type `kind`.
+#[hax_lib::decreases(b.len().to_int())]
+fn check_extension_present(b: &[U8], kind: u8) -> Result<(), TLSError> {
+    if b.len() < 4 {
+        tlserr(parse_failed())
+    } else if eq_slice(&[U8(0), U8(kind)], &b[0..2]) {
+        Ok(())
+    } else {
+        let len = length_u16_encoded_slice(&b[2..b.len()])?;
+        check_extension_present(&b[4 + len..b.len()], kind)
+    }
+}
+
 #[inline(always)]
 #[hax_lib::decreases(b.len().to_int())]
 fn check_extensions_slice(algs: &Algorithms, b: &[U8]) -> Result<Extensions, TLSError> {
@@ -718,7 +731,14 @@ pub(super) fn parse_client_hello(
     check_length_encoding_u16(&ch.slice_range(next..ch.len()))?;
     next += 2;
     check(ch.len() >= next)?;
-    let exts = check_extensions(ciphersuite, &ch.slice_range(next..ch.len()))?;
+    let extensions = ch.slice_range(next..ch.len());
+    let exts = check_extensions(ciphersuite, &extensions)?;
+    // RFC 8446 §9.2: supported_groups always (bertie requires key_share),
+    // signature_algorithms unless the hello offers a PSK.
+    check_extension_present(extensions.as_raw(), 0x0a)?;
+    if exts.ticket.is_none() {
+        check_extension_present(extensions.as_raw(), 0x0d)?;
+    }
     match (ciphersuite.psk_mode(), exts) {
         (
             _,
