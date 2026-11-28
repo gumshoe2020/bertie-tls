@@ -77,7 +77,7 @@ fn build_server_name(name: &Bytes) -> Result<Bytes, TLSError> {
 /// otherwise.
 fn check_server_name(extension: &[U8]) -> Result<Bytes, TLSError> {
     check_length_encoding_u16_slice(extension)?;
-    if extension.len() > 3 {
+    if extension.len() > 5 {
         check_eq1(U8(0), extension[2])?;
         check_length_encoding_u16_slice(&extension[3..extension.len()])?;
         Ok(extension[5..extension.len()].into())
@@ -148,12 +148,29 @@ fn key_shares(algs: &Algorithms, gx: KemPk) -> Result<Bytes, TLSError> {
 fn find_key_share(g: &Bytes, ch: &[U8]) -> Result<Bytes, TLSError> {
     if ch.len() < 4 {
         tlserr(parse_failed())
-    } else if eq_slice(g.as_raw(), &ch[0..2]) {
-        let len = length_u16_encoded_slice(&ch[2..ch.len()])?;
-        Ok(ch[4..4 + len].into())
     } else {
         let len = length_u16_encoded_slice(&ch[2..ch.len()])?;
-        find_key_share(g, &ch[4 + len..ch.len()])
+        check(len > 0)?;
+        if eq_slice(g.as_raw(), &ch[0..2]) {
+            check_key_share_entries(&ch[4 + len..ch.len()])?;
+            Ok(ch[4..4 + len].into())
+        } else {
+            find_key_share(g, &ch[4 + len..ch.len()])
+        }
+    }
+}
+
+/// Check that `ch` is a list of key share entries with non-empty keys.
+#[hax_lib::decreases(ch.len().to_int())]
+fn check_key_share_entries(ch: &[U8]) -> Result<(), TLSError> {
+    if ch.is_empty() {
+        Ok(())
+    } else if ch.len() < 4 {
+        tlserr(parse_failed())
+    } else {
+        let len = length_u16_encoded_slice(&ch[2..ch.len()])?;
+        check(len > 0)?;
+        check_key_share_entries(&ch[4 + len..ch.len()])
     }
 }
 
@@ -168,7 +185,7 @@ fn server_key_shares(algs: &Algorithms, gx: KemPk) -> Result<Bytes, TLSError> {
 }
 
 fn check_server_key_share(algs: &Algorithms, b: &[U8]) -> Result<Bytes, TLSError> {
-    if b.len() >= 2 {
+    if b.len() > 4 {
         check_eq_with_slice(algs.supported_group()?.as_raw(), b, 0, 2)?;
         check_length_encoding_u16_slice(&b[2..b.len()])?;
         // XXX Performance: These conversions aren't necessary. A slice would suffice.
@@ -687,6 +704,7 @@ pub(super) fn parse_client_hello(
     let crand = ch.slice_range(next..next + 32);
     next += 32;
     let sidlen = length_u8_encoded(&ch[next..ch.len()])?;
+    check(sidlen <= 32)?;
     let sid = ch.slice_range(next + 1..next + 1 + sidlen);
     next = next + 1 + sidlen;
     let cslen = ciphersuite.check(ch.raw_slice(next..ch.len()))?;
@@ -885,6 +903,7 @@ pub(crate) fn parse_server_hello(
     let srand = server_hello.slice_range(next..next + 32);
     next += 32;
     let sidlen = length_u8_encoded(&server_hello[next..server_hello.len()])?;
+    check(sidlen <= 32)?;
     next = next + 1 + sidlen;
     (match check_eq_with_slice(cip.as_raw(), server_hello.as_raw(), next, next + 2) {
         Ok(_) => Ok(()),
