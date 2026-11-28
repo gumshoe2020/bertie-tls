@@ -77,7 +77,7 @@ fn build_server_name(name: &Bytes) -> Result<Bytes, TLSError> {
 /// otherwise.
 fn check_server_name(extension: &[U8]) -> Result<Bytes, TLSError> {
     check_length_encoding_u16_slice(extension)?;
-    if extension.len() > 3 {
+    if extension.len() > 5 {
         check_eq1(U8(0), extension[2])?;
         check_length_encoding_u16_slice(&extension[3..extension.len()])?;
         Ok(extension[5..extension.len()].into())
@@ -148,12 +148,29 @@ fn key_shares(algs: &Algorithms, gx: KemPk) -> Result<Bytes, TLSError> {
 fn find_key_share(g: &Bytes, ch: &[U8]) -> Result<Bytes, TLSError> {
     if ch.len() < 4 {
         tlserr(parse_failed())
-    } else if eq_slice(g.as_raw(), &ch[0..2]) {
-        let len = length_u16_encoded_slice(&ch[2..ch.len()])?;
-        Ok(ch[4..4 + len].into())
     } else {
         let len = length_u16_encoded_slice(&ch[2..ch.len()])?;
-        find_key_share(g, &ch[4 + len..ch.len()])
+        check(len > 0)?;
+        if eq_slice(g.as_raw(), &ch[0..2]) {
+            check_key_share_entries(&ch[4 + len..ch.len()])?;
+            Ok(ch[4..4 + len].into())
+        } else {
+            find_key_share(g, &ch[4 + len..ch.len()])
+        }
+    }
+}
+
+/// Check that `ch` is a list of key share entries with non-empty keys.
+#[hax_lib::decreases(ch.len().to_int())]
+fn check_key_share_entries(ch: &[U8]) -> Result<(), TLSError> {
+    if ch.is_empty() {
+        Ok(())
+    } else if ch.len() < 4 {
+        tlserr(parse_failed())
+    } else {
+        let len = length_u16_encoded_slice(&ch[2..ch.len()])?;
+        check(len > 0)?;
+        check_key_share_entries(&ch[4 + len..ch.len()])
     }
 }
 
@@ -168,7 +185,7 @@ fn server_key_shares(algs: &Algorithms, gx: KemPk) -> Result<Bytes, TLSError> {
 }
 
 fn check_server_key_share(algs: &Algorithms, b: &[U8]) -> Result<Bytes, TLSError> {
-    if b.len() >= 2 {
+    if b.len() > 4 {
         check_eq_with_slice(algs.supported_group()?.as_raw(), b, 0, 2)?;
         check_length_encoding_u16_slice(&b[2..b.len()])?;
         // XXX Performance: These conversions aren't necessary. A slice would suffice.
@@ -329,10 +346,30 @@ fn check_server_extension(algs: &Algorithms, b: &[U8]) -> Result<(usize, Option<
                 out = Some(gx)
             }
             (0, 41) => check_server_psk_shared_key(algs, &b[4..4 + len])?,
+            // RFC 8446 §4.2: server_name, supported_groups, signature_algorithms
+            // and psk_key_exchange_modes never appear in a ServerHello.
+            (0, 0) | (0, 0x0a) | (0, 0x0d) | (0, 0x2d) => illegal_server_extension()?,
             _ => (),
         }
         Ok((4 + len, out))
     }
+}
+
+/// Check that the extension list `b` contains an extension of type `kind`.
+#[hax_lib::decreases(b.len().to_int())]
+fn check_extension_present(b: &[U8], kind: u8) -> Result<(), TLSError> {
+    if b.len() < 4 {
+        tlserr(parse_failed())
+    } else if eq_slice(&[U8(0), U8(kind)], &b[0..2]) {
+        Ok(())
+    } else {
+        let len = length_u16_encoded_slice(&b[2..b.len()])?;
+        check_extension_present(&b[4 + len..b.len()], kind)
+    }
+}
+
+fn illegal_server_extension() -> Result<(), TLSError> {
+    Err(UNSUPPORTED)
 }
 
 #[inline(always)]
@@ -687,6 +724,7 @@ pub(super) fn parse_client_hello(
     let crand = ch.slice_range(next..next + 32);
     next += 32;
     let sidlen = length_u8_encoded(&ch[next..ch.len()])?;
+    check(sidlen <= 32)?;
     let sid = ch.slice_range(next + 1..next + 1 + sidlen);
     next = next + 1 + sidlen;
     let cslen = ciphersuite.check(ch.raw_slice(next..ch.len()))?;
@@ -700,7 +738,14 @@ pub(super) fn parse_client_hello(
     check_length_encoding_u16(&ch.slice_range(next..ch.len()))?;
     next += 2;
     check(ch.len() >= next)?;
-    let exts = check_extensions(ciphersuite, &ch.slice_range(next..ch.len()))?;
+    let extensions = ch.slice_range(next..ch.len());
+    let exts = check_extensions(ciphersuite, &extensions)?;
+    // RFC 8446 §9.2: supported_groups always (bertie requires key_share),
+    // signature_algorithms unless the hello offers a PSK.
+    check_extension_present(extensions.as_raw(), 0x0a)?;
+    if exts.ticket.is_none() {
+        check_extension_present(extensions.as_raw(), 0x0d)?;
+    }
     match (ciphersuite.psk_mode(), exts) {
         (
             _,
@@ -831,6 +876,51 @@ fn invalid_compression_method_alert() -> Result<(), TLSError> {
     Err(DECODE_ERROR)
 }
 
+/// The ServerHello random that marks a HelloRetryRequest (RFC 8446 §4.1.3).
+const HELLO_RETRY_REQUEST_RANDOM: [U8; 32] = [
+    U8(0xcf),
+    U8(0x21),
+    U8(0xad),
+    U8(0x74),
+    U8(0xe5),
+    U8(0x9a),
+    U8(0x61),
+    U8(0x11),
+    U8(0xbe),
+    U8(0x1d),
+    U8(0x8c),
+    U8(0x02),
+    U8(0x1e),
+    U8(0x65),
+    U8(0xb8),
+    U8(0x91),
+    U8(0xc2),
+    U8(0xa2),
+    U8(0x11),
+    U8(0x16),
+    U8(0x7a),
+    U8(0xbb),
+    U8(0x8c),
+    U8(0x5e),
+    U8(0x07),
+    U8(0x9e),
+    U8(0x09),
+    U8(0xe2),
+    U8(0xc8),
+    U8(0xa8),
+    U8(0x33),
+    U8(0x9c),
+];
+
+/// Bertie does not support HelloRetryRequest.
+fn check_not_hello_retry_request(server_random: &Random) -> Result<(), TLSError> {
+    if eq_slice(&HELLO_RETRY_REQUEST_RANDOM, server_random.as_raw()) {
+        Err(UNSUPPORTED)
+    } else {
+        Ok(())
+    }
+}
+
 #[cfg(bench)]
 pub fn bench_parse_server_hello(
     algs: &Algorithms,
@@ -883,8 +973,10 @@ pub(crate) fn parse_server_hello(
     next += 2;
     check(server_hello.len() >= next + 32)?;
     let srand = server_hello.slice_range(next..next + 32);
+    check_not_hello_retry_request(&srand)?;
     next += 32;
     let sidlen = length_u8_encoded(&server_hello[next..server_hello.len()])?;
+    check(sidlen <= 32)?;
     next = next + 1 + sidlen;
     (match check_eq_with_slice(cip.as_raw(), server_hello.as_raw(), next, next + 2) {
         Ok(_) => Ok(()),
@@ -901,6 +993,12 @@ pub(crate) fn parse_server_hello(
     next += 2;
     check(server_hello.len() >= next)?;
     let gy = check_server_extensions(algs, &server_hello[next..server_hello.len()])?;
+    // RFC 8446 §4.1.3: without supported_versions the server selects TLS 1.2,
+    // which bertie never offers.
+    (match check_extension_present(&server_hello[next..server_hello.len()], 0x2b) {
+        Ok(_) => Ok(()),
+        Err(_) => protocol_version_alert(),
+    })?;
     if let Some(gy) = gy {
         Ok((srand, gy))
     } else {
