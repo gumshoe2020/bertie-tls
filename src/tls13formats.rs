@@ -993,6 +993,12 @@ pub(crate) fn parse_server_hello(
     next += 2;
     check(server_hello.len() >= next)?;
     let gy = check_server_extensions(algs, &server_hello[next..server_hello.len()])?;
+    // RFC 8446 §4.1.3: without supported_versions the server selects TLS 1.2,
+    // which bertie never offers.
+    (match check_extension_present(&server_hello[next..server_hello.len()], 0x2b) {
+        Ok(_) => Ok(()),
+        Err(_) => protocol_version_alert(),
+    })?;
     if let Some(gy) = gy {
         Ok((srand, gy))
     } else {
