@@ -2,16 +2,16 @@
 
 | Security runtime | Lines | Share |
 | --- | ---: | ---: |
-| proven | 4107 | 81.04% |
-| tested | 251 | 4.95% |
-| unverified | 710 | 14.01% |
+| proven | 4154 | 81.21% |
+| tested | 251 | 4.91% |
+| unverified | 710 | 13.88% |
 
-Total: **5068** first-party security runtime SLoC. Proven includes explicitly labelled
-`proven-extracted` hax credit (4107 lines); Verus proven: 0 lines.
+Total: **5115** first-party security runtime SLoC. Proven includes explicitly labelled
+`proven-extracted` hax credit (4154 lines); Verus proven: 0 lines.
 
-Proof-to-code ratio: **0.33** (1372 proof SLoC / 4107 proven + proven-extracted runtime SLoC); informational, never blocking.
+Proof-to-code ratio: **0.33** (1374 proof SLoC / 4154 proven + proven-extracted runtime SLoC); informational, never blocking.
 
-Proof components: 948 hax annotation SLoC, 353 standalone `cfg(hax)` proof-code SLoC, and 353 inline `cfg(hax)` SLoC (overlaps count once). F* models: 1 SLoC of trusted assumptions, excluded from the ratio.
+Proof components: 950 hax annotation SLoC, 353 standalone `cfg(hax)` proof-code SLoC, and 353 inline `cfg(hax)` SLoC (overlaps count once). F* models: 1 SLoC of trusted assumptions, excluded from the ratio.
 
 | Module | Proven runtime | Proof SLoC | Proof / proven runtime |
 | --- | ---: | ---: | ---: |
@@ -30,7 +30,7 @@ Proof components: 948 hax annotation SLoC, 353 standalone `cfg(hax)` proof-code 
 | bertie_tls::tls13crypto::Algorithms | 115 | 13 | 0.11 |
 | bertie_tls::tls13crypto::HashAlgorithm | 12 | 2 | 0.17 |
 | bertie_tls::tls13crypto::backend | 0 | 28 | n/a |
-| bertie_tls::tls13formats | 834 | 71 | 0.09 |
+| bertie_tls::tls13formats | 881 | 73 | 0.08 |
 | bertie_tls::tls13formats::ContentType | 9 | 0 | 0.00 |
 | bertie_tls::tls13formats::Extensions | 8 | 0 | 0.00 |
 | bertie_tls::tls13formats::Transcript | 53 | 1 | 0.02 |
@@ -57,9 +57,9 @@ Proof components: 948 hax annotation SLoC, 353 standalone `cfg(hax)` proof-code 
 
 | Contract depth | Lines | Share of proven lines |
 | --- | ---: | ---: |
-| safety-only | 3628 | 88.34% |
-| functional, checked only against own code | 209 | 5.09% |
-| functional | 270 | 6.57% |
+| safety-only | 3675 | 88.47% |
+| functional, checked only against own code | 209 | 5.03% |
+| functional | 270 | 6.50% |
 
 Safety-only means proven free of panics, overflows and out-of-bounds access, including length and range facts; it says nothing about what the code computes.
 

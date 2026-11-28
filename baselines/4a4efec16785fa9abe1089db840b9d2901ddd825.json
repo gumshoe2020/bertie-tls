@@ -1,0 +1,3618 @@
+{
+  "inventory": [
+    {
+      "end_line": 130,
+      "file": "src/der.rs",
+      "id": "bertie_tls::der::der_uint_valid",
+      "inline_proof_sloc": 0,
+      "line": 112,
+      "sloc": 11,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 340,
+      "file": "src/der.rs",
+      "id": "bertie_tls::der::skip_zeros",
+      "inline_proof_sloc": 6,
+      "line": 323,
+      "sloc": 11,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 365,
+      "file": "src/der.rs",
+      "id": "bertie_tls::der::encode_uint",
+      "inline_proof_sloc": 8,
+      "line": 346,
+      "sloc": 9,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 392,
+      "file": "src/der.rs",
+      "id": "bertie_tls::der::encode_ecdsa_signature",
+      "inline_proof_sloc": 11,
+      "line": 367,
+      "sloc": 14,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 427,
+      "file": "src/der.rs",
+      "id": "bertie_tls::der::uint_to_32_bytes",
+      "inline_proof_sloc": 16,
+      "line": 398,
+      "sloc": 12,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 472,
+      "file": "src/der.rs",
+      "id": "bertie_tls::der::decode_ecdsa_signature",
+      "inline_proof_sloc": 10,
+      "line": 429,
+      "sloc": 33,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 34,
+      "file": "src/server.rs",
+      "id": "bertie_tls::server::ServerDB::new",
+      "inline_proof_sloc": 0,
+      "line": 19,
+      "sloc": 13,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 60,
+      "file": "src/server.rs",
+      "id": "bertie_tls::server::psk_offered",
+      "inline_proof_sloc": 0,
+      "line": 54,
+      "sloc": 7,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 89,
+      "file": "src/server.rs",
+      "id": "bertie_tls::server::lookup_db",
+      "inline_proof_sloc": 0,
+      "line": 62,
+      "sloc": 24,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 21,
+      "file": "src/stream/bertie_stream.rs",
+      "id": "bertie_tls::stream::bertie_stream::From<std::io::Error>forBertieError::from",
+      "inline_proof_sloc": 0,
+      "line": 19,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 27,
+      "file": "src/stream/bertie_stream.rs",
+      "id": "bertie_tls::stream::bertie_stream::From<TLSError>forBertieError::from",
+      "inline_proof_sloc": 0,
+      "line": 25,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 32,
+      "file": "src/stream/bertie_stream.rs",
+      "id": "bertie_tls::stream::bertie_stream::TlsStream::write_tls",
+      "inline_proof_sloc": 0,
+      "line": 31,
+      "sloc": 1,
+      "status": "unverified"
+    },
+    {
+      "end_line": 35,
+      "file": "src/stream/bertie_stream.rs",
+      "id": "bertie_tls::stream::bertie_stream::TlsStream::read_tls",
+      "inline_proof_sloc": 0,
+      "line": 34,
+      "sloc": 1,
+      "status": "unverified"
+    },
+    {
+      "end_line": 38,
+      "file": "src/stream/bertie_stream.rs",
+      "id": "bertie_tls::stream::bertie_stream::TlsStream::stream_mut",
+      "inline_proof_sloc": 0,
+      "line": 37,
+      "sloc": 1,
+      "status": "unverified"
+    },
+    {
+      "end_line": 95,
+      "file": "src/stream/bertie_stream.rs",
+      "id": "bertie_tls::stream::bertie_stream::read_record",
+      "inline_proof_sloc": 0,
+      "line": 48,
+      "sloc": 33,
+      "status": "unverified"
+    },
+    {
+      "end_line": 36,
+      "file": "src/stream/client.rs",
+      "id": "bertie_tls::stream::client::<Stream:Read+Write>ClientState<Stream>::new",
+      "inline_proof_sloc": 0,
+      "line": 29,
+      "sloc": 7,
+      "status": "tested"
+    },
+    {
+      "end_line": 53,
+      "file": "src/stream/client.rs",
+      "id": "bertie_tls::stream::client::<T:Read+Write>TlsStream<T>forClientState<T>::write_tls",
+      "inline_proof_sloc": 0,
+      "line": 40,
+      "sloc": 11,
+      "status": "unverified"
+    },
+    {
+      "end_line": 72,
+      "file": "src/stream/client.rs",
+      "id": "bertie_tls::stream::client::<T:Read+Write>TlsStream<T>forClientState<T>::read_tls",
+      "inline_proof_sloc": 0,
+      "line": 55,
+      "sloc": 17,
+      "status": "unverified"
+    },
+    {
+      "end_line": 76,
+      "file": "src/stream/client.rs",
+      "id": "bertie_tls::stream::client::<T:Read+Write>TlsStream<T>forClientState<T>::stream_mut",
+      "inline_proof_sloc": 0,
+      "line": 74,
+      "sloc": 3,
+      "status": "unverified"
+    },
+    {
+      "end_line": 91,
+      "file": "src/stream/client.rs",
+      "id": "bertie_tls::stream::client::<Stream:Read+Write>BertieStream<ClientState<Stream>>::open_with_stream",
+      "inline_proof_sloc": 0,
+      "line": 80,
+      "sloc": 11,
+      "status": "tested"
+    },
+    {
+      "end_line": 110,
+      "file": "src/stream/client.rs",
+      "id": "bertie_tls::stream::client::BertieStream<ClientState<TcpStream>>::client",
+      "inline_proof_sloc": 0,
+      "line": 95,
+      "sloc": 11,
+      "status": "tested"
+    },
+    {
+      "end_line": 121,
+      "file": "src/stream/client.rs",
+      "id": "bertie_tls::stream::client::BertieStream<ClientState<TcpStream>>::open",
+      "inline_proof_sloc": 0,
+      "line": 112,
+      "sloc": 9,
+      "status": "tested"
+    },
+    {
+      "end_line": 222,
+      "file": "src/stream/client.rs",
+      "id": "bertie_tls::stream::client::BertieStream<ClientState<TcpStream>>::start",
+      "inline_proof_sloc": 0,
+      "line": 123,
+      "sloc": 70,
+      "status": "unverified"
+    },
+    {
+      "end_line": 229,
+      "file": "src/stream/client.rs",
+      "id": "bertie_tls::stream::client::BertieStream<ClientState<TcpStream>>::write_all",
+      "inline_proof_sloc": 0,
+      "line": 224,
+      "sloc": 6,
+      "status": "unverified"
+    },
+    {
+      "end_line": 236,
+      "file": "src/stream/client.rs",
+      "id": "bertie_tls::stream::client::BertieStream<ClientState<TcpStream>>::read",
+      "inline_proof_sloc": 0,
+      "line": 231,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 244,
+      "file": "src/stream/client.rs",
+      "id": "bertie_tls::stream::client::BertieStream<ClientState<TcpStream>>::write",
+      "inline_proof_sloc": 0,
+      "line": 238,
+      "sloc": 4,
+      "status": "tested"
+    },
+    {
+      "end_line": 47,
+      "file": "src/stream/server.rs",
+      "id": "bertie_tls::stream::server::<Stream:Read+Write>ServerState<Stream>::new",
+      "inline_proof_sloc": 0,
+      "line": 39,
+      "sloc": 8,
+      "status": "tested"
+    },
+    {
+      "end_line": 64,
+      "file": "src/stream/server.rs",
+      "id": "bertie_tls::stream::server::<Stream:Read+Write>TlsStream<Stream>forServerState<Stream>::write_tls",
+      "inline_proof_sloc": 0,
+      "line": 51,
+      "sloc": 11,
+      "status": "unverified"
+    },
+    {
+      "end_line": 83,
+      "file": "src/stream/server.rs",
+      "id": "bertie_tls::stream::server::<Stream:Read+Write>TlsStream<Stream>forServerState<Stream>::read_tls",
+      "inline_proof_sloc": 0,
+      "line": 66,
+      "sloc": 17,
+      "status": "unverified"
+    },
+    {
+      "end_line": 87,
+      "file": "src/stream/server.rs",
+      "id": "bertie_tls::stream::server::<Stream:Read+Write>TlsStream<Stream>forServerState<Stream>::stream_mut",
+      "inline_proof_sloc": 0,
+      "line": 85,
+      "sloc": 3,
+      "status": "unverified"
+    },
+    {
+      "end_line": 106,
+      "file": "src/stream/server.rs",
+      "id": "bertie_tls::stream::server::<Stream:Read+Write>BertieStream<ServerState<Stream>>::server_with_stream",
+      "inline_proof_sloc": 0,
+      "line": 91,
+      "sloc": 14,
+      "status": "unverified"
+    },
+    {
+      "end_line": 186,
+      "file": "src/stream/server.rs",
+      "id": "bertie_tls::stream::server::BertieStream<ServerState<TcpStream>>::server",
+      "inline_proof_sloc": 0,
+      "line": 110,
+      "sloc": 20,
+      "status": "tested"
+    },
+    {
+      "end_line": 235,
+      "file": "src/stream/server.rs",
+      "id": "bertie_tls::stream::server::BertieStream<ServerState<TcpStream>>::connect",
+      "inline_proof_sloc": 0,
+      "line": 188,
+      "sloc": 39,
+      "status": "tested"
+    },
+    {
+      "end_line": 248,
+      "file": "src/stream/server.rs",
+      "id": "bertie_tls::stream::server::BertieStream<ServerState<TcpStream>>::close",
+      "inline_proof_sloc": 0,
+      "line": 237,
+      "sloc": 10,
+      "status": "unverified"
+    },
+    {
+      "end_line": 263,
+      "file": "src/stream/server.rs",
+      "id": "bertie_tls::stream::server::BertieStream<ServerState<TcpStream>>::check_ccs_message",
+      "inline_proof_sloc": 0,
+      "line": 250,
+      "sloc": 14,
+      "status": "unverified"
+    },
+    {
+      "end_line": 273,
+      "file": "src/stream/server.rs",
+      "id": "bertie_tls::stream::server::BertieStream<ServerState<TcpStream>>::write_all",
+      "inline_proof_sloc": 0,
+      "line": 265,
+      "sloc": 6,
+      "status": "unverified"
+    },
+    {
+      "end_line": 280,
+      "file": "src/stream/server.rs",
+      "id": "bertie_tls::stream::server::BertieStream<ServerState<TcpStream>>::read",
+      "inline_proof_sloc": 0,
+      "line": 275,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 288,
+      "file": "src/stream/server.rs",
+      "id": "bertie_tls::stream::server::BertieStream<ServerState<TcpStream>>::write",
+      "inline_proof_sloc": 0,
+      "line": 282,
+      "sloc": 4,
+      "status": "tested"
+    },
+    {
+      "end_line": 333,
+      "file": "src/stream/server.rs",
+      "id": "bertie_tls::stream::server::init_db",
+      "inline_proof_sloc": 0,
+      "line": 291,
+      "sloc": 36,
+      "status": "unverified"
+    },
+    {
+      "end_line": 343,
+      "file": "src/stream/server.rs",
+      "id": "bertie_tls::stream::server::read_file",
+      "inline_proof_sloc": 0,
+      "line": 335,
+      "sloc": 7,
+      "status": "unverified"
+    },
+    {
+      "end_line": 50,
+      "file": "src/tls13api.rs",
+      "id": "bertie_tls::tls13api::in_psk_mode",
+      "inline_proof_sloc": 0,
+      "line": 40,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 68,
+      "file": "src/tls13api.rs",
+      "id": "bertie_tls::tls13api::get_server_info",
+      "inline_proof_sloc": 0,
+      "line": 52,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 104,
+      "file": "src/tls13api.rs",
+      "id": "bertie_tls::tls13api::Client::connect",
+      "inline_proof_sloc": 0,
+      "line": 72,
+      "sloc": 18,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 144,
+      "file": "src/tls13api.rs",
+      "id": "bertie_tls::tls13api::Client::read_handshake",
+      "inline_proof_sloc": 0,
+      "line": 108,
+      "sloc": 26,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 173,
+      "file": "src/tls13api.rs",
+      "id": "bertie_tls::tls13api::Client::read",
+      "inline_proof_sloc": 0,
+      "line": 146,
+      "sloc": 15,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 189,
+      "file": "src/tls13api.rs",
+      "id": "bertie_tls::tls13api::Client::write",
+      "inline_proof_sloc": 0,
+      "line": 175,
+      "sloc": 9,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 248,
+      "file": "src/tls13api.rs",
+      "id": "bertie_tls::tls13api::Server::accept",
+      "inline_proof_sloc": 0,
+      "line": 209,
+      "sloc": 25,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 271,
+      "file": "src/tls13api.rs",
+      "id": "bertie_tls::tls13api::Server::read_handshake",
+      "inline_proof_sloc": 0,
+      "line": 250,
+      "sloc": 14,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 287,
+      "file": "src/tls13api.rs",
+      "id": "bertie_tls::tls13api::Server::write",
+      "inline_proof_sloc": 0,
+      "line": 273,
+      "sloc": 9,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 310,
+      "file": "src/tls13api.rs",
+      "id": "bertie_tls::tls13api::Server::read",
+      "inline_proof_sloc": 0,
+      "line": 289,
+      "sloc": 9,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 323,
+      "file": "src/tls13api.rs",
+      "id": "bertie_tls::tls13api::Server::close_notify",
+      "inline_proof_sloc": 0,
+      "line": 312,
+      "sloc": 6,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 40,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::CloneforCertificateKey::clone",
+      "inline_proof_sloc": 0,
+      "line": 38,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 56,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::asn1_error",
+      "inline_proof_sloc": 0,
+      "line": 52,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 79,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::long_length",
+      "inline_proof_sloc": 3,
+      "line": 61,
+      "sloc": 13,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 96,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::length_length",
+      "inline_proof_sloc": 3,
+      "line": 82,
+      "sloc": 11,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 114,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::short_length",
+      "inline_proof_sloc": 3,
+      "line": 101,
+      "sloc": 11,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 129,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::advance",
+      "inline_proof_sloc": 3,
+      "line": 116,
+      "sloc": 7,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 153,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::length",
+      "inline_proof_sloc": 3,
+      "line": 131,
+      "sloc": 15,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 167,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::read_header",
+      "inline_proof_sloc": 3,
+      "line": 155,
+      "sloc": 6,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 177,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::read_sequence_header",
+      "inline_proof_sloc": 3,
+      "line": 169,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 187,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::read_octet_header",
+      "inline_proof_sloc": 3,
+      "line": 179,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 204,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::check_tag",
+      "inline_proof_sloc": 3,
+      "line": 189,
+      "sloc": 11,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 218,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::skip_tagged",
+      "inline_proof_sloc": 3,
+      "line": 206,
+      "sloc": 6,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 228,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::skip_sequence",
+      "inline_proof_sloc": 3,
+      "line": 220,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 249,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::read_version_number",
+      "inline_proof_sloc": 3,
+      "line": 230,
+      "sloc": 11,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 259,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::skip_integer",
+      "inline_proof_sloc": 3,
+      "line": 251,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 268,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::read_slice",
+      "inline_proof_sloc": 3,
+      "line": 261,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 277,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::read_integer",
+      "inline_proof_sloc": 0,
+      "line": 270,
+      "sloc": 6,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 283,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::x962_ec_public_key_oid",
+      "inline_proof_sloc": 0,
+      "line": 281,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 286,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::ecdsa_secp256r1_sha256_oid",
+      "inline_proof_sloc": 0,
+      "line": 284,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 289,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::rsa_pkcs1_encryption_oid",
+      "inline_proof_sloc": 0,
+      "line": 287,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 297,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::check_success",
+      "inline_proof_sloc": 0,
+      "line": 291,
+      "sloc": 7,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 314,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::has_oid",
+      "inline_proof_sloc": 3,
+      "line": 299,
+      "sloc": 12,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 336,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::read_algorithm",
+      "inline_proof_sloc": 0,
+      "line": 316,
+      "sloc": 16,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 355,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::read_key_bits",
+      "inline_proof_sloc": 0,
+      "line": 338,
+      "sloc": 14,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 376,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::read_spki",
+      "inline_proof_sloc": 0,
+      "line": 357,
+      "sloc": 12,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 437,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::verification_key_from_cert",
+      "inline_proof_sloc": 0,
+      "line": 378,
+      "sloc": 46,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 457,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::ecdsa_public_key",
+      "inline_proof_sloc": 0,
+      "line": 439,
+      "sloc": 13,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 481,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::rsa_public_key",
+      "inline_proof_sloc": 0,
+      "line": 459,
+      "sloc": 15,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 520,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::rsa_private_key",
+      "inline_proof_sloc": 0,
+      "line": 494,
+      "sloc": 11,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 561,
+      "file": "src/tls13cert.rs",
+      "id": "bertie_tls::tls13cert::cert_public_key",
+      "inline_proof_sloc": 0,
+      "line": 522,
+      "sloc": 35,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 43,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::AeadKeyIV::new",
+      "inline_proof_sloc": 0,
+      "line": 40,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 56,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::AeadKey::new",
+      "inline_proof_sloc": 0,
+      "line": 53,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 71,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::hash",
+      "inline_proof_sloc": 0,
+      "line": 65,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 84,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::HashAlgorithm::hash_len",
+      "inline_proof_sloc": 1,
+      "line": 75,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 91,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::HashAlgorithm::hmac_tag_len",
+      "inline_proof_sloc": 1,
+      "line": 86,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 100,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::hmac_tag",
+      "inline_proof_sloc": 0,
+      "line": 94,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 133,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::hmac_verify",
+      "inline_proof_sloc": 0,
+      "line": 102,
+      "sloc": 29,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 145,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::hkdf_extract",
+      "inline_proof_sloc": 0,
+      "line": 135,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 168,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::hkdf_expand",
+      "inline_proof_sloc": 6,
+      "line": 147,
+      "sloc": 10,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 179,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::AeadAlgorithm::key_len",
+      "inline_proof_sloc": 0,
+      "line": 171,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 189,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::AeadAlgorithm::iv_len",
+      "inline_proof_sloc": 0,
+      "line": 181,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 216,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::aead_encrypt",
+      "inline_proof_sloc": 0,
+      "line": 192,
+      "sloc": 21,
+      "status": "unverified"
+    },
+    {
+      "end_line": 244,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::aead_decrypt",
+      "inline_proof_sloc": 0,
+      "line": 218,
+      "sloc": 23,
+      "status": "tested"
+    },
+    {
+      "end_line": 276,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::sign_rsa",
+      "inline_proof_sloc": 0,
+      "line": 246,
+      "sloc": 26,
+      "status": "unverified"
+    },
+    {
+      "end_line": 324,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::sign",
+      "inline_proof_sloc": 0,
+      "line": 278,
+      "sloc": 44,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 427,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::verify",
+      "inline_proof_sloc": 0,
+      "line": 326,
+      "sloc": 91,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 438,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::supported_rsa_key_size",
+      "inline_proof_sloc": 0,
+      "line": 429,
+      "sloc": 7,
+      "status": "unverified"
+    },
+    {
+      "end_line": 445,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::valid_rsa_exponent",
+      "inline_proof_sloc": 0,
+      "line": 440,
+      "sloc": 4,
+      "status": "unverified"
+    },
+    {
+      "end_line": 480,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::kem_keygen",
+      "inline_proof_sloc": 0,
+      "line": 447,
+      "sloc": 28,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 491,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::encoding_prefix",
+      "inline_proof_sloc": 0,
+      "line": 482,
+      "sloc": 7,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 504,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::into_raw",
+      "inline_proof_sloc": 0,
+      "line": 493,
+      "sloc": 10,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 543,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::kem_encap",
+      "inline_proof_sloc": 0,
+      "line": 506,
+      "sloc": 32,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 557,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::to_shared_secret",
+      "inline_proof_sloc": 0,
+      "line": 545,
+      "sloc": 12,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 582,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::kem_decap",
+      "inline_proof_sloc": 0,
+      "line": 559,
+      "sloc": 19,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 603,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::Algorithms::new",
+      "inline_proof_sloc": 0,
+      "line": 586,
+      "sloc": 17,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 645,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::Algorithms::validate",
+      "inline_proof_sloc": 0,
+      "line": 605,
+      "sloc": 41,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 650,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::Algorithms::hash",
+      "inline_proof_sloc": 0,
+      "line": 647,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 655,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::Algorithms::aead",
+      "inline_proof_sloc": 0,
+      "line": 652,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 660,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::Algorithms::signature",
+      "inline_proof_sloc": 0,
+      "line": 657,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 665,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::Algorithms::kem",
+      "inline_proof_sloc": 0,
+      "line": 662,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 670,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::Algorithms::psk_mode",
+      "inline_proof_sloc": 0,
+      "line": 667,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 675,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::Algorithms::zero_rtt",
+      "inline_proof_sloc": 0,
+      "line": 672,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 695,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::Algorithms::ciphersuite",
+      "inline_proof_sloc": 3,
+      "line": 677,
+      "sloc": 14,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 712,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::Algorithms::supported_group",
+      "inline_proof_sloc": 3,
+      "line": 697,
+      "sloc": 11,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 725,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::Algorithms::signature_algorithm",
+      "inline_proof_sloc": 3,
+      "line": 714,
+      "sloc": 7,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 738,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::Algorithms::check",
+      "inline_proof_sloc": 4,
+      "line": 727,
+      "sloc": 7,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 769,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::TryFrom<&str>forAlgorithms::try_from",
+      "inline_proof_sloc": 0,
+      "line": 744,
+      "sloc": 25,
+      "status": "unverified"
+    },
+    {
+      "end_line": 780,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::DisplayforAlgorithms::fmt",
+      "inline_proof_sloc": 0,
+      "line": 774,
+      "sloc": 7,
+      "status": "unverified"
+    },
+    {
+      "end_line": 965,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::aead_encrypt",
+      "inline_proof_sloc": 0,
+      "line": 957,
+      "sloc": 9,
+      "status": "unverified"
+    },
+    {
+      "end_line": 974,
+      "file": "src/tls13crypto.rs",
+      "id": "bertie_tls::tls13crypto::aead_decrypt",
+      "inline_proof_sloc": 0,
+      "line": 966,
+      "sloc": 9,
+      "status": "tested"
+    },
+    {
+      "end_line": 36,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::sha2_digest",
+      "inline_proof_sloc": 0,
+      "line": 30,
+      "sloc": 6,
+      "status": "trusted"
+    },
+    {
+      "end_line": 45,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::hmac_compute",
+      "inline_proof_sloc": 0,
+      "line": 38,
+      "sloc": 7,
+      "status": "trusted"
+    },
+    {
+      "end_line": 54,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::hkdf_extract_prk",
+      "inline_proof_sloc": 0,
+      "line": 47,
+      "sloc": 7,
+      "status": "trusted"
+    },
+    {
+      "end_line": 101,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::hkdf_expand_okm",
+      "inline_proof_sloc": 28,
+      "line": 56,
+      "sloc": 9,
+      "status": "trusted"
+    },
+    {
+      "end_line": 117,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::chacha20poly1305_seal",
+      "inline_proof_sloc": 0,
+      "line": 103,
+      "sloc": 14,
+      "status": "trusted"
+    },
+    {
+      "end_line": 133,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::chacha20poly1305_open",
+      "inline_proof_sloc": 0,
+      "line": 119,
+      "sloc": 14,
+      "status": "trusted"
+    },
+    {
+      "end_line": 151,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::ecdsa_p256_sha256_sign",
+      "inline_proof_sloc": 0,
+      "line": 135,
+      "sloc": 16,
+      "status": "trusted"
+    },
+    {
+      "end_line": 167,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::ecdsa_p256_sha256_verify",
+      "inline_proof_sloc": 0,
+      "line": 153,
+      "sloc": 14,
+      "status": "trusted"
+    },
+    {
+      "end_line": 175,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::ed25519_sign",
+      "inline_proof_sloc": 0,
+      "line": 169,
+      "sloc": 6,
+      "status": "unverified"
+    },
+    {
+      "end_line": 181,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::ed25519_verify",
+      "inline_proof_sloc": 0,
+      "line": 177,
+      "sloc": 4,
+      "status": "unverified"
+    },
+    {
+      "end_line": 201,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::rsa_pss_sha256_sign",
+      "inline_proof_sloc": 0,
+      "line": 183,
+      "sloc": 15,
+      "status": "unverified"
+    },
+    {
+      "end_line": 219,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::rsa_pss_sha256_verify",
+      "inline_proof_sloc": 0,
+      "line": 203,
+      "sloc": 16,
+      "status": "unverified"
+    },
+    {
+      "end_line": 230,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::kem_generate",
+      "inline_proof_sloc": 0,
+      "line": 221,
+      "sloc": 9,
+      "status": "trusted"
+    },
+    {
+      "end_line": 243,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::kem_encapsulate",
+      "inline_proof_sloc": 0,
+      "line": 232,
+      "sloc": 11,
+      "status": "trusted"
+    },
+    {
+      "end_line": 254,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::kem_decapsulate",
+      "inline_proof_sloc": 0,
+      "line": 245,
+      "sloc": 9,
+      "status": "trusted"
+    },
+    {
+      "end_line": 276,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::non_hax::sha2_algorithm",
+      "inline_proof_sloc": 0,
+      "line": 265,
+      "sloc": 12,
+      "status": "unverified"
+    },
+    {
+      "end_line": 289,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::non_hax::hmac_algorithm",
+      "inline_proof_sloc": 0,
+      "line": 278,
+      "sloc": 12,
+      "status": "unverified"
+    },
+    {
+      "end_line": 302,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::non_hax::hkdf_algorithm",
+      "inline_proof_sloc": 0,
+      "line": 291,
+      "sloc": 12,
+      "status": "unverified"
+    },
+    {
+      "end_line": 314,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::non_hax::kem_algorithm",
+      "inline_proof_sloc": 0,
+      "line": 304,
+      "sloc": 11,
+      "status": "unverified"
+    },
+    {
+      "end_line": 323,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::non_hax::<R:CryptoRng>rand_core::TryRngforKemRng<'_,R>::try_next_u32",
+      "inline_proof_sloc": 0,
+      "line": 321,
+      "sloc": 3,
+      "status": "unverified"
+    },
+    {
+      "end_line": 326,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::non_hax::<R:CryptoRng>rand_core::TryRngforKemRng<'_,R>::try_next_u64",
+      "inline_proof_sloc": 0,
+      "line": 324,
+      "sloc": 3,
+      "status": "unverified"
+    },
+    {
+      "end_line": 330,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::non_hax::<R:CryptoRng>rand_core::TryRngforKemRng<'_,R>::try_fill_bytes",
+      "inline_proof_sloc": 0,
+      "line": 327,
+      "sloc": 4,
+      "status": "unverified"
+    },
+    {
+      "end_line": 339,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::non_hax::key_gen",
+      "inline_proof_sloc": 0,
+      "line": 334,
+      "sloc": 6,
+      "status": "unverified"
+    },
+    {
+      "end_line": 346,
+      "file": "src/tls13crypto/backend.rs",
+      "id": "bertie_tls::tls13crypto::backend::non_hax::encapsulate",
+      "inline_proof_sloc": 0,
+      "line": 341,
+      "sloc": 6,
+      "status": "unverified"
+    },
+    {
+      "end_line": 72,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::build_server_name",
+      "inline_proof_sloc": 3,
+      "line": 61,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 87,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::check_server_name",
+      "inline_proof_sloc": 0,
+      "line": 74,
+      "sloc": 10,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 95,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::supported_versions",
+      "inline_proof_sloc": 3,
+      "line": 89,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 101,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::check_supported_versions",
+      "inline_proof_sloc": 0,
+      "line": 97,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 106,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::server_supported_version",
+      "inline_proof_sloc": 0,
+      "line": 103,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 110,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::check_server_supported_version",
+      "inline_proof_sloc": 0,
+      "line": 108,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 118,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::supported_groups",
+      "inline_proof_sloc": 0,
+      "line": 112,
+      "sloc": 7,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 123,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::check_supported_groups",
+      "inline_proof_sloc": 0,
+      "line": 120,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 129,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::signature_algorithms",
+      "inline_proof_sloc": 0,
+      "line": 125,
+      "sloc": 5,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 134,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::check_signature_algorithms",
+      "inline_proof_sloc": 0,
+      "line": 131,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 139,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::check_psk_key_exchange_modes",
+      "inline_proof_sloc": 0,
+      "line": 136,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 145,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::key_shares",
+      "inline_proof_sloc": 0,
+      "line": 141,
+      "sloc": 5,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 161,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::find_key_share",
+      "inline_proof_sloc": 1,
+      "line": 147,
+      "sloc": 14,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 175,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::check_key_share_entries",
+      "inline_proof_sloc": 1,
+      "line": 163,
+      "sloc": 11,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 180,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::check_key_shares",
+      "inline_proof_sloc": 0,
+      "line": 177,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 185,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::server_key_shares",
+      "inline_proof_sloc": 0,
+      "line": 182,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 196,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::check_server_key_share",
+      "inline_proof_sloc": 0,
+      "line": 187,
+      "sloc": 9,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 215,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::check_psk_shared_key",
+      "inline_proof_sloc": 0,
+      "line": 199,
+      "sloc": 15,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 219,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::server_pre_shared_key",
+      "inline_proof_sloc": 0,
+      "line": 217,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 223,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::check_server_psk_shared_key",
+      "inline_proof_sloc": 0,
+      "line": 221,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 243,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::Extensions::merge",
+      "inline_proof_sloc": 0,
+      "line": 234,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 255,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::merge_opts",
+      "inline_proof_sloc": 0,
+      "line": 246,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 329,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::check_extension",
+      "inline_proof_sloc": 3,
+      "line": 257,
+      "sloc": 67,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 356,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::check_server_extension",
+      "inline_proof_sloc": 3,
+      "line": 331,
+      "sloc": 21,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 369,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::check_extension_present",
+      "inline_proof_sloc": 1,
+      "line": 358,
+      "sloc": 10,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 373,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::illegal_server_extension",
+      "inline_proof_sloc": 0,
+      "line": 371,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 385,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::check_extensions_slice",
+      "inline_proof_sloc": 1,
+      "line": 375,
+      "sloc": 10,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 395,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::check_extensions",
+      "inline_proof_sloc": 0,
+      "line": 387,
+      "sloc": 9,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 406,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::check_server_extensions",
+      "inline_proof_sloc": 1,
+      "line": 397,
+      "sloc": 9,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 424,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::TryFrom<u8>forAlertLevel::try_from",
+      "inline_proof_sloc": 0,
+      "line": 418,
+      "sloc": 7,
+      "status": "trusted"
+    },
+    {
+      "end_line": 463,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::TryFrom<u8>forAlertDescription::try_from",
+      "inline_proof_sloc": 0,
+      "line": 432,
+      "sloc": 32,
+      "status": "trusted"
+    },
+    {
+      "end_line": 481,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::bench_client_hello",
+      "inline_proof_sloc": 0,
+      "line": 466,
+      "sloc": 16,
+      "status": "unverified"
+    },
+    {
+      "end_line": 579,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::client_hello",
+      "inline_proof_sloc": 13,
+      "line": 483,
+      "sloc": 72,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 639,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::set_client_hello_binder",
+      "inline_proof_sloc": 3,
+      "line": 581,
+      "sloc": 56,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 643,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::invalid_compression_list",
+      "inline_proof_sloc": 0,
+      "line": 641,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 662,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::bench_parse_client_hello",
+      "inline_proof_sloc": 0,
+      "line": 645,
+      "sloc": 18,
+      "status": "unverified"
+    },
+    {
+      "end_line": 813,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::parse_client_hello",
+      "inline_proof_sloc": 3,
+      "line": 664,
+      "sloc": 144,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 869,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::server_hello",
+      "inline_proof_sloc": 10,
+      "line": 815,
+      "sloc": 39,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 873,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::unsupported_cipher_alert",
+      "inline_proof_sloc": 0,
+      "line": 871,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 877,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::invalid_compression_method_alert",
+      "inline_proof_sloc": 0,
+      "line": 875,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 922,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::check_not_hello_retry_request",
+      "inline_proof_sloc": 0,
+      "line": 915,
+      "sloc": 7,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 930,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::bench_parse_server_hello",
+      "inline_proof_sloc": 0,
+      "line": 924,
+      "sloc": 7,
+      "status": "unverified"
+    },
+    {
+      "end_line": 1007,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::parse_server_hello",
+      "inline_proof_sloc": 0,
+      "line": 932,
+      "sloc": 69,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1015,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::encrypted_extensions",
+      "inline_proof_sloc": 0,
+      "line": 1009,
+      "sloc": 7,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1049,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::parse_encrypted_extensions",
+      "inline_proof_sloc": 0,
+      "line": 1017,
+      "sloc": 30,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1081,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::server_certificate",
+      "inline_proof_sloc": 8,
+      "line": 1051,
+      "sloc": 20,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1086,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::bench_parse_server_certificate",
+      "inline_proof_sloc": 0,
+      "line": 1083,
+      "sloc": 4,
+      "status": "unverified"
+    },
+    {
+      "end_line": 1121,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::parse_server_certificate",
+      "inline_proof_sloc": 0,
+      "line": 1088,
+      "sloc": 31,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1160,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::certificate_verify",
+      "inline_proof_sloc": 8,
+      "line": 1123,
+      "sloc": 26,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1208,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::parse_certificate_verify",
+      "inline_proof_sloc": 0,
+      "line": 1162,
+      "sloc": 44,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1230,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::finished",
+      "inline_proof_sloc": 8,
+      "line": 1210,
+      "sloc": 10,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1253,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::parse_finished",
+      "inline_proof_sloc": 0,
+      "line": 1232,
+      "sloc": 19,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1297,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::ContentType::try_from_u8",
+      "inline_proof_sloc": 0,
+      "line": 1288,
+      "sloc": 9,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1307,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::handshake_record",
+      "inline_proof_sloc": 3,
+      "line": 1300,
+      "sloc": 5,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1311,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::protocol_version_alert",
+      "inline_proof_sloc": 0,
+      "line": 1309,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1315,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::application_data_instead_of_handshake",
+      "inline_proof_sloc": 0,
+      "line": 1313,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1334,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::check_handshake_record",
+      "inline_proof_sloc": 0,
+      "line": 1317,
+      "sloc": 18,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1343,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::get_handshake_record",
+      "inline_proof_sloc": 0,
+      "line": 1336,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1359,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::Transcript::new",
+      "inline_proof_sloc": 0,
+      "line": 1354,
+      "sloc": 6,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1385,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::Transcript::add",
+      "inline_proof_sloc": 0,
+      "line": 1361,
+      "sloc": 24,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1391,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::Transcript::transcript_hash",
+      "inline_proof_sloc": 0,
+      "line": 1387,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1414,
+      "file": "src/tls13formats.rs",
+      "id": "bertie_tls::tls13formats::Transcript::transcript_hash_without_client_hello",
+      "inline_proof_sloc": 1,
+      "line": 1393,
+      "sloc": 19,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 27,
+      "file": "src/tls13formats/handshake_data.rs",
+      "id": "bertie_tls::tls13formats::handshake_data::get_hs_type",
+      "inline_proof_sloc": 0,
+      "line": 12,
+      "sloc": 16,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 56,
+      "file": "src/tls13formats/handshake_data.rs",
+      "id": "bertie_tls::tls13formats::handshake_data::to_two_inner",
+      "inline_proof_sloc": 0,
+      "line": 32,
+      "sloc": 24,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 99,
+      "file": "src/tls13formats/handshake_data.rs",
+      "id": "bertie_tls::tls13formats::handshake_data::to_four_inner",
+      "inline_proof_sloc": 0,
+      "line": 57,
+      "sloc": 41,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 112,
+      "file": "src/tls13formats/handshake_data.rs",
+      "id": "bertie_tls::tls13formats::handshake_data::from_bytes_inner",
+      "inline_proof_sloc": 3,
+      "line": 101,
+      "sloc": 9,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 118,
+      "file": "src/tls13formats/handshake_data.rs",
+      "id": "bertie_tls::tls13formats::handshake_data::to_bytes_inner",
+      "inline_proof_sloc": 1,
+      "line": 114,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 131,
+      "file": "src/tls13formats/handshake_data.rs",
+      "id": "bertie_tls::tls13formats::handshake_data::HandshakeData::from_bytes",
+      "inline_proof_sloc": 3,
+      "line": 122,
+      "sloc": 6,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 138,
+      "file": "src/tls13formats/handshake_data.rs",
+      "id": "bertie_tls::tls13formats::handshake_data::HandshakeData::len",
+      "inline_proof_sloc": 1,
+      "line": 133,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 144,
+      "file": "src/tls13formats/handshake_data.rs",
+      "id": "bertie_tls::tls13formats::handshake_data::HandshakeData::to_bytes",
+      "inline_proof_sloc": 1,
+      "line": 140,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 158,
+      "file": "src/tls13formats/handshake_data.rs",
+      "id": "bertie_tls::tls13formats::handshake_data::HandshakeData::concat",
+      "inline_proof_sloc": 0,
+      "line": 146,
+      "sloc": 10,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 183,
+      "file": "src/tls13formats/handshake_data.rs",
+      "id": "bertie_tls::tls13formats::handshake_data::HandshakeData::as_handshake_message",
+      "inline_proof_sloc": 3,
+      "line": 160,
+      "sloc": 15,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 203,
+      "file": "src/tls13formats/handshake_data.rs",
+      "id": "bertie_tls::tls13formats::handshake_data::HandshakeData::next_handshake_message",
+      "inline_proof_sloc": 3,
+      "line": 185,
+      "sloc": 10,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 212,
+      "file": "src/tls13formats/handshake_data.rs",
+      "id": "bertie_tls::tls13formats::handshake_data::HandshakeData::to_two",
+      "inline_proof_sloc": 0,
+      "line": 205,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 223,
+      "file": "src/tls13formats/handshake_data.rs",
+      "id": "bertie_tls::tls13formats::handshake_data::HandshakeData::to_four",
+      "inline_proof_sloc": 0,
+      "line": 214,
+      "sloc": 5,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 249,
+      "file": "src/tls13formats/handshake_data.rs",
+      "id": "bertie_tls::tls13formats::handshake_data::HandshakeData::find_handshake_message",
+      "inline_proof_sloc": 2,
+      "line": 225,
+      "sloc": 20,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 257,
+      "file": "src/tls13formats/handshake_data.rs",
+      "id": "bertie_tls::tls13formats::handshake_data::From<Bytes>forHandshakeData::from",
+      "inline_proof_sloc": 0,
+      "line": 254,
+      "sloc": 4,
+      "status": "tested"
+    },
+    {
+      "end_line": 77,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::algs_post_client_hello",
+      "inline_proof_sloc": 0,
+      "line": 74,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 81,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::algs_post_server_hello",
+      "inline_proof_sloc": 0,
+      "line": 78,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 85,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::algs_post_client_finished",
+      "inline_proof_sloc": 0,
+      "line": 82,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 90,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::server_info_post_client_hello",
+      "inline_proof_sloc": 0,
+      "line": 87,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 94,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::server_info_post_server_hello",
+      "inline_proof_sloc": 0,
+      "line": 91,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 98,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::server_info_post_client_finished",
+      "inline_proof_sloc": 0,
+      "line": 95,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 187,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::build_client_hello",
+      "inline_proof_sloc": 0,
+      "line": 141,
+      "sloc": 47,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 240,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::compute_psk_binder_zero_rtt",
+      "inline_proof_sloc": 1,
+      "line": 189,
+      "sloc": 48,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 306,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::put_server_hello",
+      "inline_proof_sloc": 0,
+      "line": 242,
+      "sloc": 57,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 324,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::server_signature_input",
+      "inline_proof_sloc": 0,
+      "line": 310,
+      "sloc": 13,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 378,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::put_server_signature",
+      "inline_proof_sloc": 0,
+      "line": 326,
+      "sloc": 53,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 411,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::put_psk_skip_server_signature",
+      "inline_proof_sloc": 0,
+      "line": 380,
+      "sloc": 32,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 464,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::put_server_finished",
+      "inline_proof_sloc": 0,
+      "line": 413,
+      "sloc": 51,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 502,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::get_client_finished",
+      "inline_proof_sloc": 0,
+      "line": 466,
+      "sloc": 37,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 526,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::client_init",
+      "inline_proof_sloc": 0,
+      "line": 509,
+      "sloc": 18,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 536,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::client_set_params",
+      "inline_proof_sloc": 0,
+      "line": 528,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 575,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::client_finish",
+      "inline_proof_sloc": 0,
+      "line": 538,
+      "sloc": 38,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 605,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::put_client_hello",
+      "inline_proof_sloc": 0,
+      "line": 579,
+      "sloc": 27,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 644,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::process_psk_binder_zero_rtt",
+      "inline_proof_sloc": 0,
+      "line": 607,
+      "sloc": 34,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 716,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::get_server_hello",
+      "inline_proof_sloc": 0,
+      "line": 646,
+      "sloc": 64,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 731,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::get_rsa_signature",
+      "inline_proof_sloc": 0,
+      "line": 718,
+      "sloc": 11,
+      "status": "unverified"
+    },
+    {
+      "end_line": 780,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::get_server_signature_no_psk",
+      "inline_proof_sloc": 0,
+      "line": 733,
+      "sloc": 48,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 799,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::get_server_signature",
+      "inline_proof_sloc": 0,
+      "line": 782,
+      "sloc": 18,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 828,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::get_server_finished",
+      "inline_proof_sloc": 0,
+      "line": 801,
+      "sloc": 28,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 843,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::put_client_finished",
+      "inline_proof_sloc": 0,
+      "line": 830,
+      "sloc": 14,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 874,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::server_init_no_psk",
+      "inline_proof_sloc": 0,
+      "line": 849,
+      "sloc": 25,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 898,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::server_init",
+      "inline_proof_sloc": 0,
+      "line": 876,
+      "sloc": 23,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 906,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::server_finish",
+      "inline_proof_sloc": 0,
+      "line": 900,
+      "sloc": 7,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 918,
+      "file": "src/tls13handshake.rs",
+      "id": "bertie_tls::tls13handshake::proverif_extra::f",
+      "inline_proof_sloc": 0,
+      "line": 915,
+      "sloc": 4,
+      "status": "tested"
+    },
+    {
+      "end_line": 111,
+      "file": "src/tls13keyscheduler.rs",
+      "id": "bertie_tls::tls13keyscheduler::hash_empty",
+      "inline_proof_sloc": 90,
+      "line": 17,
+      "sloc": 18446744073709551607,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 122,
+      "file": "src/tls13keyscheduler.rs",
+      "id": "bertie_tls::tls13keyscheduler::derive_binder_key",
+      "inline_proof_sloc": 0,
+      "line": 113,
+      "sloc": 10,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 191,
+      "file": "src/tls13keyscheduler.rs",
+      "id": "bertie_tls::tls13keyscheduler::derive_aead_key_iv",
+      "inline_proof_sloc": 14,
+      "line": 124,
+      "sloc": 51,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 295,
+      "file": "src/tls13keyscheduler.rs",
+      "id": "bertie_tls::tls13keyscheduler::next_keys_c_2",
+      "inline_proof_sloc": 83,
+      "line": 193,
+      "sloc": 18,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 315,
+      "file": "src/tls13keyscheduler.rs",
+      "id": "bertie_tls::tls13keyscheduler::derive_0rtt_keys",
+      "inline_proof_sloc": 0,
+      "line": 297,
+      "sloc": 18,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 359,
+      "file": "src/tls13keyscheduler.rs",
+      "id": "bertie_tls::tls13keyscheduler::derive_finished_key",
+      "inline_proof_sloc": 5,
+      "line": 317,
+      "sloc": 36,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 394,
+      "file": "src/tls13keyscheduler.rs",
+      "id": "bertie_tls::tls13keyscheduler::derive_early_salt",
+      "inline_proof_sloc": 21,
+      "line": 361,
+      "sloc": 11,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 511,
+      "file": "src/tls13keyscheduler.rs",
+      "id": "bertie_tls::tls13keyscheduler::derive_handshake_secrets",
+      "inline_proof_sloc": 91,
+      "line": 396,
+      "sloc": 20,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 645,
+      "file": "src/tls13keyscheduler.rs",
+      "id": "bertie_tls::tls13keyscheduler::derive_hk_handles",
+      "inline_proof_sloc": 101,
+      "line": 513,
+      "sloc": 30,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 671,
+      "file": "src/tls13keyscheduler.rs",
+      "id": "bertie_tls::tls13keyscheduler::derive_hk_ms",
+      "inline_proof_sloc": 6,
+      "line": 647,
+      "sloc": 18,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 748,
+      "file": "src/tls13keyscheduler.rs",
+      "id": "bertie_tls::tls13keyscheduler::derive_app_handles",
+      "inline_proof_sloc": 58,
+      "line": 673,
+      "sloc": 15,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 769,
+      "file": "src/tls13keyscheduler.rs",
+      "id": "bertie_tls::tls13keyscheduler::derive_app_keys",
+      "inline_proof_sloc": 8,
+      "line": 750,
+      "sloc": 11,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 790,
+      "file": "src/tls13keyscheduler.rs",
+      "id": "bertie_tls::tls13keyscheduler::derive_rms",
+      "inline_proof_sloc": 12,
+      "line": 771,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 47,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::hkdf_expand_label",
+      "inline_proof_sloc": 10,
+      "line": 13,
+      "sloc": 19,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 87,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::zero_salt",
+      "inline_proof_sloc": 1,
+      "line": 76,
+      "sloc": 9,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 100,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::no_psk",
+      "inline_proof_sloc": 1,
+      "line": 89,
+      "sloc": 10,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 112,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::zero_ikm",
+      "inline_proof_sloc": 1,
+      "line": 102,
+      "sloc": 9,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 115,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::KeySchedule::labels",
+      "inline_proof_sloc": 0,
+      "line": 115,
+      "sloc": 1,
+      "status": "unverified"
+    },
+    {
+      "end_line": 116,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::KeySchedule::prnt_n",
+      "inline_proof_sloc": 0,
+      "line": 116,
+      "sloc": 1,
+      "status": "unverified"
+    },
+    {
+      "end_line": 119,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::KeySchedule::get",
+      "inline_proof_sloc": 0,
+      "line": 119,
+      "sloc": 1,
+      "status": "unverified"
+    },
+    {
+      "end_line": 120,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::KeySchedule::set",
+      "inline_proof_sloc": 0,
+      "line": 120,
+      "sloc": 1,
+      "status": "tested"
+    },
+    {
+      "end_line": 122,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::KeySchedule::hash",
+      "inline_proof_sloc": 0,
+      "line": 122,
+      "sloc": 1,
+      "status": "tested"
+    },
+    {
+      "end_line": 196,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::TLSkeyscheduler::new",
+      "inline_proof_sloc": 0,
+      "line": 193,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 213,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::TLSkeyscheduler::position",
+      "inline_proof_sloc": 8,
+      "line": 198,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 229,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::TLSkeyscheduler::lookup",
+      "inline_proof_sloc": 7,
+      "line": 215,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 245,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::TLSkeyscheduler::put",
+      "inline_proof_sloc": 7,
+      "line": 231,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 264,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::KeySchedule<TLSnames>forTLSkeyscheduler::prnt_n",
+      "inline_proof_sloc": 0,
+      "line": 251,
+      "sloc": 14,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 288,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::KeySchedule<TLSnames>forTLSkeyscheduler::labels",
+      "inline_proof_sloc": 0,
+      "line": 266,
+      "sloc": 22,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 292,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::KeySchedule<TLSnames>forTLSkeyscheduler::get",
+      "inline_proof_sloc": 0,
+      "line": 290,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 296,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::KeySchedule<TLSnames>forTLSkeyscheduler::set",
+      "inline_proof_sloc": 0,
+      "line": 294,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 301,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::KeySchedule<TLSnames>forTLSkeyscheduler::hash",
+      "inline_proof_sloc": 0,
+      "line": 299,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 338,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::convert_label",
+      "inline_proof_sloc": 1,
+      "line": 306,
+      "sloc": 32,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 358,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::label_to_bytes",
+      "inline_proof_sloc": 0,
+      "line": 340,
+      "sloc": 19,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 369,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::xtr_alg",
+      "inline_proof_sloc": 0,
+      "line": 367,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 386,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::xpd_alg",
+      "inline_proof_sloc": 3,
+      "line": 371,
+      "sloc": 13,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 396,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::xtr",
+      "inline_proof_sloc": 0,
+      "line": 388,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 411,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::xpd",
+      "inline_proof_sloc": 3,
+      "line": 398,
+      "sloc": 10,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 464,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::xpd_angle",
+      "inline_proof_sloc": 0,
+      "line": 453,
+      "sloc": 12,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 474,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::tagkey_from_handle",
+      "inline_proof_sloc": 1,
+      "line": 466,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 487,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::set_by_handle",
+      "inline_proof_sloc": 3,
+      "line": 476,
+      "sloc": 9,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 501,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::get_by_handle",
+      "inline_proof_sloc": 4,
+      "line": 489,
+      "sloc": 9,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 647,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::XPD",
+      "inline_proof_sloc": 72,
+      "line": 503,
+      "sloc": 70,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 655,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::xtr_angle",
+      "inline_proof_sloc": 0,
+      "line": 649,
+      "sloc": 7,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 722,
+      "file": "src/tls13keyscheduler/key_schedule.rs",
+      "id": "bertie_tls::tls13keyscheduler::key_schedule::XTR",
+      "inline_proof_sloc": 9,
+      "line": 657,
+      "sloc": 57,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 22,
+      "file": "src/tls13record.rs",
+      "id": "bertie_tls::tls13record::client_cipher_state0",
+      "inline_proof_sloc": 0,
+      "line": 14,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 42,
+      "file": "src/tls13record.rs",
+      "id": "bertie_tls::tls13record::server_cipher_state0",
+      "inline_proof_sloc": 0,
+      "line": 31,
+      "sloc": 11,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 66,
+      "file": "src/tls13record.rs",
+      "id": "bertie_tls::tls13record::DuplexCipherStateH::new",
+      "inline_proof_sloc": 0,
+      "line": 53,
+      "sloc": 13,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 81,
+      "file": "src/tls13record.rs",
+      "id": "bertie_tls::tls13record::duplex_cipher_state1",
+      "inline_proof_sloc": 0,
+      "line": 71,
+      "sloc": 10,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 97,
+      "file": "src/tls13record.rs",
+      "id": "bertie_tls::tls13record::derive_iv_ctr",
+      "inline_proof_sloc": 3,
+      "line": 83,
+      "sloc": 11,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 125,
+      "file": "src/tls13record.rs",
+      "id": "bertie_tls::tls13record::encrypt_record_payload",
+      "inline_proof_sloc": 0,
+      "line": 99,
+      "sloc": 24,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 136,
+      "file": "src/tls13record.rs",
+      "id": "bertie_tls::tls13record::padlen",
+      "inline_proof_sloc": 3,
+      "line": 127,
+      "sloc": 7,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 164,
+      "file": "src/tls13record.rs",
+      "id": "bertie_tls::tls13record::decrypt_record_payload",
+      "inline_proof_sloc": 0,
+      "line": 138,
+      "sloc": 24,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 186,
+      "file": "src/tls13record.rs",
+      "id": "bertie_tls::tls13record::encrypt_zerortt",
+      "inline_proof_sloc": 0,
+      "line": 168,
+      "sloc": 17,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 206,
+      "file": "src/tls13record.rs",
+      "id": "bertie_tls::tls13record::decrypt_zerortt",
+      "inline_proof_sloc": 0,
+      "line": 188,
+      "sloc": 17,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 243,
+      "file": "src/tls13record.rs",
+      "id": "bertie_tls::tls13record::encrypt_handshake",
+      "inline_proof_sloc": 0,
+      "line": 208,
+      "sloc": 30,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 292,
+      "file": "src/tls13record.rs",
+      "id": "bertie_tls::tls13record::decrypt_handshake",
+      "inline_proof_sloc": 0,
+      "line": 245,
+      "sloc": 47,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 309,
+      "file": "src/tls13record.rs",
+      "id": "bertie_tls::tls13record::encrypt_data",
+      "inline_proof_sloc": 0,
+      "line": 294,
+      "sloc": 16,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 323,
+      "file": "src/tls13record.rs",
+      "id": "bertie_tls::tls13record::encrypt_close_notify",
+      "inline_proof_sloc": 0,
+      "line": 311,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 333,
+      "file": "src/tls13record.rs",
+      "id": "bertie_tls::tls13record::decrypt_data_or_hs",
+      "inline_proof_sloc": 0,
+      "line": 325,
+      "sloc": 9,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 346,
+      "file": "src/tls13record.rs",
+      "id": "bertie_tls::tls13record::decrypt_data",
+      "inline_proof_sloc": 0,
+      "line": 334,
+      "sloc": 13,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 22,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::parse_failed",
+      "inline_proof_sloc": 0,
+      "line": 18,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 58,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::error_string",
+      "inline_proof_sloc": 0,
+      "line": 55,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 64,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::tlserr",
+      "inline_proof_sloc": 1,
+      "line": 60,
+      "sloc": 4,
+      "status": "unverified"
+    },
+    {
+      "end_line": 80,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::core::ops::BitXorforU8::bitxor",
+      "inline_proof_sloc": 0,
+      "line": 78,
+      "sloc": 3,
+      "status": "unverified"
+    },
+    {
+      "end_line": 86,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::From<u8>forU8::from",
+      "inline_proof_sloc": 0,
+      "line": 84,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 93,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::U8::declassify",
+      "inline_proof_sloc": 0,
+      "line": 91,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 100,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Declassify::declassify",
+      "inline_proof_sloc": 0,
+      "line": 99,
+      "sloc": 2,
+      "status": "tested"
+    },
+    {
+      "end_line": 107,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Declassify<u8>foru8::declassify",
+      "inline_proof_sloc": 0,
+      "line": 105,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 118,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::U8",
+      "inline_proof_sloc": 1,
+      "line": 113,
+      "sloc": 5,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 124,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::From<&u8>forU8::from",
+      "inline_proof_sloc": 0,
+      "line": 122,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 139,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::U16",
+      "inline_proof_sloc": 1,
+      "line": 134,
+      "sloc": 5,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 145,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::From<u16>forU16::from",
+      "inline_proof_sloc": 0,
+      "line": 143,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 156,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::From<u32>forU32::from",
+      "inline_proof_sloc": 0,
+      "line": 154,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 164,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::core::ops::AddforU32::add",
+      "inline_proof_sloc": 0,
+      "line": 162,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 174,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::U32",
+      "inline_proof_sloc": 0,
+      "line": 170,
+      "sloc": 5,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 181,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Declassify<u32>forU32::declassify",
+      "inline_proof_sloc": 0,
+      "line": 178,
+      "sloc": 4,
+      "status": "tested"
+    },
+    {
+      "end_line": 188,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::From<Vec<u8>>forBytes::from",
+      "inline_proof_sloc": 0,
+      "line": 186,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 195,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::From<Vec<U8>>forBytes::from",
+      "inline_proof_sloc": 0,
+      "line": 193,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 204,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::From<Vec<u8>>forBytes::from",
+      "inline_proof_sloc": 1,
+      "line": 201,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 219,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::concat_inner",
+      "inline_proof_sloc": 4,
+      "line": 207,
+      "sloc": 9,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 233,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::eq_inner",
+      "inline_proof_sloc": 0,
+      "line": 221,
+      "sloc": 13,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 255,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Bytes::prefix",
+      "inline_proof_sloc": 6,
+      "line": 237,
+      "sloc": 10,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 274,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Bytes::declassify",
+      "inline_proof_sloc": 8,
+      "line": 257,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 280,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Bytes::into_raw",
+      "inline_proof_sloc": 0,
+      "line": 276,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 287,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Bytes::as_raw",
+      "inline_proof_sloc": 1,
+      "line": 282,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 299,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Bytes::declassify_array",
+      "inline_proof_sloc": 0,
+      "line": 291,
+      "sloc": 9,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 311,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::From<&[u8]>forBytes::from",
+      "inline_proof_sloc": 5,
+      "line": 304,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 318,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::From<&[U8]>forBytes::from",
+      "inline_proof_sloc": 0,
+      "line": 316,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 326,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::<constC:usize>From<[u8 ; C]>forBytes::from",
+      "inline_proof_sloc": 1,
+      "line": 323,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 334,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::<constC:usize>From<&[u8 ; C]>forBytes::from",
+      "inline_proof_sloc": 1,
+      "line": 331,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 341,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::U32::declassify",
+      "inline_proof_sloc": 0,
+      "line": 339,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 358,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::u16_as_be_bytes",
+      "inline_proof_sloc": 4,
+      "line": 343,
+      "sloc": 12,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 366,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::u32_as_be_bytes",
+      "inline_proof_sloc": 0,
+      "line": 360,
+      "sloc": 7,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 380,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::u32_from_be_bytes",
+      "inline_proof_sloc": 0,
+      "line": 368,
+      "sloc": 12,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 387,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::bytes",
+      "inline_proof_sloc": 3,
+      "line": 382,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 392,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::bytes1",
+      "inline_proof_sloc": 1,
+      "line": 389,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 397,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::bytes2",
+      "inline_proof_sloc": 1,
+      "line": 394,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 405,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::core::ops::Index<usize>forBytes::index",
+      "inline_proof_sloc": 0,
+      "line": 402,
+      "sloc": 4,
+      "status": "trusted"
+    },
+    {
+      "end_line": 422,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::_update_at_usize_bytes_test",
+      "inline_proof_sloc": 9,
+      "line": 408,
+      "sloc": 5,
+      "status": "unverified"
+    },
+    {
+      "end_line": 433,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::non_hax::random_bytes",
+      "inline_proof_sloc": 0,
+      "line": 428,
+      "sloc": 6,
+      "status": "tested"
+    },
+    {
+      "end_line": 454,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::non_hax::Bytes::from_hex",
+      "inline_proof_sloc": 0,
+      "line": 436,
+      "sloc": 18,
+      "status": "tested"
+    },
+    {
+      "end_line": 460,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::non_hax::core::ops::IndexMut<usize>forBytes::index_mut",
+      "inline_proof_sloc": 0,
+      "line": 458,
+      "sloc": 3,
+      "status": "unverified"
+    },
+    {
+      "end_line": 466,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::non_hax::core::ops::IndexMut<core::ops::Range<usize>>forBytes::index_mut",
+      "inline_proof_sloc": 0,
+      "line": 464,
+      "sloc": 3,
+      "status": "unverified"
+    },
+    {
+      "end_line": 477,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::core::ops::Index<Range<usize>>forBytes::index",
+      "inline_proof_sloc": 1,
+      "line": 473,
+      "sloc": 4,
+      "status": "unverified"
+    },
+    {
+      "end_line": 491,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::check_eq_inner",
+      "inline_proof_sloc": 1,
+      "line": 480,
+      "sloc": 11,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 499,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Bytes::new",
+      "inline_proof_sloc": 0,
+      "line": 495,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 505,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Bytes::new_alloc",
+      "inline_proof_sloc": 1,
+      "line": 501,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 512,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Bytes::zeroes",
+      "inline_proof_sloc": 1,
+      "line": 507,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 518,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Bytes::len",
+      "inline_proof_sloc": 1,
+      "line": 514,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 527,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Bytes::push",
+      "inline_proof_sloc": 4,
+      "line": 520,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 536,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Bytes::extend_from_slice",
+      "inline_proof_sloc": 4,
+      "line": 529,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 543,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Bytes::append",
+      "inline_proof_sloc": 2,
+      "line": 538,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 551,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Bytes::from_slice",
+      "inline_proof_sloc": 3,
+      "line": 545,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 558,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Bytes::raw_slice",
+      "inline_proof_sloc": 2,
+      "line": 553,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 565,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Bytes::slice_range",
+      "inline_proof_sloc": 2,
+      "line": 560,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 572,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Bytes::slice",
+      "inline_proof_sloc": 2,
+      "line": 567,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 581,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Bytes::concat",
+      "inline_proof_sloc": 4,
+      "line": 574,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 588,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Bytes::concat_array",
+      "inline_proof_sloc": 1,
+      "line": 583,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 606,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::Bytes::update_slice",
+      "inline_proof_sloc": 2,
+      "line": 590,
+      "sloc": 13,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 655,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::check",
+      "inline_proof_sloc": 4,
+      "line": 644,
+      "sloc": 7,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 660,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::eq1",
+      "inline_proof_sloc": 0,
+      "line": 657,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 674,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::check_eq1",
+      "inline_proof_sloc": 3,
+      "line": 662,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 727,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::eq_slice",
+      "inline_proof_sloc": 12,
+      "line": 701,
+      "sloc": 13,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 734,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::eq",
+      "inline_proof_sloc": 0,
+      "line": 730,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 747,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::check_eq_slice",
+      "inline_proof_sloc": 1,
+      "line": 736,
+      "sloc": 9,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 771,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::check_eq_with_slice",
+      "inline_proof_sloc": 3,
+      "line": 749,
+      "sloc": 18,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 781,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::check_eq",
+      "inline_proof_sloc": 3,
+      "line": 773,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 795,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::check_eq_option",
+      "inline_proof_sloc": 3,
+      "line": 783,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 819,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::check_mem",
+      "inline_proof_sloc": 1,
+      "line": 798,
+      "sloc": 18,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 849,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::encode_length_u8",
+      "inline_proof_sloc": 12,
+      "line": 821,
+      "sloc": 12,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 871,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::encode_length_u16",
+      "inline_proof_sloc": 3,
+      "line": 851,
+      "sloc": 13,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 894,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::encode_length_u24",
+      "inline_proof_sloc": 3,
+      "line": 873,
+      "sloc": 14,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 917,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::length_u8_encoded",
+      "inline_proof_sloc": 4,
+      "line": 896,
+      "sloc": 12,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 943,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::length_u16_encoded_slice",
+      "inline_proof_sloc": 4,
+      "line": 919,
+      "sloc": 15,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 958,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::length_u16_encoded",
+      "inline_proof_sloc": 4,
+      "line": 945,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 985,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::length_u24_encoded",
+      "inline_proof_sloc": 4,
+      "line": 960,
+      "sloc": 16,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 996,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::check_length_encoding_u8_slice",
+      "inline_proof_sloc": 3,
+      "line": 987,
+      "sloc": 7,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1008,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::check_length_encoding_u8",
+      "inline_proof_sloc": 3,
+      "line": 998,
+      "sloc": 4,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1020,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::check_length_encoding_u16_slice",
+      "inline_proof_sloc": 3,
+      "line": 1010,
+      "sloc": 8,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1032,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::check_length_encoding_u16",
+      "inline_proof_sloc": 3,
+      "line": 1022,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1048,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::check_length_encoding_u24",
+      "inline_proof_sloc": 3,
+      "line": 1034,
+      "sloc": 7,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1056,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::AppData::new",
+      "inline_proof_sloc": 0,
+      "line": 1053,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1061,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::AppData::into_raw",
+      "inline_proof_sloc": 0,
+      "line": 1058,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1066,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::AppData::as_raw",
+      "inline_proof_sloc": 0,
+      "line": 1063,
+      "sloc": 3,
+      "status": "proven-extracted"
+    },
+    {
+      "end_line": 1072,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::From<&[u8]>forAppData::from",
+      "inline_proof_sloc": 0,
+      "line": 1070,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 1078,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::<constN:usize>From<&[u8 ; N]>forAppData::from",
+      "inline_proof_sloc": 0,
+      "line": 1076,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 1084,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::From<Vec<u8>>forAppData::from",
+      "inline_proof_sloc": 0,
+      "line": 1082,
+      "sloc": 3,
+      "status": "tested"
+    },
+    {
+      "end_line": 1090,
+      "file": "src/tls13utils.rs",
+      "id": "bertie_tls::tls13utils::From<Bytes>forAppData::from",
+      "inline_proof_sloc": 0,
+      "line": 1088,
+      "sloc": 3,
+      "status": "proven-extracted"
+    }
+  ],
+  "proof_depth": {
+    "functional": 270,
+    "functional_own_code_only": 209,
+    "safety_only": 3675
+  },
+  "proof_ratio": 0.3307655272026962,
+  "proof_sloc": 1374,
+  "proven": 4154,
+  "schema": 2,
+  "scope": "first-party security runtime",
+  "statuses": {
+    "hazard": 0,
+    "proven": 0,
+    "proven-bounded": 0,
+    "proven-extracted": 4154,
+    "proven-upstream": 0,
+    "tested": 251,
+    "trusted": 159,
+    "unverified": 551
+  },
+  "tested": 251,
+  "total": 5115,
+  "unverified": 710
+}
